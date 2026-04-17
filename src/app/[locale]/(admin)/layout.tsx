@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useAuthStore } from "@/store/auth";
 import {
   LayoutDashboard, Users, CreditCard, Repeat2, DollarSign,
-  Globe, ScrollText, Palette, Activity
+  Globe, ScrollText, Palette, Activity, Settings
 } from "lucide-react";
 
 const navItems = [
@@ -15,6 +15,7 @@ const navItems = [
   { href: "admin/plans", label: "Plans", icon: CreditCard },
   { href: "admin/subscriptions", label: "Subscriptions", icon: Repeat2 },
   { href: "admin/payments", label: "Payments", icon: DollarSign },
+  { href: "admin/payment-methods", label: "Payment Methods", icon: Settings },
   { href: "admin/domains", label: "Domains", icon: Globe },
   { href: "admin/audit-log", label: "Audit Log", icon: ScrollText },
   { href: "admin/theme", label: "Theme", icon: Palette },

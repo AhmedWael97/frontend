@@ -22,7 +22,12 @@ const tajawal = Tajawal({
 
 export const metadata: Metadata = {
   title: { default: "EYE — AI Visitor Intelligence", template: "%s | EYE" },
-  description: "AI-powered visitor tracking and analytics platform",
+  description: "AI-powered visitor tracking and analytics platform. Real-time dashboards, heatmaps, funnel analysis, B2B enrichment, and more.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://eye.ai"),
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default async function LocaleLayout({
@@ -48,7 +53,7 @@ export default async function LocaleLayout({
       className="dark"
       suppressHydrationWarning
     >
-      <body className={`${inter.variable} ${tajawal.variable} font-sans`}>
+      <body className={`${inter.variable} ${tajawal.variable} font-sans`} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             {children}

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getLocale } from "next-intl/server";
 import {
-  Brain, Zap, Globe2, ShieldCheck,
+  BarChart3, Brain, Zap, Globe2, Users, ShieldCheck,
   Play, ArrowRight, Check, Star, Eye, MousePointer2,
   TrendingUp, Layers, Lock, Gauge
 } from "lucide-react";
@@ -127,18 +127,21 @@ const FEATURES = [
 
 const STEPS = [
   {
+    step: "01",
     title: "Add the tracker script",
     description:
       "Copy one line of JavaScript to your site. Works with React, Next.js, WordPress, Shopify — everything.",
     icon: Layers,
   },
   {
+    step: "02",
     title: "Data flows automatically",
     description:
       "Visitor events, page views, sessions, and custom events are captured and stored in real time.",
     icon: Gauge,
   },
   {
+    step: "03",
     title: "Get AI-driven insights",
     description:
       "Our AI analyzes patterns, segments visitors, and surfaces actionable recommendations to grow your business.",
@@ -189,6 +192,7 @@ export default async function HomePage() {
 
         {/* ── Hero ──────────────────────────────────────────────────────────── */}
         <section className="relative min-h-screen flex items-center pt-16">
+          {/* Background gradients */}
           <div className="absolute inset-0 pointer-events-none" aria-hidden>
             <div className="absolute top-[-10%] left-[20%] w-[600px] h-[600px] rounded-full bg-indigo-600/10 blur-[120px]" />
             <div className="absolute top-[20%] right-[10%] w-[400px] h-[400px] rounded-full bg-violet-600/10 blur-[100px]" />
@@ -237,6 +241,7 @@ export default async function HomePage() {
             {/* Dashboard mock */}
             <div className="mt-16 relative max-w-5xl mx-auto">
               <div className="rounded-2xl border border-outline-variant/30 bg-surface-container/60 backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/40">
+                {/* Mock browser chrome */}
                 <div className="flex items-center gap-2 px-4 py-3 border-b border-outline-variant/20 bg-surface-container">
                   <div className="flex gap-1.5">
                     <div className="w-3 h-3 rounded-full bg-red-500/60" />
@@ -247,6 +252,7 @@ export default async function HomePage() {
                     <span className="text-xs text-on-surface-variant/60">app.eye.ai/dashboard</span>
                   </div>
                 </div>
+                {/* Stats preview row */}
                 <div className="p-6">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                     {[
@@ -262,17 +268,19 @@ export default async function HomePage() {
                       </div>
                     ))}
                   </div>
+                  {/* Mock chart bars */}
                   <div className="rounded-xl bg-surface-container-high/40 p-4 flex items-end gap-1.5 h-32">
                     {[40, 65, 55, 80, 70, 90, 75, 95, 60, 85, 72, 88, 65, 92].map((h, i) => (
                       <div
                         key={i}
-                        className="flex-1 rounded-t-sm bg-gradient-to-t from-indigo-500/60 to-violet-500/40"
+                        className="flex-1 rounded-t-sm bg-gradient-to-t from-indigo-500/60 to-violet-500/40 transition-all"
                         style={{ height: `${h}%` }}
                       />
                     ))}
                   </div>
                 </div>
               </div>
+              {/* Glow under dashboard */}
               <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-20 bg-indigo-500/20 blur-3xl rounded-full" />
             </div>
           </div>
@@ -281,10 +289,10 @@ export default async function HomePage() {
         {/* ── Stats ─────────────────────────────────────────────────────────── */}
         <section className="py-20 border-y border-outline-variant/20 bg-surface-container/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
               {STATS.map((stat) => (
-                <div key={stat.label}>
-                  <p className="text-4xl font-black bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+                <div key={stat.label} className="text-center">
+                  <p className="text-4xl font-black text-on-surface bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
                     {stat.value}
                   </p>
                   <p className="text-sm text-on-surface-variant mt-1">{stat.label}</p>
@@ -302,12 +310,11 @@ export default async function HomePage() {
                 Everything you need
               </Badge>
               <h2 className="text-4xl sm:text-5xl font-black text-on-surface tracking-tight mb-4">
-                One platform.{" "}
-                <span className="text-violet-400">Infinite insight.</span>
+                One platform.
+                <span className="text-violet-400"> Infinite insight.</span>
               </h2>
               <p className="text-lg text-on-surface-variant max-w-xl mx-auto">
-                Replace your fragmented analytics stack with a single AI-powered platform
-                that covers every aspect of visitor intelligence.
+                Replace your fragmented analytics stack with a single AI-powered platform that covers every aspect of visitor intelligence.
               </p>
             </div>
 
@@ -339,8 +346,8 @@ export default async function HomePage() {
                 Get started in minutes
               </Badge>
               <h2 className="text-4xl sm:text-5xl font-black text-on-surface tracking-tight mb-4">
-                Three steps to{" "}
-                <span className="text-emerald-400">total clarity</span>
+                Three steps to
+                <span className="text-emerald-400"> total clarity</span>
               </h2>
               <p className="text-lg text-on-surface-variant max-w-xl mx-auto">
                 No complex setup. No data engineers required. Add one script and let EYE do the rest.
@@ -351,7 +358,8 @@ export default async function HomePage() {
               {STEPS.map((step, i) => {
                 const Icon = step.icon;
                 return (
-                  <div key={step.title} className="relative text-center">
+                  <div key={step.step} className="relative text-center">
+                    {/* Connector line */}
                     {i < STEPS.length - 1 && (
                       <div className="hidden md:block absolute top-10 left-[calc(50%+48px)] right-[calc(-50%+48px)] h-px bg-gradient-to-r from-outline-variant/40 to-outline-variant/10" />
                     )}
@@ -379,25 +387,25 @@ export default async function HomePage() {
                   </div>
                   <span className="text-xs text-on-surface-variant ml-2">index.html</span>
                 </div>
-                <pre className="p-6 text-sm font-mono overflow-x-auto leading-relaxed">
+                <pre className="p-6 text-sm font-mono text-on-surface-variant overflow-x-auto">
                   <code>
-                    <span className="text-pink-400">{"<script"}</span>{" "}
+                    <span className="text-pink-400">{"<script"}</span>
+                    {" "}
                     <span className="text-indigo-400">src</span>
                     <span className="text-on-surface-variant">{"="}</span>
                     <span className="text-emerald-400">{'"https://cdn.eye.ai/tracker.js"'}</span>
-                    {"\n       "}
+                    <span className="text-pink-400">{"\n  "}</span>
                     <span className="text-indigo-400">data-site-id</span>
                     <span className="text-on-surface-variant">{"="}</span>
                     <span className="text-emerald-400">{'"YOUR_SITE_ID"'}</span>
-                    {"\n       "}
-                    <span className="text-pink-400">defer</span>
+                    <span className="text-pink-400">{"\n  defer"}</span>
                     <span className="text-pink-400">{">"}</span>
                     <span className="text-pink-400">{"</script>"}</span>
                   </code>
                 </pre>
               </div>
               <p className="text-center text-xs text-on-surface-variant mt-3">
-                That&apos;s it. Under 2KB. Zero dependencies. Zero cookies.
+                That's it. Under 2KB. Zero dependencies. Zero cookies.
               </p>
             </div>
           </div>
@@ -414,6 +422,7 @@ export default async function HomePage() {
                 Join thousands of companies making smarter decisions with EYE.
               </p>
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {TESTIMONIALS.map((t) => (
                 <div
@@ -425,7 +434,7 @@ export default async function HomePage() {
                       <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <p className="text-sm text-on-surface leading-relaxed mb-6">&ldquo;{t.quote}&rdquo;</p>
+                  <p className="text-sm text-on-surface leading-relaxed mb-6">"{t.quote}"</p>
                   <div>
                     <p className="text-sm font-bold text-on-surface">{t.author}</p>
                     <p className="text-xs text-on-surface-variant">{t.role}</p>
@@ -436,7 +445,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Trust bar ─────────────────────────────────────────────────────── */}
+        {/* ── Privacy / Trust bar ───────────────────────────────────────────── */}
         <section className="py-16 border-y border-outline-variant/20 bg-surface-container/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">

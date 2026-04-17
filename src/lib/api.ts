@@ -251,6 +251,12 @@ export const adminApi = {
   deleteDomain: (id: number) => api.delete(`/admin/domains/${id}`),
   // Audit log
   auditLog: (params?: Record<string, string>) => api.get("/admin/audit-log", { params }),
+  // Payment methods (gateways)
+  listPaymentMethods: () => api.get("/admin/payment-methods"),
+  updatePaymentMethod: (gateway: string, data: Record<string, unknown>) =>
+    api.put(`/admin/payment-methods/${gateway}`, data),
+  togglePaymentMethod: (gateway: string) =>
+    api.patch(`/admin/payment-methods/${gateway}/toggle`),
 };
 
 export const gdprApi = {
