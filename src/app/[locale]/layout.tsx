@@ -5,6 +5,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Providers from "@/components/Providers";
+import { NavigationProgress } from "@/components/NavigationProgress";
 import "@/app/globals.css";
 
 const inter = Inter({
@@ -56,6 +57,7 @@ export default async function LocaleLayout({
       <body className={`${inter.variable} ${tajawal.variable} font-sans`} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>
+            <NavigationProgress />
             {children}
           </Providers>
         </NextIntlClientProvider>

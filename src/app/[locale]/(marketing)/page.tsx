@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getLocale } from "next-intl/server";
 import {
   Brain, Zap, Globe2, ShieldCheck,
   Play, ArrowRight, Check, Star, Eye, MousePointer2,
@@ -13,8 +12,10 @@ import Footer from "@/components/marketing/Footer";
 
 // ─── SEO Metadata ─────────────────────────────────────────────────────────────
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
+export async function generateMetadata(
+  { params }: { params: { locale: string } }
+): Promise<Metadata> {
+  const locale = params.locale;
   const isAr = locale === "ar";
 
   const title = isAr
@@ -182,8 +183,10 @@ const TESTIMONIALS = [
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
-export default async function HomePage() {
-  const locale = await getLocale();
+export default async function HomePage(
+  { params }: { params: { locale: string } }
+) {
+  const locale = params.locale;
 
   return (
     <>

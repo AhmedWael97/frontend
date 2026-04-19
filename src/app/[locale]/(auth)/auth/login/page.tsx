@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
+import { toast } from "@/lib/use-toast";
 
 const schema = z.object({
   email: z.string().email(),
@@ -44,12 +45,14 @@ export default function LoginPage() {
       setToken(res.data.token);
       setUser(res.data.user);
       if (res.data.user?.role === "superadmin") {
+        toast.success("Welcome back, Admin! Redirecting...");
         router.push(`/${locale}/admin`);
       } else {
+        toast.success("Welcome back! Redirecting to dashboard...");
         router.push(`/${locale}/dashboard`);
       }
     } catch (e: any) {
-      setError(e.response?.data?.message || "Login failed. Please try again.");
+      setError(e.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }

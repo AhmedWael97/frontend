@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
+import { toast } from "@/lib/use-toast";
 
 const schema = z.object({
   name: z.string().min(2),
@@ -44,15 +45,18 @@ export default function RegisterPage() {
       const res = await authApi.register(data);
       setToken(res.data.token);
       setUser(res.data.user);
-       router.push(`/${locale}/dashboard`);
+      toast.success("Account created! Redirecting to dashboard...");
+      router.push(`/${locale}/dashboard`);
       // if (res.data.user?.email_verified_at) {
       //   router.push(`/${locale}/dashboard`);
       // } else {
       // //  router.push(`/${locale}/auth/verify-email`);
       // }
     } catch (e: any) {
-      const msgs = e.response?.data?.errors;
-      setError(msgs ? Object.values(msgs).flat().join(" ") : "Registration failed.");
+      const fieldErrors = (e as any).errors;
+      setError(
+        fieldErrors ? Object.values(fieldErrors).flat().join(" ") : (e.message || "Registration failed.")
+      );
     } finally {
       setLoading(false);
     }

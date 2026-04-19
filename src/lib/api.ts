@@ -1,8 +1,7 @@
 import axios from "axios";
+import { toast } from "@/lib/use-toast";
 
-// Strip any accidental trailing /api from the env var to avoid /api/api/v1
-const apiHost = (process.env.NEXT_PUBLIC_API_URL || "http://localhost").replace(/\/api\/?$/, "");
-const baseURL = `${apiHost}/api/${process.env.NEXT_PUBLIC_API_VERSION || "v1"}`;
+const baseURL = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost"}/api/${process.env.NEXT_PUBLIC_API_VERSION || "v1"}`;
 
 const api = axios.create({
   baseURL,
@@ -10,8 +9,8 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
-    // API keys are NOT sent from the browser — they are added server-side in the /api/collect proxy
-    // to avoid CORS preflight failures and to keep the keys out of browser network tabs
+    "X-Public-Key": process.env.NEXT_PUBLIC_APP_PUBLIC_KEY || "",
+    "X-Secret-Key": process.env.NEXT_PUBLIC_APP_SECRET_KEY || "",
   },
 });
 
@@ -24,13 +23,29 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Redirect to login on 401
+// Unwrap response envelope  { statusCode, statusText, data: <payload> }
+// and normalise errors      { statusCode, statusText, data: { message, errors } }
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    if (res.data && "statusCode" in res.data && "data" in res.data) {
+      res.data = res.data.data;
+    }
+    return res;
+  },
   (err) => {
     if (err.response?.status === 401 && typeof window !== "undefined") {
       localStorage.removeItem("eye_token");
       window.location.href = "/en/auth/login";
+      return Promise.reject(err);
+    }
+    // Normalise: body may be { statusCode, statusText, data: { message, errors } }
+    const body = err.response?.data;
+    const payload = body?.data ?? body;
+    err.message = payload?.message || err.message || "Something went wrong.";
+    (err as any).errors = payload?.errors ?? null;
+    // Show a global toast for every API error (client-side only)
+    if (typeof window !== "undefined") {
+      toast.error(err.message);
     }
     return Promise.reject(err);
   }
