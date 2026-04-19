@@ -1,11 +1,13 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm ci --prefer-offline
 
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+# Force cache-bust: copy package.json first so src changes always invalidate the build layer
+COPY package.json ./
 COPY . .
 
 # Build-time env vars (NEXT_PUBLIC_* are baked into the JS bundle at build time)
