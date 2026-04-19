@@ -67,12 +67,12 @@ export default function Navbar() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-2">
-          <Link href={`/${locale}/login`}>
+          <Link href={`/${locale}/auth/login`}>
             <Button variant="ghost" size="sm" className="text-on-surface-variant">
               Sign in
             </Button>
           </Link>
-          <Link href={`/${locale}/register`}>
+          <Link href={`/${locale}/auth/register`}>
             <Button size="sm" className="bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/25">
               Start free
             </Button>
@@ -114,10 +114,10 @@ export default function Navbar() {
             )
           )}
           <div className="pt-3 mt-1 border-t border-outline-variant/20 flex flex-col gap-2">
-            <Link href={`/${locale}/login`} onClick={() => setOpen(false)}>
+            <Link href={`/${locale}/auth/login`} onClick={() => setOpen(false)}>
               <Button variant="outline" className="w-full">Sign in</Button>
             </Link>
-            <Link href={`/${locale}/register`} onClick={() => setOpen(false)}>
+            <Link href={`/${locale}/auth/register`} onClick={() => setOpen(false)}>
               <Button className="w-full bg-indigo-500 hover:bg-indigo-400 text-white">Start free</Button>
             </Link>
           </div>

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,13 +10,11 @@ import { Progress } from "@/components/ui/progress";
 import { domainsApi } from "@/lib/api";
 import { Plus, Copy, Check, RefreshCw, Globe, Trash2 } from "lucide-react";
 
-const qc = new QueryClient();
-
 function ScriptSnippet({ token }: { token: string }) {
   const [copied, setCopied] = useState(false);
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://yourdomain.com").replace(/\/$/, "");
-  const trackerUrl = (process.env.NEXT_PUBLIC_TRACKER_URL || process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, "") || "https://yourdomain.com").replace(/\/$/, "");
-  const snippet = `<script src="${appUrl}/tracker/eye.js" data-token="${token}" data-api="${trackerUrl}/api/track" async></script>`;
+  // data-api points to the frontend proxy — absolute URL so the tracker resolves against the frontend origin, not the script source
+  const snippet = `<script src="${appUrl}/tracker/eye.js" data-token="${token}" data-api="${appUrl}/api/collect" async></script>`;
   return (
     <div className="relative">
       <pre className="bg-surface-container-lowest rounded-lg p-3 text-xs text-on-surface-variant overflow-x-auto border border-outline-variant/20 font-mono">{snippet}</pre>
@@ -129,5 +126,5 @@ function Content() {
 }
 
 export default function DomainsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

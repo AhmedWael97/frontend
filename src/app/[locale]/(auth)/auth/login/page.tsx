@@ -43,7 +43,11 @@ export default function LoginPage() {
       }
       setToken(res.data.token);
       setUser(res.data.user);
-      router.push(`/${locale}/dashboard`);
+      if (res.data.user?.role === "superadmin") {
+        router.push(`/${locale}/admin`);
+      } else {
+        router.push(`/${locale}/dashboard`);
+      }
     } catch (e: any) {
       setError(e.response?.data?.message || "Login failed. Please try again.");
     } finally {

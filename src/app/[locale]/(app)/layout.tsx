@@ -12,15 +12,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const locale = useLocale();
   const { token, user } = useAuthStore();
-  const [hydrated, setHydrated] = useState(() => useAuthStore.persist.hasHydrated());
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (hydrated) return;
+    // useAuthStore.persist is only available client-side
+    if (useAuthStore.persist.hasHydrated()) {
+      setHydrated(true);
+      return;
+    }
     const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true));
-    // In case it hydrated synchronously before this effect ran
-    if (useAuthStore.persist.hasHydrated()) setHydrated(true);
     return unsub;
-  }, [hydrated]);
+  }, []);
 
   useEffect(() => {
     if (!hydrated) return;

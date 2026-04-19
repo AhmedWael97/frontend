@@ -1,9 +1,18 @@
 import axios from "axios";
 
+// Strip any accidental trailing /api from the env var to avoid /api/api/v1
+const apiHost = (process.env.NEXT_PUBLIC_API_URL || "http://localhost").replace(/\/api\/?$/, "");
+const baseURL = `${apiHost}/api/${process.env.NEXT_PUBLIC_API_VERSION || "v1"}`;
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost/api",
+  baseURL,
   withCredentials: true,
-  headers: { "Content-Type": "application/json", Accept: "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    // API keys are NOT sent from the browser — they are added server-side in the /api/collect proxy
+    // to avoid CORS preflight failures and to keep the keys out of browser network tabs
+  },
 });
 
 // Attach auth token from localStorage on every request

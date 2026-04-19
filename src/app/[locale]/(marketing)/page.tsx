@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getLocale } from "next-intl/server";
 import {
-  BarChart3, Brain, Zap, Globe2, Users, ShieldCheck,
+  Brain, Zap, Globe2, ShieldCheck,
   Play, ArrowRight, Check, Star, Eye, MousePointer2,
   TrendingUp, Layers, Lock, Gauge
 } from "lucide-react";
@@ -218,7 +218,7 @@ export default async function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href={`/${locale}/register`}>
+              <Link href={`/${locale}/auth/register`}>
                 <Button size="lg" className="bg-indigo-500 hover:bg-indigo-400 text-white shadow-xl shadow-indigo-500/25 px-8 h-12 text-base font-semibold">
                   Start free — no credit card
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -405,7 +405,7 @@ export default async function HomePage() {
                 </pre>
               </div>
               <p className="text-center text-xs text-on-surface-variant mt-3">
-                That's it. Under 2KB. Zero dependencies. Zero cookies.
+                That&apos;s it. Under 2KB. Zero dependencies. Zero cookies.
               </p>
             </div>
           </div>
@@ -434,7 +434,7 @@ export default async function HomePage() {
                       <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <p className="text-sm text-on-surface leading-relaxed mb-6">"{t.quote}"</p>
+                  <p className="text-sm text-on-surface leading-relaxed mb-6">&ldquo;{t.quote}&rdquo;</p>
                   <div>
                     <p className="text-sm font-bold text-on-surface">{t.author}</p>
                     <p className="text-xs text-on-surface-variant">{t.role}</p>
@@ -486,7 +486,7 @@ export default async function HomePage() {
               No credit card. No lock-in.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href={`/${locale}/register`}>
+              <Link href={`/${locale}/auth/register`}>
                 <Button size="lg" className="bg-indigo-500 hover:bg-indigo-400 text-white shadow-xl shadow-indigo-500/25 px-10 h-14 text-lg font-bold">
                   Create free account
                   <ArrowRight className="w-5 h-5 ml-2" />
