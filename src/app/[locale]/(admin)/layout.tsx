@@ -2,11 +2,11 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth";
 import {
   LayoutDashboard, Users, CreditCard, Repeat2, DollarSign,
-  Globe, ScrollText, Palette, Activity, Settings
+  Globe, ScrollText, Palette, Activity, Settings, ArrowLeft,
 } from "lucide-react";
 
 const navItems = [
@@ -27,35 +27,71 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
   const { user, token } = useAuthStore();
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (!token || user?.role !== "superadmin") router.push(`/${locale}/dashboard`);
-  }, [token, user, locale, router]);
+    if (useAuthStore.persist.hasHydrated()) {
+      setHydrated(true);
+      return;
+    }
+    const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true));
+    return unsub;
+  }, []);
 
-  if (!token || user?.role !== "superadmin") return null;
+  useEffect(() => {
+    if (!hydrated) return;
+    if (!token || user?.role !== "superadmin") {
+      router.replace(`/${locale}/dashboard`);
+    }
+  }, [token, user, locale, router, hydrated]);
+
+  if (!hydrated || !token || user?.role !== "superadmin") return null;
 
   return (
-    <div className="flex min-h-screen">
+    <div className="min-h-screen bg-surface flex">
       {/* Admin sidebar */}
-      <aside className="w-56 shrink-0 bg-surface-container border-r border-outline-variant/20 flex flex-col py-6 gap-1 fixed h-full ltr:left-64 rtl:right-64 z-30">
-        <div className="px-4 mb-4">
-          <span className="text-xs font-black uppercase tracking-widest text-indigo-400">Super Admin</span>
+      <aside className="w-60 shrink-0 bg-surface-container border-r border-outline-variant/20 flex flex-col py-6 gap-1 fixed h-full left-0 z-40">
+        <div className="px-5 mb-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/50">System Control</span>
+          <p className="text-sm font-black text-indigo-400 mt-0.5">Super Admin</p>
         </div>
-        {navItems.map((item) => {
-          const href = `/${locale}/${item.href}`;
-          const active = pathname === href || (item.href !== "admin" && pathname.startsWith(href));
-          const Icon = item.icon;
-          return (
-            <button key={item.href} onClick={() => router.push(href)}
-              className={`flex items-center gap-3 mx-2 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${active ? "bg-indigo-500/10 text-indigo-400" : "text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"}`}>
-              <Icon className="w-4 h-4 shrink-0" />
-              {item.label}
-            </button>
-          );
-        })}
+
+        <div className="flex-1 flex flex-col gap-0.5 mt-2">
+          {navItems.map((item) => {
+            const href = `/${locale}/${item.href}`;
+            const active = pathname === href || (item.href !== "admin" && pathname.startsWith(href));
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.href}
+                onClick={() => router.push(href)}
+                className={`flex items-center gap-3 mx-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors text-left ${
+                  active
+                    ? "bg-indigo-500/15 text-indigo-400"
+                    : "text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
+                }`}
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Back to dashboard */}
+        <div className="px-3 pt-3 border-t border-outline-variant/20">
+          <button
+            onClick={() => router.push(`/${locale}/dashboard`)}
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 shrink-0" />
+            Back to Dashboard
+          </button>
+        </div>
       </aside>
+
       {/* Main content */}
-      <main className="flex-1 ltr:ml-56 rtl:mr-56 p-6 ltr:pl-[calc(256px+224px+24px)] rtl:pr-[calc(256px+224px+24px)]">
+      <main className="flex-1 ltr:ml-60 rtl:mr-60 p-8 min-h-screen">
         {children}
       </main>
     </div>

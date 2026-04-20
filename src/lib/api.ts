@@ -253,6 +253,7 @@ export const adminApi = {
   updateUser: (id: number, data: Record<string, unknown>) => api.patch(`/admin/users/${id}`, data),
   blockUser: (id: number) => api.post(`/admin/users/${id}/block`),
   unblockUser: (id: number) => api.post(`/admin/users/${id}/unblock`),
+  verifyUser: (id: number) => api.post(`/admin/users/${id}/verify-email`),
   impersonateUser: (id: number) => api.post(`/admin/users/${id}/impersonate`),
   endImpersonation: () => api.delete("/admin/impersonate"),
   // Plans

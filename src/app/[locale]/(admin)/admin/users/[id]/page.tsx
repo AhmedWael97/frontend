@@ -9,7 +9,7 @@ import { adminApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { useParams, useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { ArrowLeft, ShieldAlert, UserX } from "lucide-react";
+import { ArrowLeft, ShieldAlert, UserX, MailCheck } from "lucide-react";
 
 const qc = new QueryClient();
 
@@ -37,6 +37,11 @@ function Content() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-user", id] }),
   });
 
+  const verifyEmailMutation = useMutation({
+    mutationFn: () => adminApi.verifyUser(Number(id)),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-user", id] }),
+  });
+
   if (isLoading) return <div className="h-40 bg-surface-container rounded-xl animate-pulse" />;
 
   return (
@@ -48,6 +53,11 @@ function Content() {
           <p className="text-on-surface-variant text-sm">{user?.email}</p>
         </div>
         <div className="ml-auto flex gap-2">
+          {!user?.email_verified_at && (
+            <Button variant="outline" onClick={() => verifyEmailMutation.mutate()} disabled={verifyEmailMutation.isPending}>
+              <MailCheck className="w-4 h-4" /> Verify User
+            </Button>
+          )}
           <Button variant="outline" onClick={() => impersonateMutation.mutate()} disabled={impersonateMutation.isPending}>
             <ShieldAlert className="w-4 h-4" /> Impersonate
           </Button>
