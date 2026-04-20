@@ -70,7 +70,7 @@ function Content() {
                 <label className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">Timezone</label>
                 <Input {...register("timezone")} placeholder="UTC" />
               </div>
-              {profileMutation.isSuccess && <p className="text-xs text-green-400">Profile updated!</p>}
+              {profileMutation.isSuccess && <p className="text-xs text-green-700 dark:text-green-400">Profile updated!</p>}
               {profileMutation.isError && <p className="text-xs text-error">Failed to update profile</p>}
               <Button type="submit" disabled={profileMutation.isPending} className="w-full">Save Changes</Button>
             </form>
@@ -86,7 +86,7 @@ function Content() {
               <Input value={apiKey ? `${apiKey.slice(0, 8)}${"•".repeat(24)}` : "No API key yet"} readOnly className="font-mono text-xs pr-20" />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
                 <button onClick={copyKey} className="p-1.5 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant hover:text-primary">
-                  {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
               </div>
             </div>

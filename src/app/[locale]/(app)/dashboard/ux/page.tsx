@@ -87,7 +87,7 @@ function Content() {
         <CardContent>
           {(issues || []).length === 0 ? (
             <div className="flex flex-col items-center py-10 gap-2 text-on-surface-variant">
-              <CheckCircle className="w-8 h-8 text-green-400" />
+              <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
               <p className="text-sm">No UX issues detected. Keep it up!</p>
             </div>
           ) : (

@@ -41,6 +41,28 @@ export function AppHeader() {
     }
   }, [domains, selectedDomainId, setSelectedDomainId]);
 
+  // Restore appearance preference — prefer localStorage over user profile default
+  // (user?.appearance may be null/undefined when profile hasn't saved a preference)
+  useEffect(() => {
+    const userPref = user?.appearance as "light" | "dark" | "system" | null | undefined;
+    // Read localStorage as authoritative source; fall back to user profile; then dark
+    let saved: "light" | "dark" | "system";
+    try {
+      saved = (localStorage.getItem("eye-appearance") as "light" | "dark" | "system") || userPref || "dark";
+    } catch {
+      saved = userPref || "dark";
+    }
+    const root = document.documentElement;
+    if (saved === "dark") {
+      root.classList.add("dark");
+    } else if (saved === "light") {
+      root.classList.remove("dark");
+    } else {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) root.classList.add("dark");
+      else root.classList.remove("dark");
+    }
+  }, [user?.appearance]);
+
   const selectedDomain = domains.find((d: any) => d.id === selectedDomainId);
 
   const handleLogout = async () => {
@@ -58,6 +80,7 @@ export function AppHeader() {
   const handleAppearance = async (value: "light" | "dark" | "system") => {
     setAppearance(value);
     try { await authApi.updatePreferences({ appearance: value }); } catch {}
+    try { localStorage.setItem("eye-appearance", value); } catch {}
     const root = document.documentElement;
     if (value === "dark") root.classList.add("dark");
     else if (value === "light") root.classList.remove("dark");

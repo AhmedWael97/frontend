@@ -106,7 +106,7 @@ function Content() {
                     </div>
                     <p className="text-xs text-on-surface-variant">{s.description}</p>
                   </div>
-                  {s.impact && <span className="text-xs font-bold text-green-400 shrink-0">+{s.impact}%</span>}
+                  {s.impact && <span className="text-xs font-bold text-green-600 dark:text-green-400 shrink-0">+{s.impact}%</span>}
                 </CardContent>
               </Card>
             ))}

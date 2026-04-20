@@ -75,7 +75,7 @@ export default function UtmBuilderPage() {
                     <div className="bg-surface-container-lowest rounded-lg p-3 text-xs text-on-surface font-mono break-all border border-outline-variant/20 min-h-[80px]">{built}</div>
                   </div>
                   <Button onClick={copy} className="w-full">
-                    {copied ? <><Check className="w-4 h-4 text-green-400" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy URL</>}
+                    {copied ? <><Check className="w-4 h-4 text-green-600 dark:text-green-400" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy URL</>}
                   </Button>
                 </>
               ) : (

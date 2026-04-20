@@ -31,7 +31,7 @@ export default function VerifyEmailPage() {
           </p>
         </div>
         {sent ? (
-          <div className="flex items-center gap-2 justify-center text-green-400 text-sm font-medium">
+          <div className="flex items-center gap-2 justify-center text-green-700 dark:text-green-400 text-sm font-medium">
             <CheckCircle className="w-4 h-4" /> Email resent!
           </div>
         ) : (

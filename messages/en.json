@@ -143,5 +143,116 @@
     "mrr": "MRR",
     "totalUsers": "Total Users",
     "activeSubscriptions": "Active Subscriptions"
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "howItWorks": "How It Works",
+      "pricing": "Pricing",
+      "signIn": "Sign in",
+      "startFree": "Start free"
+    },
+    "hero": {
+      "badge": "AI-Powered Analytics Platform",
+      "headline1": "Know every visitor.",
+      "headline2": "Grow every metric.",
+      "description": "EYE gives you AI-powered visitor intelligence — real-time analytics, heatmaps, funnels, B2B enrichment, and session replay — all in one privacy-first platform.",
+      "cta": "Start free — no credit card",
+      "ctaSecondary": "See how it works",
+      "trustFree": "Free forever plan",
+      "trustCookies": "No cookies required",
+      "trustGdpr": "GDPR compliant",
+      "mockUrl": "app.eye.ai/dashboard",
+      "stat0Label": "Visitors today", "stat0Value": "12,847", "stat0Change": "+18%",
+      "stat1Label": "Avg. session",   "stat1Value": "3m 42s", "stat1Change": "+6%",
+      "stat2Label": "Conversion rate","stat2Value": "4.2%",   "stat2Change": "+1.1%",
+      "stat3Label": "Live visitors",  "stat3Value": "143",    "stat3Change": "now"
+    },
+    "stats": {
+      "events": "Events processed monthly",
+      "websites": "Active websites",
+      "uptime": "Uptime SLA",
+      "impact": "Tracker script impact"
+    },
+    "features": {
+      "badge": "Everything you need",
+      "headline": "One platform.",
+      "headlineAccent": "Infinite insight.",
+      "description": "Replace your fragmented analytics stack with a single AI-powered platform that covers every aspect of visitor intelligence.",
+      "0title": "AI Visitor Segments",
+      "0desc": "Automatically cluster visitors into behavioral segments. Get actionable suggestions to improve conversions — powered by GPT-4.",
+      "1title": "Heatmaps & Session Replay",
+      "1desc": "See exactly where users click, scroll, and rage-click. Watch full session replays to spot friction in real-time.",
+      "2title": "Funnel Intelligence",
+      "2desc": "Build multi-step conversion funnels with drag-and-drop. Identify exactly where visitors drop off and fix it.",
+      "3title": "B2B Company Enrichment",
+      "3desc": "Identify which companies are visiting your site. See industry, size, and intent signals — without a form fill.",
+      "4title": "Real-time Dashboard",
+      "4desc": "Live visitor counts, page views, and events streaming in real-time. Know the moment a campaign goes live.",
+      "5title": "Privacy-First & GDPR",
+      "5desc": "Cookieless tracking, data anonymization, and built-in GDPR tools. Full compliance without sacrificing insights."
+    },
+    "howItWorks": {
+      "badge": "Get started in minutes",
+      "headline": "Three steps to",
+      "headlineAccent": "total clarity",
+      "description": "No complex setup. No data engineers required. Add one script and let EYE do the rest.",
+      "0title": "Add the tracker script",
+      "0desc": "Copy one line of JavaScript to your site. Works with React, Next.js, WordPress, Shopify — everything.",
+      "1title": "Data flows automatically",
+      "1desc": "Visitor events, page views, sessions, and custom events are captured and stored in real time.",
+      "2title": "Get AI-driven insights",
+      "2desc": "Our AI analyzes patterns, segments visitors, and surfaces actionable recommendations to grow your business.",
+      "codeNote": "Under 2KB. Zero dependencies. Zero cookies."
+    },
+    "testimonials": {
+      "headline": "Trusted by growth teams",
+      "description": "Join thousands of companies making smarter decisions with EYE.",
+      "0quote": "EYE replaced 4 separate analytics tools for us. The AI segments alone saved us weeks of manual analysis.",
+      "0author": "Sarah Chen", "0role": "Head of Growth · Fintech SaaS",
+      "1quote": "The B2B enrichment is incredible. We finally know which enterprise accounts are researching us before they reach out.",
+      "1author": "Marcus Webb", "1role": "VP Sales · B2B Software",
+      "2quote": "GDPR compliance was always a blocker. EYE's cookieless approach means we can track everything without legal headaches.",
+      "2author": "Lena Müller", "2role": "CTO · EU E-commerce"
+    },
+    "trust": {
+      "gdpr": "GDPR Compliant", "gdprDesc": "Full EU data compliance",
+      "cookieless": "Cookieless", "cookielessDesc": "No consent banners needed",
+      "ownership": "Data Ownership", "ownershipDesc": "You own your data, always",
+      "uptime": "99.9% Uptime", "uptimeDesc": "Enterprise-grade reliability"
+    },
+    "cta": {
+      "headline": "Start knowing your",
+      "headlineAccent": "visitors today",
+      "description": "Free plan includes 10,000 events/day, AI analysis, funnels, and heatmaps. No credit card. No lock-in.",
+      "primary": "Create free account",
+      "secondary": "Compare plans",
+      "note": "Setup takes under 5 minutes. 50,000+ websites already trust EYE."
+    },
+    "footer": {
+      "tagline": "AI-powered visitor intelligence that helps you understand, convert, and retain every visitor.",
+      "copyright": "EYE Analytics. All rights reserved.",
+      "privacyFirst": "Privacy-first analytics. GDPR compliant. No cookies required.",
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal",
+      "developers": "Developers",
+      "features": "Features",
+      "pricing": "Pricing",
+      "changelog": "Changelog",
+      "roadmap": "Roadmap",
+      "about": "About",
+      "blog": "Blog",
+      "careers": "Careers",
+      "contact": "Contact",
+      "privacyPolicy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookiePolicy": "Cookie Policy",
+      "gdpr": "GDPR",
+      "apiDocs": "API Docs",
+      "trackerScript": "Tracker Script",
+      "webhooks": "Webhooks",
+      "status": "Status"
+    }
   }
 }

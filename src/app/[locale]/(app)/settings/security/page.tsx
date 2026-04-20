@@ -60,7 +60,7 @@ function Content() {
             <Input type="password" placeholder="Current password" value={pwForm.current} onChange={(e) => setPwForm(f => ({ ...f, current: e.target.value }))} />
             <Input type="password" placeholder="New password" value={pwForm.newPw} onChange={(e) => setPwForm(f => ({ ...f, newPw: e.target.value }))} />
             <Input type="password" placeholder="Confirm new password" value={pwForm.confirm} onChange={(e) => setPwForm(f => ({ ...f, confirm: e.target.value }))} />
-            {pwMsg && <p className={`text-xs ${pwMsg.includes("success") ? "text-green-400" : "text-error"}`}>{pwMsg}</p>}
+            {pwMsg && <p className={`text-xs ${pwMsg.includes("success") ? "text-green-700 dark:text-green-400" : "text-error"}`}>{pwMsg}</p>}
             <Button onClick={() => changePasswordMutation.mutate({ current_password: pwForm.current, password: pwForm.newPw, password_confirmation: pwForm.confirm })} disabled={changePasswordMutation.isPending}>
               Update Password
             </Button>
@@ -76,7 +76,7 @@ function Content() {
               <ShieldCheck className="w-4 h-4" /> Two-Factor Authentication
             </CardTitle>
             {user?.totp_enabled
-              ? <span className="text-xs font-semibold text-green-400 bg-green-400/10 px-2 py-1 rounded-full">Enabled</span>
+              ? <span className="text-xs font-semibold text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-400/10 px-2 py-1 rounded-full">Enabled</span>
               : <span className="text-xs font-semibold text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">Disabled</span>
             }
           </div>
@@ -109,7 +109,7 @@ function Content() {
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => copyBackup(qrData.backup_codes)} size="sm">
-                  {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />} Copy Codes
+                  {copied ? <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> : <Copy className="w-3.5 h-3.5" />} Copy Codes
                 </Button>
                 <Button onClick={() => setStep("idle")} size="sm">Done</Button>
               </div>

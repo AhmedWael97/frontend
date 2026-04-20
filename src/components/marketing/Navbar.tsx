@@ -2,18 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Eye } from "lucide-react";
 
-const NAV_LINKS = [
-  { label: "Features", href: "#features" },
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "Pricing", href: "/pricing" },
-];
-
 export default function Navbar() {
   const locale = useLocale();
+  const t = useTranslations("landing.nav");
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -23,11 +18,17 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const NAV_LINKS = [
+    { label: t("features"),   href: "#features" },
+    { label: t("howItWorks"), href: "#how-it-works" },
+    { label: t("pricing"),    href: "/pricing" },
+  ];
+
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-surface/90 backdrop-blur-xl border-b border-outline-variant/20 shadow-lg shadow-black/20"
+          ? "bg-surface/90 backdrop-blur-xl border-b border-outline-variant/20 shadow-lg shadow-black/10 dark:shadow-black/20"
           : "bg-transparent"
       }`}
     >
@@ -38,7 +39,7 @@ export default function Navbar() {
             <Eye className="w-4 h-4 text-white" />
           </div>
           <span className="text-lg font-black tracking-tight text-on-surface">
-            EYE<span className="text-indigo-400">.</span>
+            EYE<span className="text-indigo-500 dark:text-indigo-400">.</span>
           </span>
         </Link>
 
@@ -46,19 +47,11 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-1">
           {NAV_LINKS.map((link) =>
             link.href.startsWith("#") ? (
-              <a
-                key={link.label}
-                href={link.href}
-                className="px-4 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container"
-              >
+              <a key={link.label} href={link.href} className="px-4 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container">
                 {link.label}
               </a>
             ) : (
-              <Link
-                key={link.label}
-                href={`/${locale}${link.href}`}
-                className="px-4 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container"
-              >
+              <Link key={link.label} href={`/${locale}${link.href}`} className="px-4 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container">
                 {link.label}
               </Link>
             )
@@ -69,22 +62,18 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-2">
           <Link href={`/${locale}/auth/login`}>
             <Button variant="ghost" size="sm" className="text-on-surface-variant">
-              Sign in
+              {t("signIn")}
             </Button>
           </Link>
           <Link href={`/${locale}/auth/register`}>
             <Button size="sm" className="bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/25">
-              Start free
+              {t("startFree")}
             </Button>
           </Link>
         </div>
 
         {/* Mobile hamburger */}
-        <button
-          className="md:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
+        <button className="md:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </nav>
@@ -94,31 +83,21 @@ export default function Navbar() {
         <div className="md:hidden border-t border-outline-variant/20 bg-surface/95 backdrop-blur-xl px-4 py-4 flex flex-col gap-1">
           {NAV_LINKS.map((link) =>
             link.href.startsWith("#") ? (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="px-4 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface rounded-xl hover:bg-surface-container transition-colors"
-              >
+              <a key={link.label} href={link.href} onClick={() => setOpen(false)} className="px-4 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors">
                 {link.label}
               </a>
             ) : (
-              <Link
-                key={link.label}
-                href={`/${locale}${link.href}`}
-                onClick={() => setOpen(false)}
-                className="px-4 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface rounded-xl hover:bg-surface-container transition-colors"
-              >
+              <Link key={link.label} href={`/${locale}${link.href}`} onClick={() => setOpen(false)} className="px-4 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors">
                 {link.label}
               </Link>
             )
           )}
-          <div className="pt-3 mt-1 border-t border-outline-variant/20 flex flex-col gap-2">
-            <Link href={`/${locale}/auth/login`} onClick={() => setOpen(false)}>
-              <Button variant="outline" className="w-full">Sign in</Button>
+          <div className="flex gap-2 mt-2 pt-2 border-t border-outline-variant/20">
+            <Link href={`/${locale}/auth/login`} className="flex-1">
+              <Button variant="outline" size="sm" className="w-full">{t("signIn")}</Button>
             </Link>
-            <Link href={`/${locale}/auth/register`} onClick={() => setOpen(false)}>
-              <Button className="w-full bg-indigo-500 hover:bg-indigo-400 text-white">Start free</Button>
+            <Link href={`/${locale}/auth/register`} className="flex-1">
+              <Button size="sm" className="w-full bg-indigo-500 hover:bg-indigo-400 text-white">{t("startFree")}</Button>
             </Link>
           </div>
         </div>

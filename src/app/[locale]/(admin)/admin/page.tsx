@@ -40,7 +40,7 @@ function Content() {
                     <p className="text-3xl font-black text-on-surface">{isLoading ? "…" : (typeof s.value === "number" ? formatNumber(s.value) : s.value || "0")}</p>
                   </div>
                   <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-indigo-400" />
+                    <Icon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   </div>
                 </div>
               </CardContent>

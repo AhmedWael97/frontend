@@ -1,38 +1,43 @@
+"use client";
+
 import Link from "next/link";
 import { Eye, Github, Twitter, Linkedin } from "lucide-react";
-
-const FOOTER_LINKS = {
-  Product: [
-    { label: "Features", href: "#features" },
-    { label: "Pricing", href: "/pricing" },
-    { label: "Changelog", href: "#" },
-    { label: "Roadmap", href: "#" },
-  ],
-  Company: [
-    { label: "About", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Contact", href: "#" },
-  ],
-  Legal: [
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
-    { label: "Cookie Policy", href: "#" },
-    { label: "GDPR", href: "#" },
-  ],
-  Developers: [
-    { label: "API Docs", href: "#" },
-    { label: "Tracker Script", href: "#" },
-    { label: "Webhooks", href: "#" },
-    { label: "Status", href: "#" },
-  ],
-};
+import { useTranslations } from "next-intl";
 
 interface FooterProps {
   locale: string;
 }
 
 export default function Footer({ locale }: FooterProps) {
+  const t = useTranslations("landing.footer");
+
+  const FOOTER_LINKS = {
+    [t("product")]: [
+      { label: t("features"),  href: "#features" },
+      { label: t("pricing"),   href: "/pricing" },
+      { label: t("changelog"), href: "#" },
+      { label: t("roadmap"),   href: "#" },
+    ],
+    [t("company")]: [
+      { label: t("about"),    href: "#" },
+      { label: t("blog"),     href: "#" },
+      { label: t("careers"),  href: "#" },
+      { label: t("contact"),  href: "#" },
+    ],
+    [t("legal")]: [
+      { label: t("privacyPolicy"), href: "#" },
+      { label: t("terms"),         href: "#" },
+      { label: t("cookiePolicy"),  href: "#" },
+      { label: t("gdpr"),          href: "#" },
+    ],
+    [t("developers")]: [
+      { label: t("apiDocs"),       href: "#" },
+      { label: t("trackerScript"), href: "#" },
+      { label: t("webhooks"),      href: "#" },
+      { label: t("status"),        href: "#" },
+    ],
+  };
+
   return (
     <footer className="border-t border-outline-variant/20 bg-surface-container/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -44,23 +49,15 @@ export default function Footer({ locale }: FooterProps) {
                 <Eye className="w-4 h-4 text-white" />
               </div>
               <span className="text-lg font-black tracking-tight text-on-surface">
-                EYE<span className="text-indigo-400">.</span>
+                EYE<span className="text-indigo-500 dark:text-indigo-400">.</span>
               </span>
             </Link>
             <p className="text-sm text-on-surface-variant leading-relaxed max-w-xs">
-              AI-powered visitor intelligence that helps you understand, convert, and retain every visitor.
+              {t("tagline")}
             </p>
             <div className="flex items-center gap-3 mt-6">
-              {[
-                { icon: Twitter, href: "#" },
-                { icon: Github, href: "#" },
-                { icon: Linkedin, href: "#" },
-              ].map(({ icon: Icon, href }, i) => (
-                <a
-                  key={i}
-                  href={href}
-                  className="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
-                >
+              {([Twitter, Github, Linkedin] as const).map((Icon, i) => (
+                <a key={i} href="#" className="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
                   <Icon className="w-4 h-4" />
                 </a>
               ))}
@@ -75,17 +72,11 @@ export default function Footer({ locale }: FooterProps) {
                 {links.map((link) => (
                   <li key={link.label}>
                     {link.href.startsWith("#") ? (
-                      <a
-                        href={link.href}
-                        className="text-sm text-on-surface-variant hover:text-on-surface transition-colors"
-                      >
+                      <a href={link.href} className="text-sm text-on-surface-variant hover:text-on-surface transition-colors">
                         {link.label}
                       </a>
                     ) : (
-                      <Link
-                        href={`/${locale}${link.href}`}
-                        className="text-sm text-on-surface-variant hover:text-on-surface transition-colors"
-                      >
+                      <Link href={`/${locale}${link.href}`} className="text-sm text-on-surface-variant hover:text-on-surface transition-colors">
                         {link.label}
                       </Link>
                     )}
@@ -99,13 +90,14 @@ export default function Footer({ locale }: FooterProps) {
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-outline-variant/20 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-on-surface-variant">
-            © {new Date().getFullYear()} EYE Analytics. All rights reserved.
+            © {new Date().getFullYear()} {t("copyright")}
           </p>
           <p className="text-xs text-on-surface-variant">
-            Privacy-first analytics. GDPR compliant. No cookies required.
+            {t("privacyFirst")}
           </p>
         </div>
       </div>
     </footer>
   );
 }
+

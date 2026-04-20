@@ -40,7 +40,7 @@ function Content() {
               <ul className="space-y-2">
                 {(p.features || []).map((f: string) => (
                   <li key={f} className="flex items-center gap-2 text-xs text-on-surface-variant">
-                    <Check className="w-3.5 h-3.5 text-green-400 shrink-0" />{f}
+                    <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400 shrink-0" />{f}
                   </li>
                 ))}
               </ul>

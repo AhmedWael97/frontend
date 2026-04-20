@@ -53,7 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-60 shrink-0 bg-surface-container border-r border-outline-variant/20 flex flex-col py-6 gap-1 fixed h-full left-0 z-40">
         <div className="px-5 mb-2">
           <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/50">System Control</span>
-          <p className="text-sm font-black text-indigo-400 mt-0.5">Super Admin</p>
+          <p className="text-sm font-black text-indigo-700 dark:text-indigo-400 mt-0.5">Super Admin</p>
         </div>
 
         <div className="flex-1 flex flex-col gap-0.5 mt-2">
@@ -67,7 +67,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 onClick={() => router.push(href)}
                 className={`flex items-center gap-3 mx-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors text-left ${
                   active
-                    ? "bg-indigo-500/15 text-indigo-400"
+                    ? "bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400"
                     : "text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
                 }`}
               >

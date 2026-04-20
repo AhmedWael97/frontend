@@ -29,7 +29,7 @@ function KpiCard({
             <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-2">{title}</p>
             <p className="text-3xl font-black text-on-surface tracking-tight">{value}</p>
             {trendValue && (
-              <div className={`flex items-center gap-1 mt-2 text-xs font-semibold ${trend === "up" ? "text-green-400" : "text-error"}`}>
+              <div className={`flex items-center gap-1 mt-2 text-xs font-semibold ${trend === "up" ? "text-green-700 dark:text-green-400" : "text-error"}`}>
                 {trend === "up" ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                 {trendValue}
               </div>

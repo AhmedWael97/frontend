@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
       <div className="glass-card rounded-xl p-8 shadow-2xl border border-outline-variant/15">
         {sent ? (
           <div className="text-center py-4 space-y-3">
-            <CheckCircle className="w-12 h-12 text-green-400 mx-auto" />
+            <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400 mx-auto" />
             <p className="text-on-surface font-medium">Check your email</p>
             <p className="text-sm text-on-surface-variant">We&apos;ve sent a password reset link to <strong>{email}</strong></p>
           </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
@@ -151,7 +151,7 @@ export default function PricingPage() {
                     <span className="text-4xl font-black text-on-surface">${plan.price_monthly}</span>
                     <span className="text-on-surface-variant text-sm"> /month</span>
                     <p className="text-xs text-on-surface-variant mt-1">
-                      ${plan.price_yearly}/year — save 2 months
+                      ${plan.price_yearly}/year â€” save 2 months
                     </p>
                   </div>
                 )}
@@ -159,42 +159,42 @@ export default function PricingPage() {
 
               <ul className="space-y-3 flex-1 mb-8">
                 <li className="flex items-start gap-2.5 text-sm text-on-surface">
-                  <Check className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                   {plan.features.domains}
                 </li>
                 <li className="flex items-start gap-2.5 text-sm text-on-surface">
-                  <Check className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                   {plan.features.events_per_day}
                 </li>
                 <li className="flex items-start gap-2.5 text-sm text-on-surface">
-                  <Check className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                   {plan.features.retention}
                 </li>
                 <li className="flex items-start gap-2.5 text-sm text-on-surface">
-                  <Check className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                   {plan.features.ai_analysis}
                 </li>
                 {plan.features.b2b_enrichment && (
                   <li className="flex items-start gap-2.5 text-sm text-on-surface">
-                    <Check className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                    <Check className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                     B2B company enrichment
                   </li>
                 )}
                 {plan.features.session_replay && (
                   <li className="flex items-start gap-2.5 text-sm text-on-surface">
-                    <Check className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                    <Check className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                     Session replay
                   </li>
                 )}
                 {plan.features.api_access && (
                   <li className="flex items-start gap-2.5 text-sm text-on-surface">
-                    <Check className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                    <Check className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                     API access
                   </li>
                 )}
                 {plan.features.priority_support && (
                   <li className="flex items-start gap-2.5 text-sm text-on-surface">
-                    <Check className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                    <Check className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                     Priority support
                   </li>
                 )}
@@ -271,7 +271,7 @@ export default function PricingPage() {
               },
               {
                 q: "Is there a free trial for paid plans?",
-                a: "The Free plan is free forever. Paid plan trials can be arranged — reach out to our support team.",
+                a: "The Free plan is free forever. Paid plan trials can be arranged â€” reach out to our support team.",
               },
               {
                 q: "Does EYE comply with GDPR?",

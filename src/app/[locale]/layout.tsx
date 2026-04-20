@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Tajawal } from "next/font/google";
+import { Inter, Readex_Pro } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -14,9 +14,9 @@ const inter = Inter({
   display: "swap",
 });
 
-const tajawal = Tajawal({
-  subsets: ["arabic"],
-  weight: ["200", "300", "400", "500", "700", "800", "900"],
+const readexPro = Readex_Pro({
+  subsets: ["arabic", "latin"],
+  weight: ["200", "300", "400", "500", "600", "700"],
   variable: "--font-arabic",
   display: "swap",
 });
@@ -54,7 +54,11 @@ export default async function LocaleLayout({
       className="dark"
       suppressHydrationWarning
     >
-      <body className={`${inter.variable} ${tajawal.variable} font-sans`} suppressHydrationWarning>
+      {/* Runs synchronously before hydration to apply saved theme, avoiding flash */}
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('eye-appearance');if(t==='light')document.documentElement.classList.remove('dark');else if(t==='system'&&!window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.remove('dark');}catch(e){}` }} />
+      </head>
+      <body className={`${inter.variable} ${readexPro.variable} ${isArabic ? "font-arabic" : "font-sans"} antialiased`} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <NavigationProgress />
