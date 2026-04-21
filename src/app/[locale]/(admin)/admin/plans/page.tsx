@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,8 +9,6 @@ import { Input } from "@/components/ui/input";
 import { adminApi } from "@/lib/api";
 import { toast } from "@/lib/use-toast";
 import { Check, Plus, X, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
-
-const qc = new QueryClient();
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
@@ -270,5 +267,5 @@ function Content() {
 }
 
 export default function AdminPlansPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

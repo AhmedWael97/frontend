@@ -12,7 +12,7 @@ import { useAuthStore } from "@/store/auth";
 export default function TwoFactorChallengePage() {
   const locale = useLocale();
   const router = useRouter();
-  const { setToken, setUser } = useAuthStore();
+  const { setToken, setUser, twoFactorChallenge, setTwoFactorChallenge } = useAuthStore();
   const [code, setCode] = useState("");
   const [useBackup, setUseBackup] = useState(false);
   const [error, setError] = useState("");
@@ -21,12 +21,18 @@ export default function TwoFactorChallengePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (!twoFactorChallenge) {
+      setError("Session expired. Please login again.");
+      router.push(`/${locale}/auth/login`);
+      return;
+    }
     setLoading(true);
     try {
-      const payload = useBackup ? { recovery_code: code } : { code };
+      const payload = { code, challenge: twoFactorChallenge };
       const res = await authApi.twoFactorVerify(payload);
       setToken(res.data.token);
       setUser(res.data.user);
+      setTwoFactorChallenge(null);
       router.push(`/${locale}/dashboard`);
     } catch (e: any) {
       setError(e.message || "Invalid code. Please try again.");

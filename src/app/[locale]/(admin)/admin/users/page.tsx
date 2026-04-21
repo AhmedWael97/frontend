@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,8 +12,6 @@ import { formatDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Search, Plus, X, Shield, Trash2, Ban, CheckCircle, UserCheck } from "lucide-react";
-
-const qc = new QueryClient();
 
 // ── Simple inline modal ───────────────────────────────────────────────────────
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
@@ -256,6 +253,6 @@ function Content() {
 }
 
 export default function AdminUsersPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }
 

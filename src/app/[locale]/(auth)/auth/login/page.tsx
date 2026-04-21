@@ -24,7 +24,7 @@ export default function LoginPage() {
   const t = useTranslations("auth");
   const locale = useLocale();
   const router = useRouter();
-  const { setToken, setUser } = useAuthStore();
+  const { setToken, setUser, setTwoFactorChallenge } = useAuthStore();
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,9 +39,11 @@ export default function LoginPage() {
     try {
       const res = await authApi.login(data);
       if (res.data.two_factor) {
+        setTwoFactorChallenge(res.data.challenge || null);
         router.push(`/${locale}/auth/two-factor-challenge`);
         return;
       }
+      setTwoFactorChallenge(null);
       setToken(res.data.token);
       setUser(res.data.user);
       if (res.data.user?.role === "superadmin") {

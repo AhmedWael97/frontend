@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,8 +10,6 @@ import { webhooksApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Plus, Trash2, Webhook } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-
-const qc = new QueryClient();
 
 const EVENTS = ["pageview", "session_start", "goal_completed", "identified", "custom_event"];
 
@@ -105,5 +102,5 @@ function Content() {
 }
 
 export default function WebhooksPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

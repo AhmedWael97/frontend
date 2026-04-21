@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { analyticsApi } from "@/lib/api";
 import { Activity, Eye } from "lucide-react";
 
 // RealtimeEvent shape for future WebSocket integration
@@ -18,14 +19,8 @@ export default function RealtimePage() {
     // Poll active visitors every 30s as fallback
     const poll = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost"}/api/analytics/active-visitors?domain_id=${selectedDomainId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (res.ok) {
-          const data = await res.json();
-          setActiveCount(data.count ?? data.active_visitors ?? 0);
-        }
+        const res = await analyticsApi.realtime(selectedDomainId);
+        setActiveCount(res.data.active_visitors ?? 0);
       } catch {}
     };
     poll();

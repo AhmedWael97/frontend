@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,8 +9,6 @@ import { Progress } from "@/components/ui/progress";
 import { CreditCard, Zap, ArrowUpRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { billingApi } from "@/lib/api";
-
-const qc = new QueryClient();
 
 function Content() {
 
@@ -88,8 +85,8 @@ function Content() {
             <tbody>
               {(billing?.payments || []).map((p: any) => (
                 <tr key={p.id} className="border-b border-outline-variant/10">
-                  <td className="px-4 py-3 text-on-surface-variant text-xs">{formatDate(p.created_at)}</td>
-                  <td className="px-4 py-3 font-semibold text-on-surface">${(p.amount / 100).toFixed(2)}</td>
+                  <td className="px-4 py-3 text-on-surface-variant text-xs">{formatDate(p.paid_at || p.created_at)}</td>
+                  <td className="px-4 py-3 font-semibold text-on-surface">${Number(p.amount || 0).toFixed(2)}</td>
                   <td className="px-4 py-3"><Badge variant={p.status === "paid" ? "success" : "secondary"}>{p.status}</Badge></td>
                   <td className="px-4 py-3 text-on-surface-variant">{p.description || plan?.name}</td>
                 </tr>
@@ -106,5 +103,5 @@ function Content() {
 }
 
 export default function BillingPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

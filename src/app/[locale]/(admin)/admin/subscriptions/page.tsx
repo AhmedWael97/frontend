@@ -1,13 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { adminApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
-
-const qc = new QueryClient();
 
 function Content() {
   const { data, isLoading } = useQuery({
@@ -15,7 +12,7 @@ function Content() {
     queryFn: () => adminApi.listSubscriptions().then((r) => r.data),
   });
 
-  const statusV = (s: string) => s === "active" ? "success" : s === "past_due" ? "warning" : s === "canceled" ? "error" : "secondary";
+  const statusV = (s: string) => s === "active" ? "success" : s === "cancelled" ? "error" : s === "paused" ? "warning" : "secondary";
 
   return (
     <div className="space-y-6">
@@ -43,9 +40,9 @@ function Content() {
                   <td className="px-4 py-3 font-medium text-on-surface">{s.user?.name || s.user?.email}</td>
                   <td className="px-4 py-3 text-on-surface-variant">{s.plan?.name}</td>
                   <td className="px-4 py-3"><Badge variant={statusV(s.status) as any}>{s.status}</Badge></td>
-                  <td className="px-4 py-3 text-on-surface-variant text-xs">{formatDate(s.starts_at)}</td>
+                  <td className="px-4 py-3 text-on-surface-variant text-xs">{formatDate(s.current_period_start)}</td>
                   <td className="px-4 py-3 text-on-surface-variant text-xs">{s.current_period_end ? formatDate(s.current_period_end) : "—"}</td>
-                  <td className="px-4 py-3 font-semibold text-on-surface">${((s.plan?.price || 0)).toFixed(2)}</td>
+                  <td className="px-4 py-3 font-semibold text-on-surface">${Number(s.plan?.price_monthly || 0).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -57,5 +54,5 @@ function Content() {
 }
 
 export default function AdminSubscriptionsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

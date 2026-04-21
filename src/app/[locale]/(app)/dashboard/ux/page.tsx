@@ -1,14 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { uxApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Smile, Meh, Frown, AlertTriangle, CheckCircle } from "lucide-react";
-
-const qc = new QueryClient();
 
 function ScoreGauge({ score }: { score: number }) {
   const pct = Math.min(100, Math.max(0, score));
@@ -112,5 +109,5 @@ function Content() {
 }
 
 export default function UxPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

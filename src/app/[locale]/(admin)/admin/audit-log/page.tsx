@@ -1,13 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { adminApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { User, Globe, Key, ShieldCheck } from "lucide-react";
-
-const qc = new QueryClient();
 
 const EVENT_ICONS: Record<string, React.ElementType> = {
   login: Key,
@@ -68,5 +65,5 @@ function Content() {
 }
 
 export default function AdminAuditLogPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

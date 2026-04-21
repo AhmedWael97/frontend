@@ -1,14 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Building2, Globe, Users } from "lucide-react";
-
-const qc = new QueryClient();
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
@@ -86,5 +83,5 @@ function Content() {
 }
 
 export default function CompaniesPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

@@ -1,15 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { Eye, Users, Activity, Clock } from "lucide-react";
 import { sharedReportsApi } from "@/lib/api";
 import { formatNumber } from "@/lib/utils";
-
-const qc = new QueryClient();
 
 function Content() {
   const { token } = useParams<{ token: string }>();
@@ -106,5 +103,5 @@ function Content() {
 }
 
 export default function PublicReportPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

@@ -2,15 +2,12 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { adminApi } from "@/lib/api";
 import { CreditCard, Key, CheckCircle2, XCircle, Loader2 } from "lucide-react";
-
-const qc = new QueryClient();
 
 const GATEWAYS = [
   {
@@ -187,9 +184,5 @@ function Content() {
 }
 
 export default function AdminPaymentMethodsPage() {
-  return (
-    <QueryClientProvider client={qc}>
-      <Content />
-    </QueryClientProvider>
-  );
+  return <Content />;
 }

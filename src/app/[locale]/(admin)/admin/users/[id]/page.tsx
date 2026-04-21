@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,8 +9,6 @@ import { formatDate } from "@/lib/utils";
 import { useParams, useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { ArrowLeft, ShieldAlert, UserX, MailCheck } from "lucide-react";
-
-const qc = new QueryClient();
 
 function Content() {
   const { id } = useParams<{ id: string }>();
@@ -105,5 +102,5 @@ function Content() {
 }
 
 export default function AdminUserDetailPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

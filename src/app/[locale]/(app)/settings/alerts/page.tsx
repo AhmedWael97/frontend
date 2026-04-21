@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { alertRulesApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Plus, Trash2, Bell } from "lucide-react";
-
-const qc = new QueryClient();
 
 const METRICS = ["visitors", "bounce_rate", "sessions", "avg_duration"];
 const CONDITIONS = ["gt", "lt", "eq"] as const;
@@ -120,5 +117,5 @@ function Content() {
 }
 
 export default function AlertsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

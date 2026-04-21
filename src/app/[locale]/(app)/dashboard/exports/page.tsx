@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,8 +9,6 @@ import { exportsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Download, Plus, RefreshCw } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-
-const qc = new QueryClient();
 
 const FORMATS = ["csv", "excel"] as const;
 const TYPES = ["visitors", "events", "funnel", "ai"] as const;
@@ -132,5 +129,5 @@ function Content() {
 }
 
 export default function ExportsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

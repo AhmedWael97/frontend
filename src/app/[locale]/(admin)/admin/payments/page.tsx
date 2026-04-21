@@ -1,13 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { adminApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
-
-const qc = new QueryClient();
 
 function Content() {
   const { data, isLoading } = useQuery({
@@ -54,5 +51,5 @@ function Content() {
 }
 
 export default function AdminPaymentsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

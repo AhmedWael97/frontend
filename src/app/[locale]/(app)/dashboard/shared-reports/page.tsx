@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,8 +9,6 @@ import { sharedReportsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Copy, Trash2, Plus, Check } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-
-const qc = new QueryClient();
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
@@ -104,5 +101,5 @@ function Content() {
 }
 
 export default function SharedReportsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

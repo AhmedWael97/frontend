@@ -5,15 +5,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { authApi, profileApi } from "@/lib/api";
+import { profileApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { User, Key, Copy, Check, RefreshCw } from "lucide-react";
-
-const qc = new QueryClient();
 
 const profileSchema = z.object({
   name: z.string().min(2),
@@ -102,5 +99,5 @@ function Content() {
 }
 
 export default function ProfilePage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

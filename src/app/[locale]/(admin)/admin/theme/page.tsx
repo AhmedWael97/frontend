@@ -2,14 +2,11 @@
 
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { themeApi } from "@/lib/api";
 import { Palette, Check, Loader2 } from "lucide-react";
-
-const qc = new QueryClient();
 
 const DEFAULT_COLORS = {
   primary: "#c0c1ff",
@@ -85,5 +82,5 @@ function Content() {
 }
 
 export default function AdminThemePage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

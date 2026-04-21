@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +9,6 @@ import { pipelinesApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Plus, Trash2, GripVertical, ArrowDown, Target } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-
-const qc = new QueryClient();
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
@@ -133,5 +130,5 @@ function Content() {
 }
 
 export default function FunnelsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

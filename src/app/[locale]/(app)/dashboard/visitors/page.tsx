@@ -2,15 +2,12 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { formatDate } from "@/lib/utils";
 import { Monitor, Smartphone, Tablet, Globe } from "lucide-react";
-
-const qc = new QueryClient();
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
@@ -95,5 +92,5 @@ function Content() {
 }
 
 export default function VisitorsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

@@ -7,10 +7,7 @@ import { Users, Activity, Clock, TrendingDown, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { formatNumber } from "@/lib/utils";
-
-const queryClient = new QueryClient();
 
 function KpiCard({
   title, value, icon: Icon, trend, trendValue
@@ -173,9 +170,5 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <DashboardContent />
-    </QueryClientProvider>
-  );
+  return <DashboardContent />;
 }

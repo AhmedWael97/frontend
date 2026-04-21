@@ -1,15 +1,12 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { adminApi } from "@/lib/api";
 import { toast } from "@/lib/use-toast";
 import { formatDate } from "@/lib/utils";
 import { Globe, Trash2 } from "lucide-react";
-
-const qc = new QueryClient();
 
 function Content() {
   const queryClient = useQueryClient();
@@ -78,5 +75,5 @@ function Content() {
 }
 
 export default function AdminDomainsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

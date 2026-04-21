@@ -29,7 +29,7 @@ function Content() {
   });
 
   const disableMutation = useMutation({
-    mutationFn: (c: string) => profileApi.twoFactorDisable(pwForm.current),
+    mutationFn: () => profileApi.twoFactorDisable(pwForm.current),
     onSuccess: () => { setStep("idle"); if (user) setUser({ ...user, totp_enabled: false }); },
   });
 

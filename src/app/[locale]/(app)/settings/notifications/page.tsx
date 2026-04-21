@@ -2,13 +2,10 @@
 
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { notificationPrefsApi } from "@/lib/api";
 import { Bell, Check, Loader2 } from "lucide-react";
-
-const qc = new QueryClient();
 
 const PREFERENCES = [
   { key: "email_alerts", label: "Alert Rules", description: "Email when a metric threshold is crossed" },
@@ -69,5 +66,5 @@ function Content() {
 }
 
 export default function NotificationsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

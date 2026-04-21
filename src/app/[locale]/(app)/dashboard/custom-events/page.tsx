@@ -1,13 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Zap } from "lucide-react";
-
-const qc = new QueryClient();
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
@@ -74,5 +71,5 @@ function Content() {
 }
 
 export default function CustomEventsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }

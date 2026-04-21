@@ -1,14 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-
-const qc = new QueryClient();
 
 const TOOLTIP_STYLE = { background: "#171f33", border: "1px solid #464554", borderRadius: 8, color: "#dae2fd" };
 
@@ -147,5 +144,5 @@ function Content() {
 }
 
 export default function AnalyticsPage() {
-  return <QueryClientProvider client={qc}><Content /></QueryClientProvider>;
+  return <Content />;
 }
