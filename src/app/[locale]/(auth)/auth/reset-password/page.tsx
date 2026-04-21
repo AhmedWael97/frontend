@@ -40,7 +40,7 @@ export default function ResetPasswordPage() {
       await authApi.resetPassword({ token, email, ...data });
       router.push(`/${locale}/auth/login`);
     } catch (e: any) {
-      setError(e.response?.data?.message || "Reset failed. Token may have expired.");
+      setError(e.message || "Reset failed. Token may have expired.");
     } finally {
       setLoading(false);
     }

@@ -29,7 +29,7 @@ export default function TwoFactorChallengePage() {
       setUser(res.data.user);
       router.push(`/${locale}/dashboard`);
     } catch (e: any) {
-      setError(e.response?.data?.message || "Invalid code. Please try again.");
+      setError(e.message || "Invalid code. Please try again.");
     } finally {
       setLoading(false);
     }

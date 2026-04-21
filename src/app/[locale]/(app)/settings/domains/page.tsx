@@ -47,7 +47,10 @@ function Content() {
   const createMutation = useMutation({
     mutationFn: (name: string) => domainsApi.create({ domain: name }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["domains"] }); setNewDomain(""); setAdding(false); setCreateError(""); },
-    onError: (e: any) => { setCreateError(e.response?.data?.message || "Failed to add domain."); },
+    onError: (e: any) => {
+      const fieldErrors = e.errors?.domain?.[0] || e.errors ? Object.values(e.errors || {}).flat().join(" ") : null;
+      setCreateError(fieldErrors || e.message || "Failed to add domain.");
+    },
   });
 
   const deleteMutation = useMutation({

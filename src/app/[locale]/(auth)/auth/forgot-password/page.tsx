@@ -24,7 +24,7 @@ export default function ForgotPasswordPage() {
       await authApi.forgotPassword(email);
       setSent(true);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to send reset email.");
+      setError(err.message || "Failed to send reset email.");
     } finally {
       setLoading(false);
     }
