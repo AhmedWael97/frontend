@@ -97,12 +97,12 @@ export const adminApi = {
   }) => client.post(ADMIN_ROUTES.paymentMethodsCreate, data),
 
   /** PUT /admin/payment-methods/{id} */
-  updatePaymentMethod: (id: number, data: Record<string, unknown>) =>
-    client.put(ADMIN_ROUTES.paymentMethodsUpdate(id), data),
+  updatePaymentMethod: (id: number | string, data: Record<string, unknown>) =>
+    client.put(ADMIN_ROUTES.paymentMethodsUpdate(id as number), data),
 
   /** DELETE /admin/payment-methods/{id} */
-  deletePaymentMethod: (id: number) =>
-    client.delete(ADMIN_ROUTES.paymentMethodsDelete(id)),
+  deletePaymentMethod: (id: number | string) =>
+    client.delete(ADMIN_ROUTES.paymentMethodsDelete(id as number)),
 
   // ── Subscriptions ────────────────────────────────────────────────────────────
   /** GET /admin/subscriptions */
