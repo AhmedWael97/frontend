@@ -16,7 +16,7 @@ function Content() {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["public-report", token],
-    queryFn: () => sharedReportsApi.view(token).then((r) => r.data),
+    queryFn: () => sharedReportsApi.publicView(token).then((r) => r.data),
   });
 
   if (isError) {
