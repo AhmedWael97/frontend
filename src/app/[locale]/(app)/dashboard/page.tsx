@@ -81,7 +81,7 @@ function DashboardContent() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard title={t("visitors")} value={isLoading ? "…" : formatNumber(data?.visitors || 0)} icon={Users} />
         <KpiCard title={t("sessions")} value={isLoading ? "…" : formatNumber(data?.sessions || 0)} icon={Activity} />
-        <KpiCard title={t("avgTime")} value={isLoading ? "…" : formatSeconds(data?.avg_duration_seconds || 0)} icon={Clock} />
+        <KpiCard title={t("avgTime")} value={isLoading ? "…" : formatSeconds(data?.avg_session_duration || 0)} icon={Clock} />
         <KpiCard title={t("bounceRate")} value={isLoading ? "…" : `${(data?.bounce_rate || 0).toFixed(1)}%`} icon={TrendingDown} />
       </div>
 
@@ -95,7 +95,7 @@ function DashboardContent() {
             <div className="h-56 flex items-center justify-center text-on-surface-variant text-sm">Loading chart…</div>
           ) : (
             <ResponsiveContainer width="100%" height={220}>
-              <AreaChart data={data?.trend || []}>
+              <AreaChart data={data?.chart_data || []}>
                 <defs>
                   <linearGradient id="visitors" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#c0c1ff" stopOpacity={0.3} />
@@ -145,11 +145,11 @@ function DashboardContent() {
             {isLoading ? <div className="text-on-surface-variant text-sm">Loading…</div> : (
               <div className="space-y-3">
                 {[
-                  { label: "Desktop", value: data?.devices?.desktop || 0, color: "bg-primary" },
-                  { label: "Mobile", value: data?.devices?.mobile || 0, color: "bg-secondary" },
-                  { label: "Tablet", value: data?.devices?.tablet || 0, color: "bg-tertiary" },
+                  { label: "Desktop", value: (data?.top_devices || []).find((d: any) => d.device === "desktop")?.count || 0, color: "bg-primary" },
+                  { label: "Mobile", value: (data?.top_devices || []).find((d: any) => d.device === "mobile")?.count || 0, color: "bg-secondary" },
+                  { label: "Tablet", value: (data?.top_devices || []).find((d: any) => d.device === "tablet")?.count || 0, color: "bg-tertiary" },
                 ].map((d) => {
-                  const total = (data?.devices?.desktop || 0) + (data?.devices?.mobile || 0) + (data?.devices?.tablet || 0);
+                  const total = (data?.top_devices || []).reduce((sum: number, x: any) => sum + (x.count || 0), 0);
                   const pct = total ? Math.round((d.value / total) * 100) : 0;
                   return (
                     <div key={d.label} className="space-y-1">
