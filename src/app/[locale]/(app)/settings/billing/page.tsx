@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 
 import { CreditCard, Zap, ArrowUpRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { billingApi } from "@/lib/api";
 
 const qc = new QueryClient();
 
@@ -16,21 +17,13 @@ function Content() {
 
   const { data: billing } = useQuery({
     queryKey: ["billing"],
-    queryFn: async () => {
-      const [sub, payments] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/billing/subscription`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("eye-auth") ? JSON.parse(localStorage.getItem("eye-auth")!).state?.token : ""}` }
-        }).then((r) => r.json()),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/billing/payments?per_page=5`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("eye-auth") ? JSON.parse(localStorage.getItem("eye-auth")!).state?.token : ""}` }
-        }).then((r) => r.json()),
-      ]);
-      return { sub, payments: payments?.data || [] };
-    },
+    queryFn: () => billingApi.show().then((r) => r.data),
   });
 
-  const plan = billing?.sub?.plan;
-  const sub = billing?.sub;
+  const plan = billing?.subscription?.plan ?? billing?.plan;
+  const sub = billing?.subscription;
+  const usage = billing?.usage;
+  const limits = billing?.limits;
 
   return (
     <div className="space-y-6">
@@ -55,25 +48,24 @@ function Content() {
               )}
             </div>
             <div className="text-right">
-              <div className="text-2xl font-black text-on-surface">${plan?.price || 0}<span className="text-sm font-normal text-on-surface-variant">/mo</span></div>
+              <div className="text-2xl font-black text-on-surface">${plan?.price_monthly ?? plan?.price ?? 0}<span className="text-sm font-normal text-on-surface-variant">/mo</span></div>
               <Button size="sm" className="mt-2"><ArrowUpRight className="w-4 h-4" /> Upgrade</Button>
             </div>
           </div>
 
           {/* Usage bars */}
-          {sub?.usage && (
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-outline-variant/10">
+          {(usage || limits) && (
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-outline-variant/10">
               {[
-                { label: "Events", used: sub.usage.events_used, limit: sub.usage.events_limit },
-                { label: "Domains", used: sub.usage.domains_used, limit: sub.usage.domains_limit },
-                { label: "Data retention", used: sub.usage.retention_days, limit: 90, unit: " days" },
+                { label: "Domains", used: usage?.domains ?? 0, limit: limits?.domains ?? 0 },
+                { label: "Pageviews / month", used: usage?.pageviews ?? 0, limit: limits?.pageviews_per_month ?? 0 },
               ].map((u) => (
                 <div key={u.label}>
                   <div className="flex justify-between text-xs mb-1">
                     <span className="text-on-surface-variant">{u.label}</span>
-                    <span className="text-on-surface">{u.used?.toLocaleString()}{u.unit || ""} / {u.limit?.toLocaleString()}{u.unit || ""}</span>
+                    <span className="text-on-surface">{u.used?.toLocaleString()} / {u.limit?.toLocaleString()}</span>
                   </div>
-                  <Progress value={(u.used / u.limit) * 100} />
+                  <Progress value={u.limit ? (u.used / u.limit) * 100 : 0} />
                 </div>
               ))}
             </div>
