@@ -19,7 +19,7 @@ const EVENT_ICONS: Record<string, React.ElementType> = {
 function Content() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-audit"],
-    queryFn: () => adminApi.auditLog({ page: "1" }).then((r) => r.data),
+    queryFn: () => adminApi.auditLog().then((r) => r.data),
   });
 
   return (
