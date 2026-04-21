@@ -17,6 +17,10 @@ export const adminApi = {
   listUsers: (params?: { search?: string; status?: string; plan?: string }) =>
     client.get(ADMIN_ROUTES.usersList, { params }),
 
+  /** POST /admin/users */
+  createUser: (data: { name: string; email: string; password: string; role?: string }) =>
+    client.post(ADMIN_ROUTES.usersList, data),
+
   /** GET /admin/users/{id} */
   getUser: (id: number) => client.get(ADMIN_ROUTES.usersShow(id)),
 

@@ -1,19 +1,28 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { adminApi } from "@/lib/api";
+import { toast } from "@/lib/use-toast";
 import { formatDate } from "@/lib/utils";
-import { Globe } from "lucide-react";
+import { Globe, Trash2 } from "lucide-react";
 
 const qc = new QueryClient();
 
 function Content() {
+  const queryClient = useQueryClient();
+
   const { data, isLoading } = useQuery({
     queryKey: ["admin-domains"],
     queryFn: () => adminApi.listDomains().then((r) => r.data),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => adminApi.deleteDomain(id),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["admin-domains"] }); toast.success("Domain deleted"); },
+    onError: (e: any) => toast.error(e.message),
   });
 
   return (
@@ -27,7 +36,7 @@ function Content() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-outline-variant/20">
-                {["Domain", "Owner", "Status", "Events (30d)", "Created"].map((h) => (
+                {["Domain", "Owner", "Status", "Events (30d)", "Created", ""].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-widest text-on-surface-variant">{h}</th>
                 ))}
               </tr>
@@ -35,20 +44,29 @@ function Content() {
             <tbody>
               {isLoading ? Array.from({ length: 8 }).map((_, i) => (
                 <tr key={i} className="border-b border-outline-variant/10">
-                  {Array.from({ length: 5 }).map((_, j) => <td key={j} className="px-4 py-3"><div className="h-4 bg-surface-container-high rounded animate-pulse w-24" /></td>)}
+                  {Array.from({ length: 6 }).map((_, j) => <td key={j} className="px-4 py-3"><div className="h-4 bg-surface-container-high rounded animate-pulse w-24" /></td>)}
                 </tr>
               )) : (data?.data || []).map((d: any) => (
-                <tr key={d.id} className="border-b border-outline-variant/10 hover:bg-surface-container/50 transition-colors">
+                <tr key={d.id} className="border-b border-outline-variant/10 hover:bg-surface-container/30 transition-colors">
                   <td className="px-4 py-3">
                     <span className="flex items-center gap-2">
                       <Globe className="w-3.5 h-3.5 text-primary" />
                       <span className="font-medium text-on-surface">{d.name}</span>
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-on-surface-variant">{d.user?.name || d.user?.email}</td>
+                  <td className="px-4 py-3 text-on-surface-variant">{d.user?.name || d.user?.email || "—"}</td>
                   <td className="px-4 py-3"><Badge variant={d.is_active ? "success" : "secondary"}>{d.is_active ? "Active" : "Inactive"}</Badge></td>
                   <td className="px-4 py-3 text-on-surface-variant">{d.events_30d?.toLocaleString() || "—"}</td>
                   <td className="px-4 py-3 text-on-surface-variant text-xs">{formatDate(d.created_at)}</td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => { if (confirm(`Delete domain "${d.name}"? All tracking data will be lost.`)) deleteMutation.mutate(d.id); }}
+                      title="Delete domain"
+                      className="p-1.5 hover:bg-surface-container rounded-lg text-on-surface-variant hover:text-error transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
