@@ -25,12 +25,12 @@ function Content() {
   });
 
   const createMutation = useMutation({
-    mutationFn: () => sharedReportsApi.create({ domain_id: selectedDomainId! }),
+    mutationFn: () => sharedReportsApi.create({ domain_id: selectedDomainId!, label: "Shared Report" }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["shared-reports"] }),
   });
 
   const revokeMutation = useMutation({
-    mutationFn: (token: string) => sharedReportsApi.revoke(token),
+    mutationFn: (id: number) => sharedReportsApi.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["shared-reports"] }),
   });
 
@@ -84,7 +84,7 @@ function Content() {
                         <button onClick={() => copyLink(r.token)} className="p-1.5 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant hover:text-primary">
                           {copied === r.token ? <Check className="w-4 h-4 text-green-600 dark:text-green-400" /> : <Copy className="w-4 h-4" />}
                         </button>
-                        <button onClick={() => revokeMutation.mutate(r.token)} className="p-1.5 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant hover:text-error">
+                        <button onClick={() => revokeMutation.mutate(r.id)} className="p-1.5 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant hover:text-error">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
