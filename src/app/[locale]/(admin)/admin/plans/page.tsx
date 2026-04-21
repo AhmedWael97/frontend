@@ -33,14 +33,15 @@ function Content() {
             <CardContent className="p-6">
               <h3 className="text-lg font-black text-on-surface">{p.name}</h3>
               <div className="my-3">
-                <span className="text-3xl font-black text-on-surface">${p.price}</span>
+                <span className="text-3xl font-black text-on-surface">${p.price_monthly}</span>
                 <span className="text-on-surface-variant text-sm">/mo</span>
               </div>
               <p className="text-sm text-on-surface-variant mb-4">{p.description}</p>
               <ul className="space-y-2">
-                {(p.features || []).map((f: string) => (
-                  <li key={f} className="flex items-center gap-2 text-xs text-on-surface-variant">
-                    <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400 shrink-0" />{f}
+                {Object.entries(p.features || {}).map(([key, val]) => (
+                  <li key={key} className="flex items-center gap-2 text-xs text-on-surface-variant">
+                    <Check className={`w-3.5 h-3.5 shrink-0 ${val ? 'text-green-600 dark:text-green-400' : 'text-on-surface-variant opacity-30'}`} />
+                    <span className={val ? '' : 'opacity-50'}>{key.replace(/_/g, ' ')}</span>
                   </li>
                 ))}
               </ul>
