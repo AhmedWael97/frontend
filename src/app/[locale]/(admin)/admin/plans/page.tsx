@@ -12,7 +12,7 @@ const qc = new QueryClient();
 function Content() {
   const { data: plans, isLoading } = useQuery({
     queryKey: ["admin-plans"],
-    queryFn: () => adminApi.plans().then((r) => r.data),
+    queryFn: () => adminApi.listPlans().then((r) => r.data),
   });
 
   return (

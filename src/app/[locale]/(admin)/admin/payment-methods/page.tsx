@@ -53,7 +53,7 @@ function GatewayCard({ gateway, savedData }: GatewayCardProps) {
   });
 
   const toggleMutation = useMutation({
-    mutationFn: () => adminApi.togglePaymentMethod(gateway.id),
+    mutationFn: () => adminApi.updatePaymentMethod(gateway.id, { is_active: !isEnabled }),
     onSuccess: () => client.invalidateQueries({ queryKey: ["admin-payment-methods"] }),
   });
 

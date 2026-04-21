@@ -12,7 +12,7 @@ const qc = new QueryClient();
 function Content() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-payments"],
-    queryFn: () => adminApi.payments({ page: 1 }).then((r) => r.data),
+    queryFn: () => adminApi.listPayments().then((r) => r.data),
   });
 
   return (

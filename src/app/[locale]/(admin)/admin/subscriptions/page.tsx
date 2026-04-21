@@ -12,7 +12,7 @@ const qc = new QueryClient();
 function Content() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-subscriptions"],
-    queryFn: () => adminApi.subscriptions({ page: 1 }).then((r) => r.data),
+    queryFn: () => adminApi.listSubscriptions().then((r) => r.data),
   });
 
   const statusV = (s: string) => s === "active" ? "success" : s === "past_due" ? "warning" : s === "canceled" ? "error" : "secondary";

@@ -22,7 +22,7 @@ function Content() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-users", page, search],
-    queryFn: () => adminApi.users({ page, search }).then((r) => r.data),
+    queryFn: () => adminApi.listUsers({ search }).then((r) => r.data),
   });
 
   return (

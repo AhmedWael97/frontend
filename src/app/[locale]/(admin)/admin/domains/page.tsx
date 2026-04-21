@@ -13,7 +13,7 @@ const qc = new QueryClient();
 function Content() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-domains"],
-    queryFn: () => adminApi.domains({ page: 1 }).then((r) => r.data),
+    queryFn: () => adminApi.listDomains().then((r) => r.data),
   });
 
   return (

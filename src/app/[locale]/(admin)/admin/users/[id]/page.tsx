@@ -33,12 +33,12 @@ function Content() {
   });
 
   const banMutation = useMutation({
-    mutationFn: () => adminApi.banUser(Number(id)),
+    mutationFn: () => adminApi.blockUser(Number(id)),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-user", id] }),
   });
 
   const verifyEmailMutation = useMutation({
-    mutationFn: () => adminApi.verifyUser(Number(id)),
+    mutationFn: () => adminApi.verifyUserEmail(Number(id)),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-user", id] }),
   });
 

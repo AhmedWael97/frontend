@@ -19,13 +19,9 @@ export async function generateMetadata(
   const locale = params.locale;
   const isAr = locale === "ar";
 
-  const title = isAr
-    ? "EYE â€” Ù…Ù†ØµØ© Ø°ÙƒØ§Ø¡ Ø§Ù„Ø²ÙˆØ§Ø± Ø¨Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ"
-    : "EYE â€” AI-Powered Visitor Intelligence & Analytics";
+  const title ="EYE AI-Powered Visitor Intelligence & Analytics";
 
-  const description = isAr
-    ? "ØªØªØ¨Ø¹ Ø§Ù„Ø²ÙˆØ§Ø±ØŒ ØªØ­Ù„ÙŠÙ„ Ø§Ù„Ø³Ù„ÙˆÙƒØŒ Ø¨Ù†Ø§Ø¡ Ù‚Ù…Ø¹ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§ØªØŒ ÙˆØªØ­Ø³ÙŠÙ† ØªØ¬Ø±Ø¨Ø© Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø¨Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ. Ø§Ø¨Ø¯Ø£ Ù…Ø¬Ø§Ù†Ø§Ù‹."
-    : "Track every visitor, understand their behavior, build conversion funnels, and boost UX with real-time AI insights. Privacy-first, no cookies required.";
+  const description = "Track every visitor, understand their behavior, build conversion funnels, and boost UX with real-time AI insights. Privacy-first, no cookies required.";
 
   return {
     title,
