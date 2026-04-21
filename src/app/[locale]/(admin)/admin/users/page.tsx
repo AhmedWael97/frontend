@@ -158,7 +158,7 @@ function Content() {
                   </td>
                   <td className="px-4 py-3 text-on-surface-variant">{u.subscription?.plan?.name || "Free"}</td>
                   <td className="px-4 py-3">
-                    <Badge variant={u.status === "blocked" ? "destructive" : u.email_verified_at ? "success" : "secondary"}>
+                    <Badge variant={u.status === "blocked" ? "error" : u.email_verified_at ? "success" : "secondary"}>
                       {u.status === "blocked" ? "Blocked" : u.email_verified_at ? "Active" : "Unverified"}
                     </Badge>
                   </td>
