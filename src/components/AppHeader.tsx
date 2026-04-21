@@ -7,7 +7,7 @@ import { ChevronDown, Globe, Sun, Moon, Monitor, LogOut, User, Settings } from "
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/auth";
-import { authApi, domainsApi } from "@/lib/api";
+import { authApi, domainsApi, profileApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
@@ -73,13 +73,13 @@ export function AppHeader() {
 
   const handleLocaleSwitch = async () => {
     const newLocale = locale === "en" ? "ar" : "en";
-    try { await authApi.updatePreferences({ locale: newLocale }); } catch {}
+    try { await profileApi.updatePreferences({ locale: newLocale }); } catch {}
     router.push(`/${newLocale}/dashboard`);
   };
 
   const handleAppearance = async (value: "light" | "dark" | "system") => {
     setAppearance(value);
-    try { await authApi.updatePreferences({ appearance: value }); } catch {}
+    try { await profileApi.updatePreferences({ appearance: value }); } catch {}
     try { localStorage.setItem("eye-appearance", value); } catch {}
     const root = document.documentElement;
     if (value === "dark") root.classList.add("dark");
