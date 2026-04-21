@@ -9,7 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { authApi } from "@/lib/api";
+import { authApi, profileApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { User, Key, Copy, Check, RefreshCw } from "lucide-react";
 
@@ -32,12 +32,12 @@ function Content() {
   });
 
   const profileMutation = useMutation({
-    mutationFn: (data: any) => authApi.updateProfile(data),
+    mutationFn: (data: any) => profileApi.update(data),
     onSuccess: (res) => setUser(res.data.user || res.data),
   });
 
   const rotateKeyMutation = useMutation({
-    mutationFn: () => authApi.rotateApiKey(),
+    mutationFn: () => profileApi.apiKeyRegenerate(),
     onSuccess: (res) => { setApiKey(res.data.api_key); if (user) setUser({ ...user, api_key: res.data.api_key }); },
   });
 

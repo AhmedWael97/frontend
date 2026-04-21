@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { authApi } from "@/lib/api";
+import { profileApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { ShieldCheck, ShieldOff, Copy, Check } from "lucide-react";
 
@@ -19,22 +19,22 @@ function Content() {
   const [pwMsg, setPwMsg] = useState("");
 
   const enableMutation = useMutation({
-    mutationFn: () => authApi.twoFactorEnable(),
+    mutationFn: () => profileApi.twoFactorEnable(""),
     onSuccess: (res) => { setQrData(res.data); setStep("qr"); },
   });
 
   const confirmMutation = useMutation({
-    mutationFn: (c: string) => authApi.twoFactorConfirm(c),
+    mutationFn: (c: string) => profileApi.twoFactorConfirm(c),
     onSuccess: () => { setStep("backup"); if (user) setUser({ ...user, totp_enabled: true }); },
   });
 
   const disableMutation = useMutation({
-    mutationFn: (c: string) => authApi.twoFactorDisable({ code: c, password: pwForm.current }),
+    mutationFn: (c: string) => profileApi.twoFactorDisable(pwForm.current),
     onSuccess: () => { setStep("idle"); if (user) setUser({ ...user, totp_enabled: false }); },
   });
 
   const changePasswordMutation = useMutation({
-    mutationFn: (d: any) => authApi.changePassword(d),
+    mutationFn: (d: any) => profileApi.changePassword(d),
     onSuccess: () => setPwMsg("Password changed successfully!"),
     onError: () => setPwMsg("Failed to change password."),
   });

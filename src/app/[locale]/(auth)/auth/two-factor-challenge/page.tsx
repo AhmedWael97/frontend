@@ -24,7 +24,7 @@ export default function TwoFactorChallengePage() {
     setLoading(true);
     try {
       const payload = useBackup ? { recovery_code: code } : { code };
-      const res = await authApi.twoFactorChallenge(payload);
+      const res = await authApi.twoFactorVerify(payload);
       setToken(res.data.token);
       setUser(res.data.user);
       router.push(`/${locale}/dashboard`);
