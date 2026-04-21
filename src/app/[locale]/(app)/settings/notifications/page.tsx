@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { notificationsApi } from "@/lib/api";
+import { notificationPrefsApi } from "@/lib/api";
 import { Bell, Check, Loader2 } from "lucide-react";
 
 const qc = new QueryClient();
@@ -31,7 +31,7 @@ function Content() {
   const [saved, setSaved] = useState(false);
 
   const saveMutation = useMutation({
-    mutationFn: (data: any) => notificationsApi.updatePreferences(data),
+    mutationFn: (data: any) => notificationPrefsApi.update(data),
     onSuccess: () => { setSaved(true); setTimeout(() => setSaved(false), 2000); },
   });
 

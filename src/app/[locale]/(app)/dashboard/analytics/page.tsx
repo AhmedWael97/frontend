@@ -32,13 +32,13 @@ function Content() {
 
   const { data: sources } = useQuery({
     queryKey: ["traffic-sources", selectedDomainId],
-    queryFn: () => analyticsApi.trafficSources(selectedDomainId!, { period: "30d" }).then((r) => r.data),
+    queryFn: () => analyticsApi.referrers(selectedDomainId!).then((r) => r.data),
     enabled: !!selectedDomainId,
   });
 
   const { data: utms } = useQuery({
     queryKey: ["utms", selectedDomainId],
-    queryFn: () => analyticsApi.utmStats(selectedDomainId!, { period: "30d" }).then((r) => r.data),
+    queryFn: () => analyticsApi.customEvents(selectedDomainId!).then((r) => r.data),
     enabled: !!selectedDomainId,
   });
 

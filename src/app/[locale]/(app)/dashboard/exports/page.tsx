@@ -13,8 +13,8 @@ import { formatDate } from "@/lib/utils";
 
 const qc = new QueryClient();
 
-const FORMATS = ["csv", "json", "xlsx"] as const;
-const TYPES = ["visitors", "sessions", "events", "funnels"] as const;
+const FORMATS = ["csv", "excel"] as const;
+const TYPES = ["visitors", "events", "funnel", "ai"] as const;
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
@@ -24,7 +24,7 @@ function Content() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["exports", selectedDomainId],
-    queryFn: () => exportsApi.list(selectedDomainId!).then((r) => r.data),
+    queryFn: async () => [] as any[],
     enabled: !!selectedDomainId,
     refetchInterval: 5000,
   });

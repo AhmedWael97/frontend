@@ -41,7 +41,7 @@ function Content() {
 
   const { data: scores } = useQuery({
     queryKey: ["ux-scores", selectedDomainId],
-    queryFn: () => uxApi.scores(selectedDomainId!).then((r) => r.data),
+    queryFn: () => uxApi.score(selectedDomainId!).then((r) => r.data),
     enabled: !!selectedDomainId,
   });
 

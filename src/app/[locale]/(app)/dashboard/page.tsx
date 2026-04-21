@@ -50,7 +50,7 @@ function DashboardContent() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["overview", selectedDomainId],
-    queryFn: () => analyticsApi.overview(selectedDomainId!, { period: "30d" }).then((r) => r.data),
+    queryFn: () => analyticsApi.overview(selectedDomainId!).then((r) => r.data),
     enabled: !!selectedDomainId,
     refetchInterval: 60000,
   });

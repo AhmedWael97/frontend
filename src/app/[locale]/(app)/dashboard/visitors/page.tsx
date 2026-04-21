@@ -19,7 +19,7 @@ function Content() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["visitors", selectedDomainId, page],
-    queryFn: () => analyticsApi.visitors(selectedDomainId!, { page: String(page) }).then((r) => r.data),
+    queryFn: () => analyticsApi.visitorsList(selectedDomainId!, { page }).then((r) => r.data),
     enabled: !!selectedDomainId,
   });
 

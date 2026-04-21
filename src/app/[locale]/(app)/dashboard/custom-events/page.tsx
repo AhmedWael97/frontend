@@ -14,7 +14,7 @@ function Content() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["custom-events", selectedDomainId],
-    queryFn: () => analyticsApi.customEvents(selectedDomainId!, { period: "30d" }).then((r) => r.data),
+    queryFn: () => analyticsApi.customEvents(selectedDomainId!).then((r) => r.data),
     enabled: !!selectedDomainId,
   });
 

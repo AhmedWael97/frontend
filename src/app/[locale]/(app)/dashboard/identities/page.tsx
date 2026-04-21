@@ -16,7 +16,7 @@ function Content() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["identities", selectedDomainId],
-    queryFn: () => analyticsApi.identities(selectedDomainId!, {}).then((r) => r.data),
+    queryFn: () => analyticsApi.identitiesList(selectedDomainId!).then((r) => r.data),
     enabled: !!selectedDomainId,
   });
 

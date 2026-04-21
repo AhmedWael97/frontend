@@ -15,7 +15,7 @@ function Content() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["companies", selectedDomainId],
-    queryFn: () => analyticsApi.companies(selectedDomainId!, {}).then((r) => r.data),
+    queryFn: () => analyticsApi.companiesList(selectedDomainId!).then((r) => r.data),
     enabled: !!selectedDomainId,
   });
 
