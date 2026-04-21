@@ -31,13 +31,21 @@ function Content() {
   const [adding, setAdding] = useState(false);
   const [createError, setCreateError] = useState("");
 
-  const { data: domains, isLoading } = useQuery({
+  const { data: domains = [], isLoading } = useQuery({
     queryKey: ["domains"],
-    queryFn: () => domainsApi.list().then((r) => r.data?.data ?? r.data),
+    queryFn: async () => {
+      const r = await domainsApi.list();
+      return r.data;
+    },
+    select: (data: any): any[] => {
+      if (Array.isArray(data)) return data;
+      if (Array.isArray(data?.data)) return data.data;
+      return [];
+    },
   });
 
   const createMutation = useMutation({
-    mutationFn: (name: string) => domainsApi.create(name),
+    mutationFn: (name: string) => domainsApi.create({ domain: name }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["domains"] }); setNewDomain(""); setAdding(false); setCreateError(""); },
     onError: (e: any) => { setCreateError(e.response?.data?.message || "Failed to add domain."); },
   });
@@ -77,7 +85,7 @@ function Content() {
 
       {isLoading ? (
         Array.from({ length: 2 }).map((_, i) => <div key={i} className="h-40 bg-surface-container rounded-xl animate-pulse" />)
-      ) : (domains || []).map((d: any) => (
+      ) : domains.map((d: any) => (
         <Card key={d.id}>
           <CardHeader>
             <div className="flex items-center justify-between">
