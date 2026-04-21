@@ -35,9 +35,15 @@ client.interceptors.request.use((config) => {
 // ── Response: unwrap envelope + normalise errors ─────────────────────────────
 client.interceptors.response.use(
   (res) => {
-    // Backend wraps every response: { statusCode, statusText, data: <payload> }
+    // Backend wraps every response: { statusCode, statusText, data: <payload>, meta? }
     if (res.data && "statusCode" in res.data && "data" in res.data) {
-      res.data = res.data.data;
+      const envelope = res.data;
+      // Preserve meta for paginated responses so consumers can access data.data + data.meta
+      if (envelope.meta !== undefined) {
+        res.data = { data: envelope.data, meta: envelope.meta };
+      } else {
+        res.data = envelope.data;
+      }
     }
     return res;
   },
