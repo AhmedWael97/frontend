@@ -121,7 +121,7 @@ function Content() {
               <p className="text-sm text-on-surface-variant">2FA is active on your account.</p>
               <div className="flex gap-3 max-w-xs">
                 <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="Confirm with TOTP code" maxLength={6} />
-                <Button variant="destructive" onClick={() => disableMutation.mutate(code)} disabled={!code || disableMutation.isPending}><ShieldOff className="w-4 h-4" /> Disable</Button>
+                <Button variant="destructive" disabled={!code || disableMutation.isPending}><ShieldOff className="w-4 h-4" /> Disable</Button>
               </div>
             </div>
           )}
