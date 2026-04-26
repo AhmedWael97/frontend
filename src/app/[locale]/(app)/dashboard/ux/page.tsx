@@ -97,8 +97,7 @@ function parseIssueDetails(raw: unknown): Record<string, unknown> {
   } catch {
     // Ignore parse errors and fall back to empty details.
   }
-          <h1 className="text-2xl font-black text-on-surface tracking-tight">{t("title")}</h1>
-          <p className="text-on-surface-variant text-sm mt-0.5">{t("subtitle")}</p>
+  return {};
 }
 
 function pickFirstText(details: Record<string, unknown>, keys: string[]): string {

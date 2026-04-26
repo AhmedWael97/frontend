@@ -45,7 +45,7 @@ function Content() {
 
   const selectedMethod = useMemo(
     () => (paymentMethods ?? []).find((m: any) => m.id === effectiveMethodId) ?? null,
-    [paymentMethods, effectiveMethodId]
+    [billing?.payment_methods, effectiveMethodId]
   );
 
   const subscribeMutation = useMutation({

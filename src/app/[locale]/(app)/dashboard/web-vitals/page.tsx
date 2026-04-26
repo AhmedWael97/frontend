@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { uxApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Gauge, CheckCircle, AlertTriangle, XCircle } from "lucide-react";

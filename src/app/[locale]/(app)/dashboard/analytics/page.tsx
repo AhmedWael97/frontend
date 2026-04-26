@@ -80,8 +80,8 @@ function Content() {
         <TabsContent value="referrers" className="mt-4">
           <Card>
             <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Top Referrers</CardTitle></CardHeader>
-          <h1 className="text-2xl font-black text-on-surface tracking-tight">{t("title")}</h1>
-          <p className="text-on-surface-variant text-sm mt-0.5">{t("subtitle")}</p>
+            <CardContent>
+              {Array.isArray(referrers) && referrers.length ? (
                 <SimpleBarChart data={referrers} dataKey="visits" nameKey="referrer" />
               ) : <NoData />}
             </CardContent>

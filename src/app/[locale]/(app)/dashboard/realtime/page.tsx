@@ -12,6 +12,7 @@ type RealtimeEvent = { id: string; type: string; page: string; visitor_id: strin
 
 export default function RealtimePage() {
   const { selectedDomainId, token } = useAuthStore();
+    const t = useTranslations("realtime");
   const [activeCount, setActiveCount] = useState<number | null>(null);
   const events: RealtimeEvent[] = [];
 
@@ -32,7 +33,6 @@ export default function RealtimePage() {
   return (
     <div className="space-y-6">
       <div>
-        const t = useTranslations("realtime");
         <h1 className="text-2xl font-black text-on-surface tracking-tight">{t("title")}</h1>
         <p className="text-on-surface-variant text-sm mt-0.5">{t("subtitle")}</p>
       </div>
