@@ -1,7 +1,7 @@
 /**
  * UX Intelligence API
  * Routes: /ux/{domainId}/*
- * Docs: api-contract.json ??? endpoints.ux_intelligence
+ * Docs: api-contract.json → endpoints.ux_intelligence
  */
 import client from "./client";
 import { UX_ROUTES } from "./routes";
@@ -9,7 +9,7 @@ import { UX_ROUTES } from "./routes";
 type DateParams = { from?: string; to?: string };
 
 export const uxApi = {
-  /** GET /ux/{domainId}/score ??? { score, breakdown, calculated_at } */
+  /** GET /ux/{domainId}/score → { score, breakdown, calculated_at } */
   score: (domainId: number) => client.get(UX_ROUTES.score(domainId)),
 
   /** GET /ux/{domainId}/issues */
@@ -34,4 +34,3 @@ export const uxApi = {
   webVitals: (domainId: number, params?: DateParams) =>
     client.get(UX_ROUTES.webVitals(domainId), { params }),
 };
-

@@ -8,11 +8,13 @@ import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { formatDate } from "@/lib/utils";
 import { Monitor, Smartphone, Tablet, Globe } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
   const [page, setPage] = useState(1);
   const [, setSelected] = useState<string | null>(null);
+  const t = useTranslations("visitors");
 
   const { data, isLoading } = useQuery({
     queryKey: ["visitors", selectedDomainId, page],
@@ -26,11 +28,20 @@ function Content() {
     return <Monitor className="w-3.5 h-3.5" />;
   };
 
+  const tableHeaders = [
+    t("visitorId"),
+    t("country"),
+    t("device"),
+    t("browser"),
+    t("sessions"),
+    t("lastSeen")
+  ];
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-on-surface tracking-tight">Visitors</h1>
-        <p className="text-on-surface-variant text-sm mt-0.5">All recorded visitor sessions</p>
+        <h1 className="text-2xl font-black text-on-surface tracking-tight">{t("title")}</h1>
+        <p className="text-on-surface-variant text-sm mt-0.5">{t("subtitle")}</p>
       </div>
 
       <Card>
@@ -39,7 +50,7 @@ function Content() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-outline-variant/20">
-                  {["Visitor ID", "Country", "Device", "Browser", "Sessions", "Last Seen"].map((h) => (
+                  {tableHeaders.map((h) => (
                     <th key={h} className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-widest text-on-surface-variant">{h}</th>
                   ))}
                 </tr>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/store/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { analyticsApi } from "@/lib/api";
@@ -31,8 +32,9 @@ export default function RealtimePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-on-surface tracking-tight">Real-Time</h1>
-        <p className="text-on-surface-variant text-sm mt-0.5">Live visitor activity on your site</p>
+        const t = useTranslations("realtime");
+        <h1 className="text-2xl font-black text-on-surface tracking-tight">{t("title")}</h1>
+        <p className="text-on-surface-variant text-sm mt-0.5">{t("subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

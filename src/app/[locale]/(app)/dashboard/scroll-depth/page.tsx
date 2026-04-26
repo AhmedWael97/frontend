@@ -69,13 +69,13 @@ function Content() {
           Scroll Depth
         </h1>
         <p className="text-on-surface-variant text-sm mt-0.5">
-          How far visitors scroll on each page ??? spot where your content loses attention.
+          How far visitors scroll on each page — spot where your content loses attention.
         </p>
       </div>
 
       {isLoading && (
         <div className="flex items-center justify-center h-40">
-          <p className="text-on-surface-variant text-sm">Loading???</p>
+          <p className="text-on-surface-variant text-sm">Loading…</p>
         </div>
       )}
 
@@ -132,4 +132,3 @@ function Content() {
 export default function ScrollDepthPage() {
   return <Content />;
 }
-

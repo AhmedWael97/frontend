@@ -237,9 +237,14 @@
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: #18181b;
+  background: #f8f9fb;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #1a1a1a;
+  font-weight: bold;
 }
 
 @layer utilities {
