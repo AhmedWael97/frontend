@@ -14,7 +14,6 @@ import { User, Key, Copy, Check, RefreshCw } from "lucide-react";
 
 const profileSchema = z.object({
   name: z.string().min(2),
-  email: z.string().email(),
   timezone: z.string().optional(),
 });
 
@@ -25,7 +24,7 @@ function Content() {
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(profileSchema),
-    defaultValues: { name: user?.name || "", email: user?.email || "", timezone: user?.timezone || "" },
+    defaultValues: { name: user?.name || "", timezone: user?.timezone || "" },
   });
 
   const profileMutation = useMutation({
@@ -60,8 +59,8 @@ function Content() {
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">Email</label>
-                <Input {...register("email")} placeholder="you@example.com" />
-                {errors.email && <p className="text-xs text-error">{errors.email.message}</p>}
+                <Input value={user?.email || ""} readOnly disabled className="opacity-60 cursor-not-allowed" />
+                <p className="text-xs text-on-surface-variant">Contact support to change your email address.</p>
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">Timezone</label>

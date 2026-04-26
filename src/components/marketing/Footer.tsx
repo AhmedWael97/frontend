@@ -31,7 +31,7 @@ export default function Footer({ locale }: FooterProps) {
       { label: t("gdpr"),          href: "#" },
     ],
     [t("developers")]: [
-      { label: t("apiDocs"),       href: "#" },
+      { label: t("apiDocs"),       href: "/docs" },
       { label: t("trackerScript"), href: "#" },
       { label: t("webhooks"),      href: "#" },
       { label: t("status"),        href: "#" },

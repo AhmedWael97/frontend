@@ -85,6 +85,7 @@ export const GDPR_ROUTES = {
 
 // ── Exports ───────────────────────────────────────────────────────────────────
 export const EXPORT_ROUTES = {
+  list: "/exports",
   create: "/exports",
   show: (id: number) => `/exports/${id}`,
   download: (id: number) => `/exports/${id}/download`,
@@ -162,6 +163,7 @@ export const ANALYTICS_ROUTES = {
   devices: (domain: number | string) => `/domains/${domain}/analytics/devices`,
   geo: (domain: number | string) => `/domains/${domain}/analytics/geo`,
   customEvents: (domain: number | string) => `/domains/${domain}/analytics/custom-events`,
+  customEventsStore: (domain: number | string) => `/domains/${domain}/analytics/custom-events/store`,
   funnel: (domain: number | string, pipeline: number | string) =>
     `/domains/${domain}/analytics/pipelines/${pipeline}/funnel`,
   realtime: (domain: number | string) => `/domains/${domain}/analytics/realtime`,
@@ -184,6 +186,8 @@ export const UX_ROUTES = {
   issues: (domainId: number) => `/ux/${domainId}/issues`,
   heatmap: (domainId: number) => `/ux/${domainId}/heatmap`,
   errors: (domainId: number) => `/ux/${domainId}/errors`,
+  scrollDepth: (domainId: number) => `/ux/${domainId}/scroll-depth`,
+  webVitals: (domainId: number) => `/ux/${domainId}/web-vitals`,
 } as const;
 
 // ── AI ────────────────────────────────────────────────────────────────────────

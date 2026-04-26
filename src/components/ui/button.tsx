@@ -8,9 +8,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "signature-glow text-on-primary-fixed hover:shadow-[0_0_20px_rgba(192,193,255,0.3)]",
-        outline: "border border-outline-variant bg-transparent text-on-surface hover:bg-surface-container-high",
-        ghost: "bg-transparent text-on-surface hover:bg-surface-container-high",
+        default: "bg-primary text-on-primary hover:bg-primary/90 shadow-md",
+        outline: "border border-outline-variant bg-white text-on-surface hover:bg-surface-container-high",
+        ghost: "bg-surface-container text-on-surface hover:bg-surface-container-high",
         secondary: "bg-secondary-container text-on-secondary-container hover:bg-secondary-container/80",
         destructive: "bg-error-container text-on-error-container hover:bg-error-container/80",
         link: "underline-offset-4 hover:underline text-primary",

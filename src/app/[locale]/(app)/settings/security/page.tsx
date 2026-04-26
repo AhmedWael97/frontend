@@ -12,25 +12,37 @@ import { ShieldCheck, ShieldOff, Copy, Check } from "lucide-react";
 function Content() {
   const { user, setUser } = useAuthStore();
   const [step, setStep] = useState<"idle" | "qr" | "confirm" | "backup">("idle");
-  const [qrData, setQrData] = useState<{ qr_code_url: string; secret: string; backup_codes: string[] } | null>(null);
+  const [qrData, setQrData] = useState<{ qr_code_url: string; secret: string; backup_codes?: string[] } | null>(null);
   const [code, setCode] = useState("");
   const [copied, setCopied] = useState(false);
   const [pwForm, setPwForm] = useState({ current: "", newPw: "", confirm: "" });
   const [pwMsg, setPwMsg] = useState("");
+  const [enablePw, setEnablePw] = useState("");
+  const [disablePw, setDisablePw] = useState("");
 
   const enableMutation = useMutation({
-    mutationFn: () => profileApi.twoFactorEnable(""),
-    onSuccess: (res) => { setQrData(res.data); setStep("qr"); },
+    mutationFn: (pw: string) => profileApi.twoFactorEnable(pw),
+    onSuccess: (res) => {
+      // Backend returns { qr_code, secret } — normalize field name
+      setQrData({ qr_code_url: res.data.qr_code ?? res.data.qr_code_url, secret: res.data.secret });
+      setStep("qr");
+      setEnablePw("");
+    },
   });
 
   const confirmMutation = useMutation({
     mutationFn: (c: string) => profileApi.twoFactorConfirm(c),
-    onSuccess: () => { setStep("backup"); if (user) setUser({ ...user, totp_enabled: true }); },
+    onSuccess: (res) => {
+      // Backend returns { message, backup_codes } — merge into qrData
+      setQrData((prev) => prev ? { ...prev, backup_codes: res.data.backup_codes } : null);
+      setStep("backup");
+      if (user) setUser({ ...user, totp_enabled: true });
+    },
   });
 
   const disableMutation = useMutation({
-    mutationFn: () => profileApi.twoFactorDisable(pwForm.current),
-    onSuccess: () => { setStep("idle"); if (user) setUser({ ...user, totp_enabled: false }); },
+    mutationFn: (pw: string) => profileApi.twoFactorDisable(pw),
+    onSuccess: () => { setStep("idle"); setDisablePw(""); if (user) setUser({ ...user, totp_enabled: false }); },
   });
 
   const changePasswordMutation = useMutation({
@@ -85,7 +97,10 @@ function Content() {
           {!user?.totp_enabled && step === "idle" && (
             <div className="space-y-3">
               <p className="text-sm text-on-surface-variant">Protect your account with a TOTP authenticator app like Google Authenticator or Authy.</p>
-              <Button onClick={() => enableMutation.mutate()} disabled={enableMutation.isPending}><ShieldCheck className="w-4 h-4" /> Enable 2FA</Button>
+              <div className="flex gap-3 max-w-xs">
+                <Input type="password" value={enablePw} onChange={(e) => setEnablePw(e.target.value)} placeholder="Confirm with your password" />
+                <Button onClick={() => enableMutation.mutate(enablePw)} disabled={!enablePw || enableMutation.isPending}><ShieldCheck className="w-4 h-4" /> Enable 2FA</Button>
+              </div>
             </div>
           )}
 
@@ -105,10 +120,10 @@ function Content() {
             <div className="space-y-3">
               <p className="text-sm font-semibold text-on-surface">2FA Enabled! Save your backup codes:</p>
               <div className="bg-surface-container-lowest rounded-lg p-4 font-mono text-xs grid grid-cols-2 gap-1 border border-outline-variant/20">
-                {qrData.backup_codes.map((c, i) => <span key={i} className="text-on-surface-variant">{c}</span>)}
+                {(qrData.backup_codes ?? []).map((c, i) => <span key={i} className="text-on-surface-variant">{c}</span>)}
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => copyBackup(qrData.backup_codes)} size="sm">
+                <Button variant="outline" onClick={() => copyBackup(qrData.backup_codes ?? [])} size="sm">
                   {copied ? <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> : <Copy className="w-3.5 h-3.5" />} Copy Codes
                 </Button>
                 <Button onClick={() => setStep("idle")} size="sm">Done</Button>
@@ -120,8 +135,8 @@ function Content() {
             <div className="space-y-3">
               <p className="text-sm text-on-surface-variant">2FA is active on your account.</p>
               <div className="flex gap-3 max-w-xs">
-                <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="Confirm with TOTP code" maxLength={6} />
-                <Button variant="destructive" disabled={!code || disableMutation.isPending}><ShieldOff className="w-4 h-4" /> Disable</Button>
+                <Input type="password" value={disablePw} onChange={(e) => setDisablePw(e.target.value)} placeholder="Enter your password to disable 2FA" />
+                <Button variant="destructive" onClick={() => disableMutation.mutate(disablePw)} disabled={!disablePw || disableMutation.isPending}><ShieldOff className="w-4 h-4" /> Disable</Button>
               </div>
             </div>
           )}

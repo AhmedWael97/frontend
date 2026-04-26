@@ -125,7 +125,7 @@ export const pipelinesApi = {
     data: {
       name: string;
       description?: string;
-      steps?: { name: string; url_pattern: string; match_type?: string }[];
+      steps?: { name: string; url_pattern: string; match_type?: string; order?: number }[];
     }
   ) => client.post(DOMAIN_ROUTES.pipelinesCreate(domain), data),
 

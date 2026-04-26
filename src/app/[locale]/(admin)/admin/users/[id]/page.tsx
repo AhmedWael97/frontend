@@ -30,7 +30,9 @@ function Content() {
   });
 
   const banMutation = useMutation({
-    mutationFn: () => adminApi.blockUser(Number(id)),
+    mutationFn: () => user?.banned_at
+      ? adminApi.unblockUser(Number(id))
+      : adminApi.blockUser(Number(id)),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-user", id] }),
   });
 

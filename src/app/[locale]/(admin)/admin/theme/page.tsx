@@ -21,7 +21,7 @@ function Content() {
   const [saved, setSaved] = useState(false);
 
   const saveMutation = useMutation({
-    mutationFn: (data: any) => themeApi.adminUpdate(data),
+    mutationFn: (data: Array<{ key: string; value: string }>) => themeApi.adminUpdate(data),
     onSuccess: () => { setSaved(true); setTimeout(() => setSaved(false), 2000); },
   });
 
@@ -74,7 +74,10 @@ function Content() {
         </div>
       </div>
 
-      <Button onClick={() => saveMutation.mutate({ colors, logo_url: logo })} disabled={saveMutation.isPending} className="min-w-36">
+      <Button onClick={() => saveMutation.mutate([
+        ...Object.entries(colors).map(([key, value]) => ({ key: `color_${key}`, value })),
+        { key: "logo_url", value: logo },
+      ])} disabled={saveMutation.isPending} className="min-w-36">
         {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <><Check className="w-4 h-4" /> Saved!</> : "Save Theme"}
       </Button>
     </div>

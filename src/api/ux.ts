@@ -25,4 +25,12 @@ export const uxApi = {
   /** GET /ux/{domainId}/errors */
   errors: (domainId: number, params?: DateParams) =>
     client.get(UX_ROUTES.errors(domainId), { params }),
+
+  /** GET /ux/{domainId}/scroll-depth */
+  scrollDepth: (domainId: number, params?: DateParams) =>
+    client.get(UX_ROUTES.scrollDepth(domainId), { params }),
+
+  /** GET /ux/{domainId}/web-vitals */
+  webVitals: (domainId: number, params?: DateParams) =>
+    client.get(UX_ROUTES.webVitals(domainId), { params }),
 };

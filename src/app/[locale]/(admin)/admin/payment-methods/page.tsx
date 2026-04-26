@@ -7,9 +7,26 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { adminApi } from "@/lib/api";
+import { toast } from "@/lib/use-toast";
 import { CreditCard, Key, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
-const GATEWAYS = [
+type MethodTemplate = {
+  id: "stripe" | "paypal" | "bank_transfer";
+  name: string;
+  icon: string;
+  fields: Array<{ key: string; label: string; placeholder: string; secret?: boolean }>;
+};
+
+type PaymentMethod = {
+  id: number;
+  name: string;
+  name_ar?: string;
+  type: string;
+  config?: Record<string, string>;
+  is_active: boolean;
+};
+
+const GATEWAYS: MethodTemplate[] = [
   {
     id: "stripe",
     name: "Stripe",
@@ -30,31 +47,74 @@ const GATEWAYS = [
       { key: "mode", label: "Mode", placeholder: "sandbox | live" },
     ],
   },
+  {
+    id: "bank_transfer",
+    name: "Bank Transfer",
+    icon: "🏦",
+    fields: [
+      { key: "bank_name", label: "Bank Name", placeholder: "Example Bank" },
+      { key: "account_name", label: "Account Name", placeholder: "EYE Analytics LLC" },
+      { key: "account_number", label: "Account Number", placeholder: "0000000000" },
+      { key: "iban", label: "IBAN", placeholder: "IBANXXXXXXXXXXXX" },
+      { key: "swift", label: "SWIFT", placeholder: "ABCDEF12" },
+    ],
+  },
 ];
 
 interface GatewayCardProps {
-  gateway: typeof GATEWAYS[0];
-  savedData?: Record<string, string> & { enabled?: boolean };
+  gateway: MethodTemplate;
+  method?: PaymentMethod;
 }
 
-function GatewayCard({ gateway, savedData }: GatewayCardProps) {
+function GatewayCard({ gateway, method }: GatewayCardProps) {
   const client = useQueryClient();
   const [values, setValues] = useState<Record<string, string>>(
-    Object.fromEntries(gateway.fields.map((f) => [f.key, savedData?.[f.key] ?? ""]))
+    Object.fromEntries(gateway.fields.map((f) => [f.key, method?.config?.[f.key] ?? ""]))
   );
   const [show, setShow] = useState<Record<string, boolean>>({});
 
+  const isEnabled = method?.is_active ?? false;
+
   const saveMutation = useMutation({
-    mutationFn: () => adminApi.updatePaymentMethod(gateway.id, values),
-    onSuccess: () => client.invalidateQueries({ queryKey: ["admin-payment-methods"] }),
+    mutationFn: async () => {
+      if (method) {
+        return adminApi.updatePaymentMethod(method.id, {
+          config: values,
+          name: method.name,
+          name_ar: method.name_ar,
+        });
+      }
+
+      return adminApi.createPaymentMethod({
+        name: gateway.name,
+        type: gateway.id,
+        config: values,
+        is_active: true,
+      });
+    },
+    onSuccess: () => {
+      toast.success(`${gateway.name} settings saved.`);
+      client.invalidateQueries({ queryKey: ["admin-payment-methods"] });
+    },
   });
 
   const toggleMutation = useMutation({
-    mutationFn: () => adminApi.updatePaymentMethod(gateway.id, { is_active: !isEnabled }),
-    onSuccess: () => client.invalidateQueries({ queryKey: ["admin-payment-methods"] }),
-  });
+    mutationFn: async () => {
+      if (method) {
+        return adminApi.updatePaymentMethod(method.id, { is_active: !isEnabled });
+      }
 
-  const isEnabled = savedData?.enabled ?? false;
+      return adminApi.createPaymentMethod({
+        name: gateway.name,
+        type: gateway.id,
+        config: values,
+        is_active: true,
+      });
+    },
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ["admin-payment-methods"] });
+    },
+  });
 
   return (
     <Card>
@@ -129,6 +189,12 @@ function GatewayCard({ gateway, savedData }: GatewayCardProps) {
         {saveMutation.isSuccess && (
           <p className="text-xs text-green-500 text-center">Saved successfully</p>
         )}
+
+        {gateway.id === "bank_transfer" && (
+          <p className="text-xs text-on-surface-variant text-center">
+            These bank transfer details are shown to users on the Billing page.
+          </p>
+        )}
       </CardContent>
     </Card>
   );
@@ -137,9 +203,14 @@ function GatewayCard({ gateway, savedData }: GatewayCardProps) {
 function Content() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-payment-methods"],
-    queryFn: () =>
-      adminApi.listPaymentMethods().then((r) => r.data).catch(() => ({})),
+    queryFn: async () => {
+      const res = await adminApi.listPaymentMethods();
+      return (res.data ?? []) as PaymentMethod[];
+    },
   });
+
+  const methods = Array.isArray(data) ? data : [];
+  const findByType = (type: string) => methods.find((m) => m.type === type);
 
   return (
     <div className="space-y-6">
@@ -149,7 +220,7 @@ function Content() {
           Payment Methods
         </h1>
         <p className="text-on-surface-variant text-sm mt-0.5">
-          Configure payment gateways and credentials
+          Configure payment gateways and bank transfer details
         </p>
       </div>
 
@@ -168,7 +239,7 @@ function Content() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {GATEWAYS.map((gateway) => (
-            <GatewayCard key={gateway.id} gateway={gateway} savedData={data?.[gateway.id]} />
+            <GatewayCard key={gateway.id} gateway={gateway} method={findByType(gateway.id)} />
           ))}
         </div>
       )}

@@ -11,7 +11,7 @@ export const billingApi = {
   show: () => client.get(BILLING_ROUTES.show),
 
   /** POST /billing/subscribe */
-  subscribe: (data: { plan_id: number; payment_method_id?: number }) =>
+  subscribe: (data: FormData | { plan_id: number; payment_method_id?: number; transaction_reference?: string }) =>
     client.post(BILLING_ROUTES.subscribe, data),
 
   /** POST /billing/cancel */
