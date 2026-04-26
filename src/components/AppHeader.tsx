@@ -91,7 +91,7 @@ export function AppHeader() {
   };
 
   return (
-    <header className="h-14 ltr:pl-64 rtl:pr-64 flex items-center justify-between px-6 border-b border-outline-variant/20 bg-surface-container-low/80 backdrop-blur-sm sticky top-0 z-30">
+    <header className="h-14 flex items-center justify-between px-6 border-b border-outline-variant/20 bg-surface-container-low/80 backdrop-blur-sm sticky top-0 z-30">
       {/* Domain Selector */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

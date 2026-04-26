@@ -108,7 +108,7 @@ export function AppSidebar() {
       <aside
         className={cn(
           "h-full w-64 fixed inset-y-0 ltr:left-0 rtl:right-0 flex flex-col bg-surface-container-low border-r border-outline-variant/20 z-50 transition-transform duration-300",
-          "md:translate-x-0 md:static md:block",
+          "md:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
         style={{ maxWidth: 256 }}
