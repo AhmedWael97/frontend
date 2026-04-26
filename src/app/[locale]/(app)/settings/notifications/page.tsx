@@ -28,7 +28,7 @@ function Content() {
   const [saved, setSaved] = useState(false);
 
   const saveMutation = useMutation({
-    mutationFn: (data: any) => notificationPrefsApi.update(data),
+    mutationFn: (data: Array<{ type: string; in_app: boolean; email: boolean }>) => notificationPrefsApi.update(data),
     onSuccess: () => { setSaved(true); setTimeout(() => setSaved(false), 2000); },
   });
 
@@ -58,7 +58,13 @@ function Content() {
         </CardContent>
       </Card>
 
-      <Button onClick={() => saveMutation.mutate(prefs)} disabled={saveMutation.isPending} className="min-w-32">
+      <Button onClick={() => saveMutation.mutate(
+        Object.entries(prefs).map(([type, val]) => ({
+          type,
+          email: type.startsWith("email_") ? val : false,
+          in_app: type.startsWith("push_") ? val : false,
+        }))
+      )} disabled={saveMutation.isPending} className="min-w-32">
         {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <><Check className="w-4 h-4" /> Saved!</> : "Save Preferences"}
       </Button>
     </div>

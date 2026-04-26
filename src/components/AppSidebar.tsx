@@ -8,7 +8,8 @@ import {
   LayoutDashboard, Radio, Users, BarChart3, GitMerge, Sparkles,
   Zap, Code2, UserCheck, Building2, PlaySquare, Share2, Download,
   MessageSquare, Globe, CreditCard, User, Shield,
-  Bell, Webhook, Link2, Eye
+  Bell, Webhook, Link2, Eye,
+  ArrowDownToLine, Gauge, Bug, Lightbulb,
 } from "lucide-react";
 
 const navGroups = [
@@ -35,8 +36,12 @@ const navGroups = [
     items: [
       { key: "ai", href: "/dashboard/ai", icon: Sparkles },
       { key: "ux", href: "/dashboard/ux", icon: Zap },
+      { key: "ownerBrief", href: "/dashboard/owner-brief", icon: Lightbulb },
       { key: "replay", href: "/dashboard/replay", icon: PlaySquare },
       { key: "websiteChatbot", href: "/dashboard/website-chatbot", icon: MessageSquare },
+      { key: "scrollDepth", href: "/dashboard/scroll-depth", icon: ArrowDownToLine },
+      { key: "webVitals", href: "/dashboard/web-vitals", icon: Gauge },
+      { key: "jsErrors", href: "/dashboard/errors", icon: Bug },
     ],
   },
   {

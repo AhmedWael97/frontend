@@ -21,7 +21,7 @@ function Content() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["exports", selectedDomainId],
-    queryFn: async () => [] as any[],
+    queryFn: () => exportsApi.list(selectedDomainId ?? undefined).then((r) => r.data),
     enabled: !!selectedDomainId,
     refetchInterval: 5000,
   });

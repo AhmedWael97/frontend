@@ -7,6 +7,10 @@ import client from "./client";
 import { EXPORT_ROUTES } from "./routes";
 
 export const exportsApi = {
+  /** GET /exports?domain_id=X → ExportJobObject[] */
+  list: (domainId?: number) =>
+    client.get(EXPORT_ROUTES.list, { params: domainId ? { domain_id: domainId } : {} }),
+
   /** POST /exports → 202 ExportJobObject */
   create: (data: {
     domain_id: number;

@@ -14,7 +14,7 @@ export const adminApi = {
 
   // ── Users ───────────────────────────────────────────────────────────────────
   /** GET /admin/users */
-  listUsers: (params?: { search?: string; status?: string; plan?: string }) =>
+  listUsers: (params?: { search?: string; status?: string; plan?: string; page?: number }) =>
     client.get(ADMIN_ROUTES.usersList, { params }),
 
   /** POST /admin/users */

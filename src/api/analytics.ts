@@ -42,6 +42,12 @@ export const analyticsApi = {
   customEvents: (domain: number | string, params?: DateParams) =>
     client.get(ANALYTICS_ROUTES.customEvents(domain), { params }),
 
+  /** POST /domains/{domain}/analytics/custom-events/store */
+  customEventsStore: (
+    domain: number | string,
+    data: { name: string; props?: Record<string, unknown>; url?: string }
+  ) => client.post(ANALYTICS_ROUTES.customEventsStore(domain), data),
+
   /** GET /domains/{domain}/analytics/pipelines/{pipeline}/funnel */
   funnel: (domain: number | string, pipeline: number | string, params?: DateParams) =>
     client.get(ANALYTICS_ROUTES.funnel(domain, pipeline), { params }),

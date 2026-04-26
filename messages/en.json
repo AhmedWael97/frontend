@@ -24,7 +24,11 @@
     "notifications": "Notifications",
     "tools": "Tools",
     "utmBuilder": "UTM Builder",
-    "logout": "Logout"
+    "logout": "Logout",
+    "scrollDepth": "Scroll Depth",
+    "webVitals": "Web Vitals",
+    "jsErrors": "JS Errors",
+    "ownerBrief": "Owner Brief"
   },
   "auth": {
     "login": "Sign In",
@@ -148,6 +152,7 @@
     "nav": {
       "features": "Features",
       "howItWorks": "How It Works",
+      "docs": "Documentation",
       "pricing": "Pricing",
       "signIn": "Sign in",
       "startFree": "Start free"

@@ -24,7 +24,11 @@
     "notifications": "الإشعارات",
     "tools": "الأدوات",
     "utmBuilder": "منشئ UTM",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "scrollDepth": "عمق التمرير",
+    "webVitals": "مؤشرات الأداء",
+    "jsErrors": "أخطاء JS",
+    "ownerBrief": "ملخص المالك"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -148,6 +152,7 @@
     "nav": {
       "features": "المميزات",
       "howItWorks": "كيف يعمل",
+      "docs": "التوثيق",
       "pricing": "الأسعار",
       "signIn": "تسجيل الدخول",
       "startFree": "ابدأ مجاناً"

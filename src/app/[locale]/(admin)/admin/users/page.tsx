@@ -63,7 +63,7 @@ function Content() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-users", page, search],
-    queryFn: () => adminApi.listUsers({ search, page } as any).then((r) => r.data),
+    queryFn: () => adminApi.listUsers({ search, page }).then((r) => r.data),
   });
 
   const createMutation = useMutation({
