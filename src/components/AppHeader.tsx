@@ -61,6 +61,7 @@ export function AppHeader() {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) root.classList.add("dark");
       else root.classList.remove("dark");
     }
+    setAppearance(saved);
   }, [user?.appearance]);
 
   const selectedDomain = domains.find((d: any) => d.id === selectedDomainId);
