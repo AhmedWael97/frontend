@@ -29,6 +29,10 @@ client.interceptors.request.use((config) => {
     const token = localStorage.getItem("eye_token");
     if (token) config.headers.Authorization = `Bearer ${token}`;
   }
+  // Let FormData set its own Content-Type (multipart/form-data with boundary)
+  if (config.data instanceof FormData) {
+    delete (config.headers as any)["Content-Type"];
+  }
   return config;
 });
 

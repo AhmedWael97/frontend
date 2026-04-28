@@ -104,8 +104,8 @@ function Content() {
             <Card>
               <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Device Types</CardTitle></CardHeader>
               <CardContent>
-                {devices?.device_types?.length ? (
-                  <SimpleBarChart data={devices.device_types} dataKey="count" nameKey="type" />
+                {devices?.devices?.length ? (
+                  <SimpleBarChart data={devices.devices} dataKey="visits" nameKey="device_type" />
                 ) : <NoData />}
               </CardContent>
             </Card>
@@ -113,7 +113,7 @@ function Content() {
               <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Browsers</CardTitle></CardHeader>
               <CardContent>
                 {devices?.browsers?.length ? (
-                  <SimpleBarChart data={devices.browsers} dataKey="count" nameKey="browser" />
+                  <SimpleBarChart data={devices.browsers} dataKey="visits" nameKey="browser" />
                 ) : <NoData />}
               </CardContent>
             </Card>
@@ -121,7 +121,7 @@ function Content() {
               <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Operating Systems</CardTitle></CardHeader>
               <CardContent>
                 {devices?.os?.length ? (
-                  <SimpleBarChart data={devices.os} dataKey="count" nameKey="os" />
+                  <SimpleBarChart data={devices.os} dataKey="visits" nameKey="os" />
                 ) : <NoData />}
               </CardContent>
             </Card>
@@ -133,7 +133,7 @@ function Content() {
             <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Custom Events</CardTitle></CardHeader>
             <CardContent>
               {Array.isArray(events) && events.length ? (
-                <SimpleBarChart data={events} dataKey="count" nameKey="name" />
+                <SimpleBarChart data={events} dataKey="occurrences" nameKey="name" />
               ) : <NoData message="No custom events tracked yet. Use eye.track() in your website code." />}
             </CardContent>
           </Card>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AppHeader } from "@/components/AppHeader";
@@ -10,6 +10,7 @@ import { useAuthStore } from "@/store/auth";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const locale = useLocale();
+  const pathname = usePathname();
   const { token, user } = useAuthStore();
   const [hydrated, setHydrated] = useState(false);
 
@@ -31,9 +32,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
     if (user && !user.email_verified_at) {
       router.replace(`/${locale}/auth/verify-email`);
+      return;
+    }
+    // New users who haven't added a domain yet → send them to domains setup
+    // Only redirect when navigating away from settings pages so they can add a domain
+    const isOnDomainsPage = pathname?.includes("/settings/domains");
+    const isOnSettingsPage = pathname?.includes("/settings/");
+    if (user?.onboarding && !user.onboarding.domain_added && !isOnDomainsPage && !isOnSettingsPage) {
+      router.replace(`/${locale}/settings/domains?welcome=1`);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, user, locale, hydrated]);
+  }, [token, user, locale, hydrated, pathname]);
 
   if (!hydrated || !token) return null;
 

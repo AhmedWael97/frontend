@@ -91,16 +91,16 @@
   /* ── Dark theme ────────────────────────────────────────────────── */
   .dark {
     /* MD3 design tokens — dark palette */
-    --color-surface: 11 19 38;
-    --color-background: 11 19 38;
-    --color-surface-dim: 11 19 38;
-    --color-surface-bright: 49 57 77;
-    --color-surface-container-lowest: 6 14 32;
-    --color-surface-container-low: 19 27 46;
-    --color-surface-container: 23 31 51;
-    --color-surface-container-high: 34 42 61;
-    --color-surface-container-highest: 45 52 73;
-    --color-surface-variant: 45 52 73;
+    --color-surface: 13 17 33;
+    --color-background: 13 17 33;
+    --color-surface-dim: 13 17 33;
+    --color-surface-bright: 50 57 78;
+    --color-surface-container-lowest: 8 12 26;
+    --color-surface-container-low: 20 25 44;
+    --color-surface-container: 26 32 52;
+    --color-surface-container-high: 34 41 62;
+    --color-surface-container-highest: 44 52 74;
+    --color-surface-variant: 44 52 74;
     --color-surface-tint: 192 193 255;
 
     --color-primary: 192 193 255;
@@ -136,13 +136,13 @@
     --color-on-error: 105 0 5;
     --color-on-error-container: 255 218 214;
 
-    --color-on-background: 218 226 253;
-    --color-on-surface: 218 226 253;
-    --color-on-surface-variant: 199 196 215;
+    --color-on-background: 220 228 255;
+    --color-on-surface: 220 228 255;
+    --color-on-surface-variant: 200 198 218;
     --color-inverse-on-surface: 40 48 68;
-    --color-inverse-surface: 218 226 253;
-    --color-outline: 144 143 160;
-    --color-outline-variant: 70 69 84;
+    --color-inverse-surface: 220 228 255;
+    --color-outline: 150 148 168;
+    --color-outline-variant: 78 76 96;
 
     /* shadcn/ui tokens — dark */
     --background: 221 47% 9%;
@@ -166,9 +166,9 @@
     --ring: 239 100% 87%;
 
     /* Glass component backgrounds */
-    --glass-card-bg: rgba(23, 31, 51, 0.6);
-    --glass-panel-bg: rgba(45, 52, 73, 0.6);
-    --ambient-glow-color: rgba(192, 193, 255, 0.08);
+    --glass-card-bg: rgba(26, 32, 52, 0.65);
+    --glass-panel-bg: rgba(44, 52, 74, 0.65);
+    --ambient-glow-color: rgba(192, 193, 255, 0.09);
   }
 
   * {

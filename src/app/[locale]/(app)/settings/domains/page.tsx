@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { domainsApi } from "@/lib/api";
-import { Plus, Copy, Check, RefreshCw, Globe, Trash2 } from "lucide-react";
+import { domainsApi, billingApi } from "@/lib/api";
+import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X } from "lucide-react";
 
 function ScriptSnippet({ token }: { token: string }) {
   const [copied, setCopied] = useState(false);
@@ -27,8 +28,11 @@ function ScriptSnippet({ token }: { token: string }) {
 
 function Content() {
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const isWelcome = searchParams?.get("welcome") === "1";
+  const [showWelcome, setShowWelcome] = useState(isWelcome);
   const [newDomain, setNewDomain] = useState("");
-  const [adding, setAdding] = useState(false);
+  const [adding, setAdding] = useState(isWelcome); // auto-open add form for new users
   const [createError, setCreateError] = useState("");
 
   const { data: domains = [], isLoading } = useQuery({
@@ -44,9 +48,22 @@ function Content() {
     },
   });
 
-  const createMutation = useMutation({
+  const { data: billing } = useQuery({
+    queryKey: ["billing"],
+    queryFn: () => billingApi.show().then((r) => r.data),
+    staleTime: 60_000,
+  });
+
+  const domainLimit: number = billing?.limits?.domains ?? 1;
+  const planName: string = billing?.subscription?.plan?.name ?? "Free";
     mutationFn: (name: string) => domainsApi.create({ domain: name }),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["domains"] }); setNewDomain(""); setAdding(false); setCreateError(""); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["domains"] });
+      setNewDomain("");
+      setAdding(false);
+      setCreateError("");
+      setShowWelcome(false);
+    },
     onError: (e: any) => {
       const fieldErrors = e.errors?.domain?.[0] || e.errors ? Object.values(e.errors || {}).flat().join(" ") : null;
       setCreateError(fieldErrors || e.message || "Failed to add domain.");
@@ -65,21 +82,64 @@ function Content() {
 
   return (
     <div className="space-y-6">
+      {/* Welcome / onboarding banner */}
+      {showWelcome && (
+        <div className="relative rounded-xl border border-primary/20 bg-primary/5 p-5 flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <Rocket className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-base font-bold text-on-surface">Welcome! Let's get your first website set up.</h2>
+            <p className="text-sm text-on-surface-variant mt-1">
+              Add the domain you want to track. You'll get a tracking script to paste into your website — it takes about 2 minutes.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowWelcome(false)}
+            className="p-1.5 rounded-lg hover:bg-surface-container transition-colors text-on-surface-variant"
+            aria-label="Dismiss"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-on-surface tracking-tight">Domains</h1>
-          <p className="text-on-surface-variant text-sm mt-0.5">Manage tracked websites and tracking scripts</p>
+          <h1 className="text-2xl font-bold text-on-surface">Domains</h1>
+          <p className="text-on-surface-variant text-sm mt-0.5">Manage your tracked websites and tracking scripts</p>
         </div>
-        <Button onClick={() => setAdding(true)}><Plus className="w-4 h-4" /> Add Domain</Button>
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <p className="text-xs text-on-surface-variant">{planName} plan</p>
+            <p className="text-sm font-semibold text-on-surface">{domains.length} / {domainLimit} domain{domainLimit !== 1 ? "s" : ""}</p>
+          </div>
+          {!adding && (
+            <Button onClick={() => setAdding(true)} disabled={domains.length >= domainLimit}>
+              <Plus className="w-4 h-4" /> Add Domain
+            </Button>
+          )}
+        </div>
       </div>
+      {domains.length >= domainLimit && !adding && (
+        <div className="rounded-lg border border-error/20 bg-error-container/20 px-4 py-3 text-sm text-error">
+          You've reached your plan's domain limit ({domainLimit}). <a href="/settings/billing" className="font-semibold underline">Upgrade your plan</a> to add more.
+        </div>
+      )}
 
       {adding && (
         <Card>
-          <CardContent className="p-4 space-y-3">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold text-on-surface">Add a new domain</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0 space-y-3">
+            <p className="text-xs text-on-surface-variant">Enter your website domain without http:// — e.g. <code className="text-primary">example.com</code></p>
             <div className="flex gap-3">
               <Input value={newDomain} onChange={(e) => { setNewDomain(e.target.value); setCreateError(""); }} placeholder="example.com" className="max-w-sm" autoFocus />
-              <Button onClick={() => createMutation.mutate(newDomain)} disabled={!newDomain || createMutation.isPending}>Add</Button>
-              <Button variant="ghost" onClick={() => { setAdding(false); setCreateError(""); }}>Cancel</Button>
+              <Button onClick={() => createMutation.mutate(newDomain)} disabled={!newDomain || createMutation.isPending}>
+                {createMutation.isPending ? "Adding…" : "Add"}
+              </Button>
+              <Button variant="ghost" onClick={() => { setAdding(false); setCreateError(""); setShowWelcome(false); }}>Cancel</Button>
             </div>
             {createError && <p className="text-sm text-error">{createError}</p>}
           </CardContent>
@@ -129,8 +189,12 @@ function Content() {
           </CardContent>
         </Card>
       ))}
-      {!isLoading && !domains?.length && (
-        <div className="text-center py-12 text-on-surface-variant text-sm">No domains yet. Add your first website above.</div>
+      {!isLoading && !domains?.length && !adding && (
+        <div className="rounded-xl border border-dashed border-outline-variant/40 p-10 text-center space-y-3">
+          <Globe className="w-8 h-8 text-on-surface-variant/40 mx-auto" />
+          <p className="text-on-surface-variant text-sm">No domains added yet.</p>
+          <Button size="sm" onClick={() => setAdding(true)}><Plus className="w-4 h-4" /> Add your first website</Button>
+        </div>
       )}
     </div>
   );

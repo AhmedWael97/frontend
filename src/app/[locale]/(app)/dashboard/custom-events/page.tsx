@@ -247,7 +247,7 @@ function Content() {
                         <span className="font-medium text-on-surface">{e.name}</span>
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-semibold text-on-surface">{e.count?.toLocaleString()}</td>
+                    <td className="px-4 py-3 font-semibold text-on-surface">{(e.occurrences ?? e.count)?.toLocaleString()}</td>
                     <td className="px-4 py-3 text-on-surface-variant">{e.unique_visitors?.toLocaleString()}</td>
                     <td className="px-4 py-3 text-on-surface-variant">{e.avg_value ? `$${e.avg_value.toFixed(2)}` : "—"}</td>
                   </tr>

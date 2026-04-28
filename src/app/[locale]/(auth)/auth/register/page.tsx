@@ -45,8 +45,8 @@ export default function RegisterPage() {
       const res = await authApi.register(data);
       setToken(res.data.token);
       setUser(res.data.user);
-      toast.success("Account created! Redirecting to dashboard...");
-      router.push(`/${locale}/dashboard`);
+      toast.success("Account created! Let's set up your first website.");
+      router.push(`/${locale}/settings/domains?welcome=1`);
       // if (res.data.user?.email_verified_at) {
       //   router.push(`/${locale}/dashboard`);
       // } else {
@@ -74,9 +74,8 @@ export default function RegisterPage() {
 
       <div className="glass-panel rounded-xl border border-outline-variant/15 p-8 md:p-10 shadow-2xl space-y-7">
         <div className="space-y-1.5">
-          <span className="text-[0.6875rem] font-semibold uppercase tracking-widest text-secondary">Access The Observatory</span>
-          <h1 className="text-3xl font-bold tracking-tighter text-on-surface">{t("register")}</h1>
-          <p className="text-on-surface-variant text-sm">Join the next generation of observational intelligence.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface">Create your account</h1>
+          <p className="text-on-surface-variant text-sm">Start tracking your website visitors in minutes.</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
