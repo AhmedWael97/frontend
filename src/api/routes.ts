@@ -190,6 +190,13 @@ export const UX_ROUTES = {
   webVitals: (domainId: number) => `/ux/${domainId}/web-vitals`,
 } as const;
 
+// ── Session Replay ────────────────────────────────────────────────────────────
+export const REPLAY_ROUTES = {
+  sessions: (domainId: number) => `/replay/${domainId}/sessions`,
+  events:   (domainId: number, sessionId: string) => `/replay/${domainId}/sessions/${sessionId}`,
+  destroy:  (domainId: number, sessionId: string) => `/replay/${domainId}/sessions/${sessionId}`,
+} as const;
+
 // ── AI ────────────────────────────────────────────────────────────────────────
 export const AI_ROUTES = {
   segments: (domainId: number) => `/ai/${domainId}/segments`,

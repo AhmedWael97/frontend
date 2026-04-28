@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { uxApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { Smile, Meh, Frown, AlertTriangle, CheckCircle, CircleHelp } from "lucide-react";
+import { Smile, Meh, Frown, AlertTriangle, CheckCircle, CircleHelp, Film } from "lucide-react";
 
 type IssueExplanation = {
   label: string;
@@ -72,6 +72,20 @@ const ISSUE_EXPLANATIONS: Record<string, IssueExplanation> = {
     meaning: "A repeated click interaction pattern was detected.",
     why: "Visitors are engaging with a specific element frequently.",
     action: "Review if this interaction supports your business goal and make it easier if important.",
+  },
+  excessive_scroll: {
+    label: "Excessive Scrolling",
+    severity: "medium",
+    meaning: "Visitors scroll rapidly up and down without settling on content.",
+    why: "The page layout may be confusing, key content is hard to find, or navigation is unclear.",
+    action: "Move the most important content higher and improve visual hierarchy so users find what they need faster.",
+  },
+  quick_back: {
+    label: "Quick Back",
+    severity: "high",
+    meaning: "A visitor arrived at this page and immediately navigated back (within 5 seconds).",
+    why: "The page content did not match expectations set by the link or referrer.",
+    action: "Check the page title, meta description, and first-screen content to ensure it matches what users are expecting to find.",
   },
 };
 
@@ -152,6 +166,8 @@ function toReadableIssue(row: any, idx: number) {
   const occurrences = Number(row.occurrences ?? 0);
   const affectedVisitors = Number(row.affected_visitors ?? 0);
   const lastSeen = row.last_seen ? new Date(row.last_seen).toLocaleString() : "Unknown time";
+  const sampleSessionId = String(row.sample_session_id ?? "").trim() || null;
+  const hasReplay = sampleSessionId && (type === "rage_click" || type === "dead_click");
 
   const metrics: string[] = [];
   if (typeof details.depth === "number") metrics.push(`avg scroll: ${Math.round(Number(details.depth))}%`);
@@ -201,6 +217,8 @@ function toReadableIssue(row: any, idx: number) {
     occurrences,
     affectedVisitors,
     lastSeen,
+    sampleSessionId,
+    hasReplay,
   };
 }
 
@@ -366,6 +384,15 @@ function Content() {
                         {issue.metrics ? `${issue.metrics} | ` : ""}
                         events: {issue.occurrences?.toLocaleString?.() ?? issue.occurrences} | last seen: {issue.lastSeen}
                       </p>
+                    )}
+                    {issue.hasReplay && (
+                      <a
+                        href={`../../replay`}
+                        className="inline-flex items-center gap-1 mt-1.5 text-[11px] font-semibold text-primary hover:underline"
+                        title={`Session: ${issue.sampleSessionId}`}
+                      >
+                        <Film className="w-3 h-3" /> View recording
+                      </a>
                     )}
                   </div>
                   <span className="text-xs text-on-surface-variant shrink-0">{issue.affectedVisitors?.toLocaleString()} visitors</span>

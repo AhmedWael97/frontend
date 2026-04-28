@@ -18,6 +18,7 @@ export {
   savedViewsApi,
   analyticsApi,
   uxApi,
+  replayApi,
   aiApi,
   notificationsApi,
   notificationPrefsApi,
