@@ -56,6 +56,8 @@ function Content() {
 
   const domainLimit: number = billing?.limits?.domains ?? 1;
   const planName: string = billing?.subscription?.plan?.name ?? "Free";
+
+  const createMutation = useMutation({
     mutationFn: (name: string) => domainsApi.create({ domain: name }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["domains"] });

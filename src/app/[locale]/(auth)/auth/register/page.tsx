@@ -45,13 +45,13 @@ export default function RegisterPage() {
       const res = await authApi.register(data);
       setToken(res.data.token);
       setUser(res.data.user);
-      toast.success("Account created! Let's set up your first website.");
-      router.push(`/${locale}/settings/domains?welcome=1`);
-      // if (res.data.user?.email_verified_at) {
-      //   router.push(`/${locale}/dashboard`);
-      // } else {
-      // //  router.push(`/${locale}/auth/verify-email`);
-      // }
+      if (res.data.user?.email_verified_at) {
+        toast.success("Account created! Let's set up your first website.");
+        router.push(`/${locale}/settings/domains?welcome=1`);
+      } else {
+        toast.success("Account created! Check your inbox to verify your email.");
+        router.push(`/${locale}/auth/verify-email`);
+      }
     } catch (e: any) {
       const fieldErrors = (e as any).errors;
       setError(
