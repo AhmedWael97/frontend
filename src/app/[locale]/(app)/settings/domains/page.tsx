@@ -26,6 +26,20 @@ function ScriptSnippet({ token }: { token: string }) {
   );
 }
 
+function ReplaySnippet({ token }: { token: string }) {
+  const [copied, setCopied] = useState(false);
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://yourdomain.com").replace(/\/$/, "");
+  const snippet = `<script src="${appUrl}/tracker/eye.js" data-token="${token}" data-api="${appUrl}/api/collect" data-replay="true" async></script>\n<script src="${appUrl}/tracker/eye-replay.js" async></script>`;
+  return (
+    <div className="relative">
+      <pre className="bg-surface-container-lowest rounded-lg p-3 text-xs text-on-surface-variant overflow-x-auto border border-outline-variant/20 font-mono whitespace-pre-wrap break-all">{snippet}</pre>
+      <button onClick={() => { navigator.clipboard.writeText(snippet); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="absolute top-2 right-2 p-1.5 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
+        {copied ? <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+      </button>
+    </div>
+  );
+}
+
 function Content() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
@@ -178,6 +192,21 @@ function Content() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-2">Tracking Script</p>
               <ScriptSnippet token={d.script_token} />
+            </div>
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+              <div>
+                <p className="text-sm font-semibold text-on-surface">Enable recording on your site</p>
+                <p className="text-xs text-on-surface-variant mt-1">
+                  Add{" "}
+                  <code className="bg-surface px-1 py-0.5 rounded font-mono">data-replay=&quot;true&quot;</code>{" "}
+                  to your tracking snippet and load{" "}
+                  <code className="bg-surface px-1 py-0.5 rounded font-mono">/tracker/eye-replay.js</code>{" "}
+                  after it. Recordings respect the{" "}
+                  <code className="font-mono">eye-block</code> / <code className="font-mono">eye-mask</code>{" "}
+                  CSS classes for privacy.
+                </p>
+              </div>
+              <ReplaySnippet token={d.script_token} />
             </div>
             {d.quota && (
               <div>
