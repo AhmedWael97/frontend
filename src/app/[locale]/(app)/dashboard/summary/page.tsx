@@ -49,8 +49,9 @@ type SummaryData = {
 };
 
 function pct(a: number, b: number): number {
-  if (!b) return 0;
-  return Math.round(((a - b) / b) * 100);
+  const bNum = Number(b);
+  if (!bNum) return 0;
+  return Math.round(((Number(a) - bNum) / bNum) * 100);
 }
 
 function Delta({ val }: { val: number }) {
