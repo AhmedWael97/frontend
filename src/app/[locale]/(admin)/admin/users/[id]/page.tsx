@@ -9,12 +9,14 @@ import { formatDate } from "@/lib/utils";
 import { useParams, useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { ArrowLeft, ShieldAlert, UserX, MailCheck } from "lucide-react";
+import { useAuthStore } from "@/store/auth";
 
 function Content() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const locale = useLocale();
   const queryClient = useQueryClient();
+  const { setToken, setUser, setImpersonating } = useAuthStore();
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["admin-user", id],
@@ -24,7 +26,15 @@ function Content() {
   const impersonateMutation = useMutation({
     mutationFn: () => adminApi.impersonateUser(Number(id)),
     onSuccess: (res) => {
-      localStorage.setItem("eye-impersonate-token", res.data.token);
+      // Back up the admin token so it can be restored on exit
+      const adminToken = localStorage.getItem("eye_token");
+      if (adminToken) localStorage.setItem("eye_token_admin_backup", adminToken);
+
+      // Swap active token to the impersonation token
+      setToken(res.data.token);
+      setUser(null); // force re-fetch of user profile as target user
+      setImpersonating(true);
+
       router.push(`/${locale}/dashboard`);
     },
   });

@@ -9,7 +9,7 @@ import {
   Zap, Code2, UserCheck, Building2, PlaySquare, Share2, Download,
   MessageSquare, Globe, CreditCard, User, Shield,
   Bell, Webhook, Link2, Eye,
-  ArrowDownToLine, Gauge, Bug, Lightbulb,
+  ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star, SearchCheck,
 } from "lucide-react";
 
 const navGroups = [
@@ -18,6 +18,7 @@ const navGroups = [
     items: [
       { key: "dashboard", href: "/dashboard", icon: LayoutDashboard },
       { key: "realtime", href: "/dashboard/realtime", icon: Radio },
+      { key: "summary", href: "/dashboard/summary", icon: Star },
     ],
   },
   {
@@ -25,6 +26,8 @@ const navGroups = [
     items: [
       { key: "visitors", href: "/dashboard/visitors", icon: Users },
       { key: "analytics", href: "/dashboard/analytics", icon: BarChart3 },
+      { key: "campaigns", href: "/dashboard/campaigns", icon: Megaphone },
+      { key: "engagedVisitors", href: "/dashboard/engaged-visitors", icon: Flame },
       { key: "funnels", href: "/dashboard/funnels", icon: GitMerge },
       { key: "customEvents", href: "/dashboard/custom-events", icon: Code2 },
       { key: "identities", href: "/dashboard/identities", icon: UserCheck },
@@ -67,6 +70,7 @@ const navGroups = [
     label: "Tools",
     items: [
       { key: "utmBuilder", href: "/tools/utm-builder", icon: Link2 },
+      { key: "seoChecker", href: "/tools/seo-checker", icon: SearchCheck },
     ],
   },
 ];

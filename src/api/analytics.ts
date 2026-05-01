@@ -85,4 +85,16 @@ export const analyticsApi = {
   /** GET /analytics/{domainId}/companies/{companyDomain}  (Pro plan required) */
   companiesShow: (domainId: number, companyDomain: string) =>
     client.get(ANALYTICS_ROUTES.companiesShow(domainId, companyDomain)),
+
+  /** GET /analytics/{domainId}/campaigns */
+  campaigns: (domainId: number, params?: Record<string, unknown>) =>
+    client.get(ANALYTICS_ROUTES.campaigns(domainId), { params }),
+
+  /** GET /analytics/{domainId}/engaged-visitors */
+  engagedVisitors: (domainId: number, params?: Record<string, unknown>) =>
+    client.get(ANALYTICS_ROUTES.engagedVisitors(domainId), { params }),
+
+  /** GET /analytics/{domainId}/summary */
+  summary: (domainId: number, params?: Record<string, unknown>) =>
+    client.get(ANALYTICS_ROUTES.summary(domainId), { params }),
 };

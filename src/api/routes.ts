@@ -178,6 +178,9 @@ export const ANALYTICS_ROUTES = {
   companiesList: (domainId: number) => `/analytics/${domainId}/companies`,
   companiesShow: (domainId: number, companyDomain: string) =>
     `/analytics/${domainId}/companies/${companyDomain}`,
+  campaigns: (domainId: number) => `/analytics/${domainId}/campaigns`,
+  engagedVisitors: (domainId: number) => `/analytics/${domainId}/engaged-visitors`,
+  summary: (domainId: number) => `/analytics/${domainId}/summary`,
 } as const;
 
 // ── UX Intelligence ───────────────────────────────────────────────────────────

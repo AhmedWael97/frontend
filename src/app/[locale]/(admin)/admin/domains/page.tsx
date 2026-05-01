@@ -48,11 +48,11 @@ function Content() {
                   <td className="px-4 py-3">
                     <span className="flex items-center gap-2">
                       <Globe className="w-3.5 h-3.5 text-primary" />
-                      <span className="font-medium text-on-surface">{d.name}</span>
+                      <span className="font-medium text-on-surface">{d.domain}</span>
                     </span>
                   </td>
                   <td className="px-4 py-3 text-on-surface-variant">{d.user?.name || d.user?.email || "—"}</td>
-                  <td className="px-4 py-3"><Badge variant={d.is_active ? "success" : "secondary"}>{d.is_active ? "Active" : "Inactive"}</Badge></td>
+                  <td className="px-4 py-3"><Badge variant={d.active ? "success" : "secondary"}>{d.active ? "Active" : "Inactive"}</Badge></td>
                   <td className="px-4 py-3 text-on-surface-variant">{d.events_30d?.toLocaleString() || "—"}</td>
                   <td className="px-4 py-3 text-on-surface-variant text-xs">{formatDate(d.created_at)}</td>
                   <td className="px-4 py-3">

@@ -24,11 +24,15 @@
     "notifications": "Notifications",
     "tools": "Tools",
     "utmBuilder": "UTM Builder",
+    "seoChecker": "SEO Checker",
     "logout": "Logout",
     "scrollDepth": "Scroll Depth",
     "webVitals": "Web Vitals",
     "jsErrors": "JS Errors",
-    "ownerBrief": "Owner Brief"
+    "ownerBrief": "Owner Brief",
+    "summary": "Full Summary",
+    "campaigns": "Campaigns",
+    "engagedVisitors": "Engaged Visitors"
   },
   "auth": {
     "login": "Sign In",

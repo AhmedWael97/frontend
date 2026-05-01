@@ -76,7 +76,7 @@ function Content() {
                       <span className="flex items-center gap-1 text-on-surface-variant">{deviceIcon(v.device_type)}{v.device_type || "—"}</span>
                     </td>
                     <td className="px-4 py-3 text-on-surface">{v.browser || "—"}</td>
-                    <td className="px-4 py-3"><Badge variant="secondary">{v.sessions_count || 1}</Badge></td>
+                    <td className="px-4 py-3"><Badge variant="secondary">{v.session_count ?? 0}</Badge></td>
                     <td className="px-4 py-3 text-on-surface-variant text-xs">{v.last_seen ? formatDate(v.last_seen) : "—"}</td>
                   </tr>
                 ))}

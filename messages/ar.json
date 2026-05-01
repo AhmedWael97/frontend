@@ -24,11 +24,15 @@
     "notifications": "الإشعارات",
     "tools": "الأدوات",
     "utmBuilder": "منشئ UTM",
+    "seoChecker": "فاحص SEO",
     "logout": "تسجيل الخروج",
     "scrollDepth": "عمق التمرير",
     "webVitals": "مؤشرات الأداء",
     "jsErrors": "أخطاء JS",
-    "ownerBrief": "ملخص المالك"
+    "ownerBrief": "ملخص المالك",
+    "summary": "الملخص الكامل",
+    "campaigns": "الحملات",
+    "engagedVisitors": "الزوار المتفاعلون"
   },
   "auth": {
     "login": "تسجيل الدخول",

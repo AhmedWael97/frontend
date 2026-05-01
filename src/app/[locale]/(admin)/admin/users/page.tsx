@@ -11,7 +11,8 @@ import { toast } from "@/lib/use-toast";
 import { formatDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { Search, Plus, X, Shield, Trash2, Ban, CheckCircle, UserCheck } from "lucide-react";
+import { Search, Plus, X, Shield, Trash2, Ban, CheckCircle, UserCheck, LogIn } from "lucide-react";
+import { useAuthStore } from "@/store/auth";
 
 // ── Simple inline modal ───────────────────────────────────────────────────────
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
@@ -109,6 +110,22 @@ function Content() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const { setToken, setUser, setImpersonating, token: adminToken } = useAuthStore();
+
+  const impersonateMutation = useMutation({
+    mutationFn: (id: number) => adminApi.impersonateUser(id).then((r) => r.data),
+    onSuccess: (data: any) => {
+      // Store admin token so they can return
+      localStorage.setItem("eye_admin_token", adminToken ?? "");
+      setToken(data.data?.token ?? data.token);
+      setUser(data.data?.target_user ?? data.target_user);
+      setImpersonating(true);
+      toast.success(`Logged in as ${data.data?.target_user?.name ?? data.target_user?.name}`);
+      router.push(`/${locale}/dashboard`);
+    },
+    onError: (e: any) => toast.error(e.message || "Failed to impersonate user"),
+  });
+
   const openEdit = (u: any) => {
     setEditUser(u); setEName(u.name); setEEmail(u.email); setERole(u.role); setEError("");
   };
@@ -162,6 +179,14 @@ function Content() {
                   <td className="px-4 py-3 text-on-surface-variant text-xs">{formatDate(u.created_at)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => { if (confirm(`Login as ${u.name}? You will be redirected to their dashboard.`)) impersonateMutation.mutate(u.id); }}
+                        title="Login as this user"
+                        className="p-1.5 hover:bg-surface-container rounded-lg text-on-surface-variant hover:text-blue-500 transition-colors"
+                        disabled={impersonateMutation.isPending}
+                      >
+                        <LogIn className="w-3.5 h-3.5" />
+                      </button>
                       <button onClick={() => openEdit(u)} title="Edit" className="p-1.5 hover:bg-surface-container rounded-lg text-on-surface-variant hover:text-primary transition-colors">
                         <Shield className="w-3.5 h-3.5" />
                       </button>

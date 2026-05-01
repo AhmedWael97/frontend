@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AppHeader } from "@/components/AppHeader";
+import { ImpersonationBanner } from "@/components/ImpersonationBanner";
 import { useAuthStore } from "@/store/auth";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -50,6 +51,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-surface">
       <AppSidebar />
       <div className="md:ltr:pl-64 md:rtl:pr-64 flex flex-col min-h-screen">
+        <ImpersonationBanner />
         <AppHeader />
         <main className="flex-1 p-6">{children}</main>
       </div>
