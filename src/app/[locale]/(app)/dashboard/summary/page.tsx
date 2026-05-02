@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid, PieChart, Pie, Cell,
 } from "recharts";
 import {

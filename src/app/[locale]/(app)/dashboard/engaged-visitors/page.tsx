@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { Monitor, Smartphone, Tablet, Globe, Flame, Users, RotateCcw, Clock } from "lucide-react";
+import { Flame, Users, RotateCcw, Clock, Globe } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 type EngagedVisitor = {
@@ -48,12 +48,6 @@ function ScoreBar({ score }: { score: number }) {
       </div>
     </div>
   );
-}
-
-function DeviceIcon({ type }: { type: string }) {
-  if (type === "mobile") return <Smartphone className="w-3.5 h-3.5" />;
-  if (type === "tablet") return <Tablet className="w-3.5 h-3.5" />;
-  return <Monitor className="w-3.5 h-3.5" />;
 }
 
 function fmtDuration(secs: number): string {
@@ -223,7 +217,7 @@ function Content() {
                         ))}
                       </tr>
                     ))
-                  : visitors.map((v, i) => (
+                  : visitors.map((v) => (
                       <tr key={v.visitor_id} className="border-b border-outline-variant/10 hover:bg-surface-container/50 transition-colors">
                         <td className="px-3 py-2.5">
                           <div className="flex items-center gap-2">

@@ -105,9 +105,9 @@ function Content() {
             <Rocket className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1">
-            <h2 className="text-base font-bold text-on-surface">Welcome! Let's get your first website set up.</h2>
+            <h2 className="text-base font-bold text-on-surface">Welcome! Let&apos;s get your first website set up.</h2>
             <p className="text-sm text-on-surface-variant mt-1">
-              Add the domain you want to track. You'll get a tracking script to paste into your website — it takes about 2 minutes.
+              Add the domain you want to track. You&apos;ll get a tracking script to paste into your website — it takes about 2 minutes.
             </p>
           </div>
           <button
@@ -139,7 +139,7 @@ function Content() {
       </div>
       {domains.length >= domainLimit && !adding && (
         <div className="rounded-lg border border-error/20 bg-error-container/20 px-4 py-3 text-sm text-error">
-          You've reached your plan's domain limit ({domainLimit}). <a href="/settings/billing" className="font-semibold underline">Upgrade your plan</a> to add more.
+          You&apos;ve reached your plan&apos;s domain limit ({domainLimit}). <a href="/settings/billing" className="font-semibold underline">Upgrade your plan</a> to add more.
         </div>
       )}
 

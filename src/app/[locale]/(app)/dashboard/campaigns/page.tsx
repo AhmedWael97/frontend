@@ -11,7 +11,7 @@ import {
   LineChart, Line, Legend,
 } from "recharts";
 import {
-  TrendingUp, MousePointerClick, Users, Clock, ArrowUpRight, ArrowDownRight,
+  TrendingUp, MousePointerClick, Users,
 } from "lucide-react";
 
 const TOOLTIP_STYLE = {
@@ -43,17 +43,6 @@ function fmtDuration(secs: number): string {
   const s = Number(secs) || 0;
   if (s < 60) return `${s}s`;
   return `${Math.floor(s / 60)}m ${s % 60}s`;
-}
-
-function DeltaChip({ val, suffix = "" }: { val: number; suffix?: string }) {
-  if (!val || val === 0) return <span className="text-on-surface-variant text-xs">—</span>;
-  const pos = val > 0;
-  return (
-    <span className={`flex items-center gap-0.5 text-xs font-semibold ${pos ? "text-emerald-400" : "text-rose-400"}`}>
-      {pos ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-      {Math.abs(val).toFixed(1)}{suffix}
-    </span>
-  );
 }
 
 function KpiCard({ icon: Icon, label, value, sub }: { icon: React.ElementType; label: string; value: string | number; sub?: string }) {

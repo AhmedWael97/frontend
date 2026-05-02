@@ -6,7 +6,7 @@ import { replayApi } from "@/api";
 import { useAuthStore } from "@/store/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Film, Play, Pause, SkipForward, Trash2, Clock, MousePointer, Globe, Monitor } from "lucide-react";
+import { Film, Play, Pause, SkipForward, Trash2, Clock, MousePointer } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -54,12 +54,22 @@ function ReplayPlayer({
   });
 
   // Rebuild rrweb events from the backend format (type + data + timestamp)
+  // CRITICAL FIX: Ensure all events have proper structure, especially FullSnapshot (type 2)
   function toRrwebEvents(rows: RrwebEvent[]): RrwebEvent[] {
-    return rows.map((r) => ({
-      type:      Number(r.type),
-      data:      r.data ?? {},
-      timestamp: Number(r.timestamp),
-    }));
+    return rows.map((r, index) => {
+      const event: RrwebEvent = {
+        type:      Number(r.type),
+        data:      r.data ?? {},
+        timestamp: Number(r.timestamp),
+      };
+      
+      // Ensure FullSnapshot events (type 2) have node data
+      if (event.type === 2 && (!event.data || !event.data.node)) {
+        console.warn(`FullSnapshot event at index ${index} missing node data`, event);
+      }
+      
+      return event;
+    });
   }
 
   // Initialise rrweb Replayer once we have events
@@ -68,7 +78,9 @@ function ReplayPlayer({
 
     // Destroy existing instance
     if (replayerRef.current) {
-      try { replayerRef.current.pause(); } catch (_) {}
+      try { replayerRef.current.pause(); } catch {
+        // Suppress error if pause fails
+      }
       replayerRef.current = null;
       if (containerRef.current) containerRef.current.innerHTML = "";
     }
@@ -87,7 +99,7 @@ function ReplayPlayer({
         skipInactive,
         showWarning:  false,
         showDebug:    false,
-        UNSAFE_replayCanvas: false,
+        UNSAFE_replayCanvas: true,  // CRITICAL FIX: Enable canvas replay
       });
 
       replayerRef.current = replayer;
@@ -110,13 +122,17 @@ function ReplayPlayer({
           const tot = meta.totalTime || 1;
           setElapsed(cur);
           setProgress(Math.min(100, (cur / tot) * 100));
-        } catch (_) {}
+        } catch {
+          // Suppress error if timing data unavailable
+        }
       }, 250);
     });
 
     return () => {
       clearInterval(progressRef.current);
-      try { replayerRef.current?.pause(); } catch (_) {}
+      try { replayerRef.current?.pause(); } catch {
+        // Suppress error if pause fails during cleanup
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -143,7 +159,9 @@ function ReplayPlayer({
           const cur  = r.getCurrentTime();
           setElapsed(cur);
           setProgress(Math.min(100, (cur / (meta.totalTime || 1)) * 100));
-        } catch (_) {}
+        } catch {
+          // Suppress error if timing data unavailable
+        }
       }, 250);
     }
   }, [isPlaying]);
@@ -185,21 +203,20 @@ function ReplayPlayer({
         </div>
 
         {/* Player viewport */}
-        <div className="flex-1 overflow-hidden bg-[#111] relative min-h-[300px]">
+        <div className="flex-1 overflow-hidden bg-[#111] relative">
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center text-white/60 text-sm">
+            <div className="absolute inset-0 flex items-center justify-center text-white/60 text-sm z-10">
               Loading recording…
             </div>
           )}
           {isError && (
-            <div className="absolute inset-0 flex items-center justify-center text-red-400 text-sm">
+            <div className="absolute inset-0 flex items-center justify-center text-red-400 text-sm z-10">
               Failed to load recording.
             </div>
           )}
           <div
             ref={containerRef}
             className="w-full h-full"
-            style={{ minHeight: 320 }}
           />
         </div>
 
@@ -276,7 +293,7 @@ function SessionRow({
   onDelete: () => void;
 }) {
   const domain = session.start_url
-    ? (() => { try { return new URL(session.start_url).pathname; } catch (_) { return session.start_url; } })()
+    ? (() => { try { return new URL(session.start_url).pathname; } catch { return session.start_url; } })()
     : "—";
 
   return (

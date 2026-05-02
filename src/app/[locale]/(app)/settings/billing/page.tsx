@@ -30,7 +30,10 @@ function Content() {
   const [transactionReference, setTransactionReference] = useState("");
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
-  const paymentMethods = billing?.payment_methods ?? [];
+  const paymentMethods = useMemo(
+    () => billing?.payment_methods ?? [],
+    [billing?.payment_methods]
+  );
   const bankTransfer = billing?.bank_transfer;
 
   const activePlanId = billing?.subscription?.plan?.id ?? null;
@@ -45,7 +48,7 @@ function Content() {
 
   const selectedMethod = useMemo(
     () => (paymentMethods ?? []).find((m: any) => m.id === effectiveMethodId) ?? null,
-    [billing?.payment_methods, effectiveMethodId]
+    [paymentMethods, effectiveMethodId]
   );
 
   const subscribeMutation = useMutation({

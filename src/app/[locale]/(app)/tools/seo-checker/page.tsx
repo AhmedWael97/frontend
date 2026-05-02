@@ -176,7 +176,6 @@ export default function SeoCheckerPage() {
   }
 
   const critical = result?.issues.filter(c => c.severity === "critical").length ?? 0;
-  const high     = result?.issues.filter(c => c.severity === "high").length ?? 0;
   const warnings = result?.issues.filter(c => c.severity === "warning").length ?? 0;
 
   return (

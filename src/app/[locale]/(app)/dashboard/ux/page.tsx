@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { uxApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { Smile, Meh, Frown, AlertTriangle, CheckCircle, CircleHelp, Film } from "lucide-react";
+import { Smile, Meh, Frown, AlertTriangle, CheckCircle, CircleHelp, Film, Flame } from "lucide-react";
 
 type IssueExplanation = {
   label: string;
@@ -254,8 +254,116 @@ function averageScores(values: Array<number | null | undefined>) {
   return valid.reduce((sum, value) => sum + value, 0) / valid.length;
 }
 
+function HeatmapPanel({
+  rows,
+  page,
+  onPageChange,
+  pageOptions,
+}: {
+  rows: Array<{ type: string; x: number; y: number; count: number }>;
+  page: string;
+  onPageChange: (value: string) => void;
+  pageOptions: string[];
+}) {
+  const total = rows.reduce((sum, row) => sum + Number(row.count || 0), 0);
+  const maxCount = rows.reduce((max, row) => Math.max(max, Number(row.count || 0)), 1);
+
+  const dots = rows
+    .filter((row) => Number.isFinite(Number(row.x)) && Number.isFinite(Number(row.y)))
+    .slice(0, 350)
+    .map((row, idx) => {
+      const x = Math.min(99, Math.max(1, Number(row.x)));
+      const y = Math.min(99, Math.max(1, Number(row.y)));
+      const intensity = Math.max(0.12, Math.min(1, Number(row.count || 0) / maxCount));
+      const size = 22 + intensity * 68;
+      const isRage = row.type === "rage_click";
+      const isDead = row.type === "dead_click";
+      const color = isRage
+        ? `rgba(239, 68, 68, ${Math.min(0.95, 0.28 + intensity * 0.7)})`
+        : isDead
+          ? `rgba(249, 115, 22, ${Math.min(0.9, 0.24 + intensity * 0.66)})`
+          : `rgba(59, 130, 246, ${Math.min(0.85, 0.2 + intensity * 0.62)})`;
+
+      return {
+        id: `${row.type}-${x}-${y}-${idx}`,
+        x,
+        y,
+        size,
+        color,
+        count: Number(row.count || 0),
+        type: row.type,
+      };
+    });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+          <Flame className="w-4 h-4" /> Heatmap
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center gap-3">
+          <label className="text-xs text-on-surface-variant">Page URL filter</label>
+          <input
+            value={page}
+            onChange={(e) => onPageChange(e.target.value)}
+            placeholder="https://example.com/pricing"
+            list="ux-heatmap-pages"
+            className="w-full md:max-w-xl rounded-lg border border-outline-variant/30 bg-surface-container px-3 py-2 text-sm text-on-surface"
+          />
+          <datalist id="ux-heatmap-pages">
+            {pageOptions.map((option) => (
+              <option key={option} value={option} />
+            ))}
+          </datalist>
+        </div>
+
+        <div className="relative w-full aspect-[16/9] overflow-hidden rounded-xl border border-outline-variant/30 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.08),transparent_36%),linear-gradient(180deg,#0f172a_0%,#1e293b_100%)]">
+          <div className="absolute inset-0 opacity-20" style={{
+            backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.12) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }} />
+
+          {dots.map((dot) => (
+            <div
+              key={dot.id}
+              className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full blur-[2px]"
+              title={`${dot.type.replaceAll("_", " ")} • ${dot.count} events`}
+              style={{
+                left: `${dot.x}%`,
+                top: `${dot.y}%`,
+                width: `${dot.size}px`,
+                height: `${dot.size}px`,
+                background: `radial-gradient(circle, ${dot.color} 0%, rgba(0,0,0,0) 72%)`,
+              }}
+            />
+          ))}
+
+          {dots.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center text-center px-6">
+              <p className="text-sm text-white/70">
+                No heatmap points yet for this filter. Generate a few clicks/rage clicks/dead clicks on your site and refresh.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4 text-xs text-on-surface-variant">
+          <span>Total points: {rows.length.toLocaleString()}</span>
+          <span>Total events: {total.toLocaleString()}</span>
+          <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500" />click</span>
+          <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-500" />dead click</span>
+          <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" />rage click</span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function Content() {
   const { selectedDomainId } = useAuthStore();
+  const [heatmapPage, setHeatmapPage] = useState("");
 
   const { data: scores } = useQuery({
     queryKey: ["ux-scores", selectedDomainId],
@@ -270,6 +378,36 @@ function Content() {
       const rows = Array.isArray(d) ? d : (d?.data ?? []);
       return rows.map((row: any, idx: number) => toReadableIssue(row, idx));
     }),
+    enabled: !!selectedDomainId,
+  });
+
+  const heatmapPageOptions = useMemo(() => {
+    const set = new Set<string>();
+    (issues || []).forEach((issue: any) => {
+      if (issue.pageUrl) set.add(String(issue.pageUrl));
+    });
+    return Array.from(set).slice(0, 100);
+  }, [issues]);
+
+  useEffect(() => {
+    if (!heatmapPage && heatmapPageOptions.length > 0) {
+      setHeatmapPage(heatmapPageOptions[0]);
+    }
+  }, [heatmapPage, heatmapPageOptions]);
+
+  const { data: heatmapRows } = useQuery({
+    queryKey: ["ux-heatmap", selectedDomainId, heatmapPage],
+    queryFn: () =>
+      uxApi.heatmap(selectedDomainId!, { url: heatmapPage }).then((r) => {
+        const payload = r.data;
+        const rows = Array.isArray(payload) ? payload : (payload?.data ?? []);
+        return rows.map((row: any) => ({
+          type: String(row.type ?? "click"),
+          x: Number(row.x ?? 0),
+          y: Number(row.y ?? 0),
+          count: Number(row.count ?? 0),
+        }));
+      }),
     enabled: !!selectedDomainId,
   });
 
@@ -318,6 +456,13 @@ function Content() {
           </Card>
         ))}
       </div>
+
+      <HeatmapPanel
+        rows={heatmapRows || []}
+        page={heatmapPage}
+        onPageChange={setHeatmapPage}
+        pageOptions={heatmapPageOptions}
+      />
 
       {/* UX Issues */}
       <Card>
