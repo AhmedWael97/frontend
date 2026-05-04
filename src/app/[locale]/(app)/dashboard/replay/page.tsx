@@ -6,7 +6,7 @@ import { replayApi } from "@/api";
 import { useAuthStore } from "@/store/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Film, Play, Pause, SkipForward, Trash2, Clock, MousePointer } from "lucide-react";
+import { Film, Play, Pause, SkipForward, Trash2, Clock, MousePointer, Monitor, Smartphone } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -44,6 +44,8 @@ function ReplayPlayer({
   const [elapsed,    setElapsed]    = useState(0);
   const [totalMs,    setTotalMs]    = useState(0);
   const [skipInactive, setSkipInactive] = useState(true);
+  const [replayError, setReplayError] = useState<string | null>(null);
+  const [viewportInfo, setViewportInfo] = useState<{ w: number; h: number } | null>(null);
   const progressRef  = useRef<ReturnType<typeof setInterval>>();
 
   const { data, isLoading, isError } = useQuery({
@@ -54,22 +56,40 @@ function ReplayPlayer({
   });
 
   // Rebuild rrweb events from the backend format (type + data + timestamp)
-  // CRITICAL FIX: Ensure all events have proper structure, especially FullSnapshot (type 2)
   function toRrwebEvents(rows: RrwebEvent[]): RrwebEvent[] {
-    return rows.map((r, index) => {
+    let hasFullSnapshot = false;
+
+    const events = rows.map((r, index) => {
       const event: RrwebEvent = {
         type:      Number(r.type),
         data:      r.data ?? {},
         timestamp: Number(r.timestamp),
       };
-      
-      // Ensure FullSnapshot events (type 2) have node data
-      if (event.type === 2 && (!event.data || !event.data.node)) {
-        console.warn(`FullSnapshot event at index ${index} missing node data`, event);
+
+      // Extract viewport dimensions from Meta event (type 4)
+      if (event.type === 4 && event.data) {
+        const w = Number((event.data as any).width);
+        const h = Number((event.data as any).height);
+        if (w > 0 && h > 0) setViewportInfo({ w, h });
       }
-      
+
+      // Track if we have a valid FullSnapshot
+      if (event.type === 2) {
+        hasFullSnapshot = true;
+        if (!event.data || !event.data.node) {
+          console.warn(`FullSnapshot event at index ${index} missing node data`, event);
+        }
+      }
+
       return event;
     });
+
+    // Set error if no FullSnapshot found
+    if (!hasFullSnapshot && events.length > 0) {
+      setReplayError('No FullSnapshot event found. The recording may be incomplete.');
+    }
+
+    return events;
   }
 
   // Initialise rrweb Replayer once we have events
@@ -86,6 +106,14 @@ function ReplayPlayer({
     }
 
     const events = toRrwebEvents(data);
+
+    // Extract recorded viewport dimensions from the Meta event (type 4).
+    // rrweb getMetaData() does NOT expose width/height — we must read from events.
+    const metaEv = events.find((e) => e.type === 4);
+    const viewportDims = {
+      w: Number((metaEv?.data as any)?.width  ?? 0),
+      h: Number((metaEv?.data as any)?.height ?? 0),
+    };
 
     // rrweb is installed at build time (package.json); ts-ignore until npm install runs
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -106,6 +134,22 @@ function ReplayPlayer({
 
       const meta = replayer.getMetaData();
       setTotalMs(meta.totalTime);
+
+      // Scale mobile recordings down to fit the container.
+      // Use a short timeout so rrweb has painted .replayer-wrapper before we measure.
+      setTimeout(() => {
+        const wrapper = containerRef.current?.querySelector('.replayer-wrapper') as HTMLElement | null;
+        if (wrapper && containerRef.current && viewportDims.w > 0 && viewportDims.h > 0) {
+          const containerW = containerRef.current.clientWidth;
+          const containerH = containerRef.current.clientHeight;
+          const scale = Math.min(containerW / viewportDims.w, containerH / viewportDims.h, 1);
+          if (scale < 0.99) {
+            wrapper.style.transformOrigin = 'top left';
+            wrapper.style.transform = `scale(${scale})`;
+            wrapper.style.marginBottom = `${viewportDims.h * scale - viewportDims.h}px`;
+          }
+        }
+      }, 150);
 
       replayer.on("finish", () => {
         setIsPlaying(false);
@@ -186,9 +230,19 @@ function ReplayPlayer({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-outline-variant/20">
           <div className="flex flex-col gap-0.5">
-            <p className="text-sm font-bold text-on-surface truncate max-w-sm">
-              {session.start_url || "Session Recording"}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-bold text-on-surface truncate max-w-sm">
+                {session.start_url || "Session Recording"}
+              </p>
+              {viewportInfo && (
+                <Badge variant="outline" className="text-[10px] flex items-center gap-1 shrink-0">
+                  {viewportInfo.w < 768
+                    ? <><Smartphone className="w-3 h-3" /> Mobile ({viewportInfo.w}px)</>
+                    : <><Monitor className="w-3 h-3" /> Desktop ({viewportInfo.w}px)</>
+                  }
+                </Badge>
+              )}
+            </div>
             <p className="text-[11px] text-on-surface-variant">
               {session.event_count.toLocaleString()} events ·{" "}
               {formatDistanceToNow(new Date(session.recorded_at), { addSuffix: true })}
@@ -214,9 +268,17 @@ function ReplayPlayer({
               Failed to load recording.
             </div>
           )}
+          {replayError && (
+            <div className="absolute inset-0 flex items-center justify-center text-yellow-400 text-sm z-10 bg-black/50">
+              <div className="text-center p-4">
+                <p className="font-semibold mb-2">⚠️ {replayError}</p>
+                <p className="text-xs text-yellow-300/70">The session recording may be incomplete or corrupted.</p>
+              </div>
+            </div>
+          )}
           <div
             ref={containerRef}
-            className="w-full h-full"
+            className="replay-viewport w-full h-full"
           />
         </div>
 
@@ -296,8 +358,12 @@ function SessionRow({
     ? (() => { try { return new URL(session.start_url).pathname; } catch { return session.start_url; } })()
     : "—";
 
+  // Heuristic session quality label based on event count
+  const isShortSession = session.event_count < 10;
+  const isMediumSession = session.event_count >= 10 && session.event_count < 30;
+
   return (
-    <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container transition-colors group">
+    <div className={`flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container transition-colors group ${isShortSession ? "opacity-60" : ""}`}>
       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
         <Film className="w-5 h-5 text-primary" />
       </div>
@@ -313,6 +379,12 @@ function SessionRow({
             <Clock className="w-3 h-3" />
             {formatDistanceToNow(new Date(session.recorded_at), { addSuffix: true })}
           </span>
+          {isShortSession && (
+            <span className="text-amber-500 font-medium">· low activity</span>
+          )}
+          {isMediumSession && (
+            <span className="text-blue-500 font-medium">· brief visit</span>
+          )}
         </div>
       </div>
 
@@ -346,6 +418,7 @@ function SessionRow({
 function Content() {
   const { selectedDomainId } = useAuthStore();
   const [playing, setPlaying] = useState<ReplaySession | null>(null);
+  const [hideShort, setHideShort] = useState(true);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["replay-sessions", selectedDomainId],
@@ -364,7 +437,12 @@ function Content() {
     refetch();
   };
 
-  const sessions = data ?? [];
+  const allSessions = data ?? [];
+  // Filter sessions with too few events — these are likely dead-click stalls or
+  // incomplete recordings where the user landed and immediately left.
+  const sessions = hideShort
+    ? allSessions.filter((s) => s.event_count >= 10)
+    : allSessions;
 
   return (
     <div className="space-y-6">
@@ -392,11 +470,24 @@ function Content() {
       {/* Session list */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+          <CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant flex items-center gap-2 flex-wrap">
             <Film className="w-4 h-4" /> Recorded Sessions
-            {sessions.length > 0 && (
-              <span className="ml-auto text-xs font-normal normal-case text-on-surface-variant">
-                {sessions.length} recording{sessions.length !== 1 ? "s" : ""}
+            {allSessions.length > 0 && (
+              <span className="ml-auto text-xs font-normal normal-case text-on-surface-variant flex items-center gap-3">
+                {allSessions.length - sessions.length > 0 && (
+                  <span className="text-on-surface-variant/60">
+                    {allSessions.length - sessions.length} short hidden
+                  </span>
+                )}
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={hideShort}
+                    onChange={(e) => setHideShort(e.target.checked)}
+                    className="accent-primary"
+                  />
+                  Hide sessions &lt;10 events
+                </label>
               </span>
             )}
           </CardTitle>

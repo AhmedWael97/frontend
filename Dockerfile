@@ -37,6 +37,8 @@ RUN npm run build -- --no-lint
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont
+ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./

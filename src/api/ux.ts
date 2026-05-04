@@ -7,6 +7,7 @@ import client from "./client";
 import { UX_ROUTES } from "./routes";
 
 type DateParams = { from?: string; to?: string };
+type HeatmapScreenshotResponse = { url: string };
 
 export const uxApi = {
   /** GET /ux/{domainId}/score → { score, breakdown, calculated_at } */
@@ -18,9 +19,13 @@ export const uxApi = {
     params?: DateParams & { type?: string; url?: string; page?: number }
   ) => client.get(UX_ROUTES.issues(domainId), { params }),
 
-  /** GET /ux/{domainId}/heatmap  (url is required) */
-  heatmap: (domainId: number, params: DateParams & { url: string }) =>
+  /** GET /ux/{domainId}/heatmap */
+  heatmap: (domainId: number, params?: DateParams & { url?: string }) =>
     client.get(UX_ROUTES.heatmap(domainId), { params }),
+
+  /** GET /ux/{domainId}/heatmap/screenshot -> { url } */
+  heatmapScreenshot: (domainId: number, params: { url: string }) =>
+    client.get<HeatmapScreenshotResponse>(`${UX_ROUTES.heatmap(domainId)}/screenshot`, { params }),
 
   /** GET /ux/{domainId}/errors */
   errors: (domainId: number, params?: DateParams) =>

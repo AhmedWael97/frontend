@@ -39,6 +39,7 @@ const navGroups = [
     items: [
       { key: "ai", href: "/dashboard/ai", icon: Sparkles },
       { key: "ux", href: "/dashboard/ux", icon: Zap },
+      { key: "heatmaps", href: "/dashboard/heatmaps", icon: Flame },
       { key: "ownerBrief", href: "/dashboard/owner-brief", icon: Lightbulb },
       { key: "replay", href: "/dashboard/replay", icon: PlaySquare },
       { key: "websiteChatbot", href: "/dashboard/website-chatbot", icon: MessageSquare },
