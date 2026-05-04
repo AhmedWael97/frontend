@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { formatDate } from "@/lib/utils";
-import { Monitor, Smartphone, Tablet, Globe } from "lucide-react";
+import { Monitor, Smartphone, Tablet, Globe, ShieldOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 function Content() {
@@ -19,6 +19,12 @@ function Content() {
   const { data, isLoading } = useQuery({
     queryKey: ["visitors", selectedDomainId, page],
     queryFn: () => analyticsApi.visitorsList(selectedDomainId!, { page }).then((r) => r.data),
+    enabled: !!selectedDomainId,
+  });
+
+  const { data: botStats } = useQuery({
+    queryKey: ["bot-stats", selectedDomainId],
+    queryFn: () => analyticsApi.botStats(selectedDomainId!).then((r) => r.data),
     enabled: !!selectedDomainId,
   });
 
@@ -43,6 +49,24 @@ function Content() {
         <h1 className="text-2xl font-black text-on-surface tracking-tight">{t("title")}</h1>
         <p className="text-on-surface-variant text-sm mt-0.5">{t("subtitle")}</p>
       </div>
+
+      {/* Bot stats card */}
+      {botStats && (
+        <Card className="border-rose-500/20 bg-rose-500/5">
+          <CardContent className="py-3 px-4 flex items-center gap-3">
+            <ShieldOff className="w-5 h-5 text-rose-400 shrink-0" />
+            <div>
+              <p className="text-xs font-semibold text-rose-300 uppercase tracking-widest">Bots Blocked</p>
+              <p className="text-sm text-on-surface">
+                <span className="font-bold">{Number(botStats.today).toLocaleString()}</span>
+                <span className="text-on-surface-variant"> today · </span>
+                <span className="font-bold">{Number(botStats.total).toLocaleString()}</span>
+                <span className="text-on-surface-variant"> all-time</span>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent className="p-0">

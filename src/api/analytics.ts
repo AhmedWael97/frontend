@@ -13,6 +13,7 @@ type DateParams = {
   end?: string;
   granularity?: "hour" | "day" | "week" | "month";
   limit?: number;
+  compare?: boolean;
 };
 
 export const analyticsApi = {
@@ -97,4 +98,8 @@ export const analyticsApi = {
   /** GET /analytics/{domainId}/summary */
   summary: (domainId: number, params?: Record<string, unknown>) =>
     client.get(ANALYTICS_ROUTES.summary(domainId), { params }),
+
+  /** GET /analytics/{domainId}/bot-stats */
+  botStats: (domainId: number) =>
+    client.get(ANALYTICS_ROUTES.botStats(domainId)),
 };

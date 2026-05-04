@@ -35,10 +35,12 @@ function DepthBar({ value, max, label, color }: { value: number; max: number; la
 
 function shortUrl(url: string) {
   try {
-    const u = new URL(url);
-    return u.pathname + u.search || "/";
+    const path = new URL(url).pathname.replace(/\/$/, "");
+    const parts = path.split("/").filter(Boolean);
+    if (!parts.length) return "/";
+    return parts.length > 2 ? `…/${parts.slice(-2).join("/")}` : `/${parts.join("/")}`;
   } catch {
-    return url;
+    return url.length > 40 ? `…${url.slice(-38)}` : url;
   }
 }
 

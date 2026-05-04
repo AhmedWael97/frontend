@@ -255,6 +255,18 @@ function averageScores(values: Array<number | null | undefined>) {
   return valid.reduce((sum, value) => sum + value, 0) / valid.length;
 }
 
+/** Show the tail of a URL so the page slug is always readable. */
+function shortUrl(raw: string): string {
+  try {
+    const path = new URL(raw).pathname.replace(/\/$/, "");
+    const parts = path.split("/").filter(Boolean);
+    if (!parts.length) return "/";
+    return parts.length > 2 ? `…/${parts.slice(-2).join("/")}` : `/${parts.join("/")}`;
+  } catch {
+    return raw.length > 40 ? `…${raw.slice(-38)}` : raw;
+  }
+}
+
 function Content() {
   const { selectedDomainId } = useAuthStore();
 
@@ -381,11 +393,12 @@ function Content() {
                         target="_blank"
                         rel="noreferrer"
                         className="text-xs text-primary mt-2 font-medium inline-block underline underline-offset-2"
+                        title={issue.page}
                       >
-                        {issue.page}
+                        {shortUrl(issue.page)}
                       </a>
                     ) : (
-                      <p className="text-xs text-primary mt-2 font-medium">{issue.page}</p>
+                      <p className="text-xs text-primary mt-2 font-medium" title={issue.page}>{shortUrl(issue.page)}</p>
                     )}
                     {issue.selector && (
                       <p className="text-[11px] text-on-surface-variant mt-1">Element selector: {issue.selector}</p>

@@ -88,7 +88,7 @@ function HeatmapCard({ page, domainId, expanded, onToggle }: { page: HeatmapPage
 
   const dots = page.rows
     .filter((row) => Number.isFinite(Number(row.x)) && Number.isFinite(Number(row.y)))
-    .slice(0, 350)
+    .slice(0, 2000)
     .map((row, idx) => {
       const x = Math.min(99, Math.max(1, Number(row.x)));
       const y = Math.min(99, Math.max(1, Number(row.y)));

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import {
@@ -13,7 +14,7 @@ import {
 import {
   Users, Eye, Clock, TrendingDown, TrendingUp, Globe, Monitor, Smartphone,
   Tablet, Flame, Megaphone, Zap, Star, ArrowUpRight, ArrowDownRight,
-  BarChart2, AlertCircle,
+  BarChart2, AlertCircle, Info,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -35,7 +36,7 @@ type SummaryData = {
   };
   prev_traffic: {
     visitors: number; sessions: number; pageviews: number;
-    avg_duration: number; bounce_rate: number;
+    avg_duration: number; bounce_rate: number; avg_pages: number;
   };
   top_pages: { url: string; views: number }[];
   top_countries: { country: string; sessions: number }[];
@@ -70,6 +71,7 @@ function KpiCard({
   label,
   value,
   delta,
+  hint,
   color = "text-primary",
   bg = "bg-primary/10",
 }: {
@@ -77,6 +79,7 @@ function KpiCard({
   label: string;
   value: string | number;
   delta?: number;
+  hint?: string;
   color?: string;
   bg?: string;
 }) {
@@ -89,7 +92,17 @@ function KpiCard({
           </div>
           {delta !== undefined && <Delta val={delta} />}
         </div>
-        <p className="text-xs text-on-surface-variant uppercase tracking-widest mt-3">{label}</p>
+        <div className="flex items-center gap-1 mt-3">
+          <p className="text-xs text-on-surface-variant uppercase tracking-widest">{label}</p>
+          {hint && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-3 h-3 text-on-surface-variant/50 cursor-help shrink-0" />
+              </TooltipTrigger>
+              <TooltipContent>{hint}</TooltipContent>
+            </Tooltip>
+          )}
+        </div>
         <p className="text-2xl font-black text-on-surface mt-0.5">
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
@@ -215,41 +228,51 @@ function Content() {
 
       {/* ── Traffic KPIs ─────────────────────────────────────────────────── */}
       <Section title="Traffic Overview" icon={BarChart2}>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <KpiCard
-            icon={Users} label="Visitors"
-            value={isLoading ? "—" : (t?.visitors ?? 0).toLocaleString()}
-            delta={isLoading ? undefined : pct(t?.visitors ?? 0, pt?.visitors ?? 0)}
-          />
-          <KpiCard
-            icon={Eye} label="Pageviews"
-            value={isLoading ? "—" : (t?.pageviews ?? 0).toLocaleString()}
-            delta={isLoading ? undefined : pct(t?.pageviews ?? 0, pt?.pageviews ?? 0)}
-            color="text-violet-400" bg="bg-violet-400/10"
-          />
-          <KpiCard
-            icon={Zap} label="Sessions"
-            value={isLoading ? "—" : (t?.sessions ?? 0).toLocaleString()}
-            delta={isLoading ? undefined : pct(t?.sessions ?? 0, pt?.sessions ?? 0)}
-            color="text-cyan-400" bg="bg-cyan-400/10"
-          />
-          <KpiCard
-            icon={Clock} label="Avg Duration"
-            value={isLoading ? "—" : fmtDuration(t?.avg_duration ?? 0)}
-            delta={isLoading ? undefined : pct(t?.avg_duration ?? 0, pt?.avg_duration ?? 0)}
-            color="text-amber-400" bg="bg-amber-400/10"
-          />
-          <KpiCard
-            icon={TrendingDown} label="Bounce Rate"
-            value={isLoading ? "—" : `${t?.bounce_rate ?? 0}%`}
-            color="text-rose-400" bg="bg-rose-400/10"
-          />
-          <KpiCard
-            icon={TrendingUp} label="Avg Pages"
-            value={isLoading ? "—" : Number(t?.avg_pages ?? 0).toFixed(1)}
-            color="text-emerald-400" bg="bg-emerald-400/10"
-          />
-        </div>
+        <TooltipProvider delayDuration={200}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <KpiCard
+              icon={Users} label="Visitors"
+              hint="Unique individuals tracked by a persistent browser ID."
+              value={isLoading ? "—" : (t?.visitors ?? 0).toLocaleString()}
+              delta={isLoading ? undefined : pct(t?.visitors ?? 0, pt?.visitors ?? 0)}
+            />
+            <KpiCard
+              icon={Eye} label="Pageviews"
+              hint="Total number of pages loaded across all sessions."
+              value={isLoading ? "—" : (t?.pageviews ?? 0).toLocaleString()}
+              delta={isLoading ? undefined : pct(t?.pageviews ?? 0, pt?.pageviews ?? 0)}
+              color="text-violet-400" bg="bg-violet-400/10"
+            />
+            <KpiCard
+              icon={Zap} label="Sessions"
+              hint="A group of interactions by one visitor within 30 minutes of each other."
+              value={isLoading ? "—" : (t?.sessions ?? 0).toLocaleString()}
+              delta={isLoading ? undefined : pct(t?.sessions ?? 0, pt?.sessions ?? 0)}
+              color="text-cyan-400" bg="bg-cyan-400/10"
+            />
+            <KpiCard
+              icon={Clock} label="Avg Time on Page"
+              hint="Average length of time a user spent on your site per session."
+              value={isLoading ? "—" : fmtDuration(t?.avg_duration ?? 0)}
+              delta={isLoading ? undefined : pct(t?.avg_duration ?? 0, pt?.avg_duration ?? 0)}
+              color="text-amber-400" bg="bg-amber-400/10"
+            />
+            <KpiCard
+              icon={TrendingDown} label="Bounce Rate"
+              hint="% of sessions where the visitor viewed only one page and did not interact."
+              value={isLoading ? "—" : `${t?.bounce_rate ?? 0}%`}
+              delta={isLoading ? undefined : pct(t?.bounce_rate ?? 0, pt?.bounce_rate ?? 0)}
+              color="text-rose-400" bg="bg-rose-400/10"
+            />
+            <KpiCard
+              icon={TrendingUp} label="Avg Pages"
+              hint="Average number of pages viewed per session."
+              value={isLoading ? "—" : Number(t?.avg_pages ?? 0).toFixed(1)}
+              delta={isLoading ? undefined : pct(t?.avg_pages ?? 0, pt?.avg_pages ?? 0)}
+              color="text-emerald-400" bg="bg-emerald-400/10"
+            />
+          </div>
+        </TooltipProvider>
       </Section>
 
       {/* ── Trend Chart ──────────────────────────────────────────────────── */}
