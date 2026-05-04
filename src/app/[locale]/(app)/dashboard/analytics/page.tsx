@@ -102,7 +102,7 @@ function Content() {
   const refRows: any[]     = comparing ? (referrers?.current ?? []) : (Array.isArray(referrers) ? referrers : []);
   const refPrev: any[]     = comparing ? (referrers?.prev ?? []) : [];
   const devData: any       = comparing ? (devices?.current ?? {}) : (devices ?? {});
-  const devPrev: any       = comparing ? (devices?.prev ?? {}) : {};
+  const _devPrev: any      = comparing ? (devices?.prev ?? {}) : {};
 
   function prevVisits(list: any[], key: string, value: string): number | undefined {
     return list.find((r: any) => r[key] === value)?.["visits"] ??

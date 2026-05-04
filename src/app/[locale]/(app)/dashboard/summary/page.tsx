@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, Tooltip as ChartTooltip, ResponsiveContainer,
   CartesianGrid, PieChart, Pie, Cell,
 } from "recharts";
 import {
@@ -299,7 +299,7 @@ function Content() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#464554" strokeOpacity={0.2} />
                 <XAxis dataKey="date" tick={{ fill: "#c7c4d7", fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: "#c7c4d7", fontSize: 10 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={TOOLTIP_STYLE} />
+                <ChartTooltip contentStyle={TOOLTIP_STYLE} />
                 <Area type="monotone" dataKey="visitors" stroke="#c0c1ff" fill="url(#gV)" strokeWidth={2} dot={false} name="Visitors" />
                 <Area type="monotone" dataKey="sessions" stroke="#a78bfa" fill="url(#gS)" strokeWidth={2} dot={false} name="Sessions" />
               </AreaChart>
@@ -393,7 +393,7 @@ function Content() {
                           <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip contentStyle={TOOLTIP_STYLE} />
+                      <ChartTooltip contentStyle={TOOLTIP_STYLE} />
                     </PieChart>
                   </ResponsiveContainer>
                   <div className="flex flex-wrap gap-2 justify-center">
