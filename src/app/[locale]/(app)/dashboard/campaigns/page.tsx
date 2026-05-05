@@ -71,6 +71,7 @@ const PERIODS = [
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
+  const locale = useLocale();
   const [days, setDays] = useState("30");
   const [goalFilter, setGoalFilter] = useState("");
   const [sortCol, setSortCol] = useState<keyof CampaignRow>("sessions");
@@ -150,7 +151,7 @@ function Content() {
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <a
-            href={`/${useLocale()}/tools/utm-builder`}
+            href={`/${locale}/tools/utm-builder`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline-variant/40 text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:border-primary/40 transition-colors"
           >
             <Link2 className="w-3.5 h-3.5" />

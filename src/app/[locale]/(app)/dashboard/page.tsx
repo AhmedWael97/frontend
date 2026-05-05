@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
@@ -16,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { formatNumber } from "@/lib/utils";
-import { toast } from "sonner";
+import { toast } from "@/lib/use-toast";
 import WelcomeChecklist from "@/components/WelcomeChecklist";
 
 // ── KPI Card ─────────────────────────────────────────────────────────────────
@@ -65,7 +64,6 @@ function DashboardContent() {
   const t = useTranslations("dashboard");
   const { selectedDomainId } = useAuthStore();
   const locale = useLocale();
-  const router = useRouter();
 
   const { data, isLoading } = useQuery({
     queryKey: ["overview", selectedDomainId],
