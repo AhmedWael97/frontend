@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 
-// ── Modal helper ─────────────────────────────────────────────────────────────
+// â”€â”€ Modal helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
@@ -89,7 +89,7 @@ function Content() {
   });
   const plans = plansData?.data || plansData || [];
 
-  // ── Mutations ───────────────────────────────────────────────────────────────
+  // â”€â”€ Mutations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const impersonateMut = useMutation({
     mutationFn: () => adminApi.impersonateUser(Number(id)),
     onSuccess: (res) => {
@@ -208,7 +208,7 @@ function Content() {
             <Badge variant={user?.role === "superadmin" ? "warning" : "secondary"}>{user?.role}</Badge>
             <Badge variant={isBlocked ? "error" : "success"}>{isBlocked ? "Blocked" : "Active"}</Badge>
           </div>
-          <p className="text-on-surface-variant text-sm mt-0.5">{user?.email} · ID #{user?.id}</p>
+          <p className="text-on-surface-variant text-sm mt-0.5">{user?.email} Â· ID #{user?.id}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => { setEName(user?.name || ""); setEEmail(user?.email || ""); setERole(user?.role || "user"); setFormError(""); setEditOpen(true); }}>
@@ -232,7 +232,7 @@ function Content() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* ── Account Info ─────────────────────────────────────────────────── */}
+        {/* â”€â”€ Account Info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Card className="lg:col-span-1">
           <CardHeader><CardTitle className="text-xs uppercase tracking-widest text-on-surface-variant">Account Info</CardTitle></CardHeader>
           <CardContent className="space-y-0 divide-y divide-outline-variant/10">
@@ -241,7 +241,7 @@ function Content() {
               ["Timezone", user?.timezone || "UTC"],
               ["Email Verified", user?.email_verified_at ? formatDate(user.email_verified_at) : "Not verified"],
               ["2FA", user?.totp_enabled ? "Enabled" : "Disabled"],
-              ["Last Login", user?.last_login_at ? formatDate(user.last_login_at) : "—"],
+              ["Last Login", user?.last_login_at ? formatDate(user.last_login_at) : "â€”"],
             ] as [string, string][]).map(([label, value]) => (
               <div key={label} className="flex justify-between py-2.5">
                 <span className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">{label}</span>
@@ -251,7 +251,7 @@ function Content() {
           </CardContent>
         </Card>
 
-        {/* ── Security Actions ──────────────────────────────────────────────── */}
+        {/* â”€â”€ Security Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Card className="lg:col-span-1">
           <CardHeader><CardTitle className="text-xs uppercase tracking-widest text-on-surface-variant">Security Actions</CardTitle></CardHeader>
           <CardContent className="space-y-2">
@@ -284,7 +284,7 @@ function Content() {
           </CardContent>
         </Card>
 
-        {/* ── Subscription ─────────────────────────────────────────────────── */}
+        {/* â”€â”€ Subscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Card className="lg:col-span-1">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -307,8 +307,8 @@ function Content() {
                   <Badge variant={statusVariant(sub.status) as any}>{sub.status}</Badge>
                 </div>
                 <div className="text-xs text-on-surface-variant space-y-1">
-                  <p>Start: {sub.current_period_start ? formatDate(sub.current_period_start) : "—"}</p>
-                  <p>Renewal: {sub.current_period_end ? formatDate(sub.current_period_end) : "—"}</p>
+                  <p>Start: {sub.current_period_start ? formatDate(sub.current_period_start) : "â€”"}</p>
+                  <p>Renewal: {sub.current_period_end ? formatDate(sub.current_period_end) : "â€”"}</p>
                   {sub.notes && <p className="italic">Note: {sub.notes}</p>}
                 </div>
                 <div className="flex flex-wrap gap-2 pt-1">
@@ -354,13 +354,13 @@ function Content() {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-on-surface-variant">Free tier — no active subscription.</p>
+              <p className="text-sm text-on-surface-variant">Free tier â€” no active subscription.</p>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* ── Domains ────────────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Domains â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Card>
         <CardHeader>
           <CardTitle className="text-xs uppercase tracking-widest text-on-surface-variant">
@@ -413,7 +413,7 @@ function Content() {
         </CardContent>
       </Card>
 
-      {/* ── Edit User Modal ───────────────────────────────────────────────────── */}
+      {/* â”€â”€ Edit User Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {editOpen && (
         <Modal title="Edit User" onClose={() => setEditOpen(false)}>
           <div className="space-y-4">
@@ -435,13 +435,13 @@ function Content() {
             </FieldRow>
             {formError && <p className="text-xs text-error">{formError}</p>}
             <Button className="w-full" disabled={updateMut.isPending} onClick={() => updateMut.mutate()}>
-              {updateMut.isPending ? "Saving…" : "Save Changes"}
+              {updateMut.isPending ? "Savingâ€¦" : "Save Changes"}
             </Button>
           </div>
         </Modal>
       )}
 
-      {/* ── Assign Subscription Modal ─────────────────────────────────────────── */}
+      {/* â”€â”€ Assign Subscription Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {assignSubOpen && (
         <Modal title="Assign Subscription" onClose={() => setAssignSubOpen(false)}>
           <div className="space-y-4">
@@ -451,24 +451,24 @@ function Content() {
                 onChange={(e) => setAssignPlanId(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl border border-outline-variant/30 bg-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
-                <option value="">Select a plan…</option>
+                <option value="">Select a planâ€¦</option>
                 {plans.map((p: any) => (
-                  <option key={p.id} value={p.id}>{p.name} — ${Number(p.price_monthly || 0).toFixed(2)}/mo</option>
+                  <option key={p.id} value={p.id}>{p.name} â€” ${Number(p.price_monthly || 0).toFixed(2)}/mo</option>
                 ))}
               </select>
             </FieldRow>
             <FieldRow label="Notes (optional)">
-              <Input placeholder="e.g. Promo, free trial…" value={assignNotes} onChange={(e) => setAssignNotes(e.target.value)} />
+              <Input placeholder="e.g. Promo, free trialâ€¦" value={assignNotes} onChange={(e) => setAssignNotes(e.target.value)} />
             </FieldRow>
             {formError && <p className="text-xs text-error">{formError}</p>}
             <Button className="w-full" disabled={!assignPlanId || assignSubMut.isPending} onClick={() => assignSubMut.mutate()}>
-              {assignSubMut.isPending ? "Assigning…" : "Assign Plan"}
+              {assignSubMut.isPending ? "Assigningâ€¦" : "Assign Plan"}
             </Button>
           </div>
         </Modal>
       )}
 
-      {/* ── Change Plan Modal ─────────────────────────────────────────────────── */}
+      {/* â”€â”€ Change Plan Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {changePlanOpen && (
         <Modal title="Change Plan" onClose={() => setChangePlanOpen(false)}>
           <div className="space-y-4">
@@ -478,21 +478,21 @@ function Content() {
                 onChange={(e) => setChangePlanId(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl border border-outline-variant/30 bg-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
-                <option value="">Select a plan…</option>
+                <option value="">Select a planâ€¦</option>
                 {plans.map((p: any) => (
-                  <option key={p.id} value={p.id}>{p.name} — ${Number(p.price_monthly || 0).toFixed(2)}/mo</option>
+                  <option key={p.id} value={p.id}>{p.name} â€” ${Number(p.price_monthly || 0).toFixed(2)}/mo</option>
                 ))}
               </select>
             </FieldRow>
             {formError && <p className="text-xs text-error">{formError}</p>}
             <Button className="w-full" disabled={!changePlanId || changePlanMut.isPending} onClick={() => changePlanMut.mutate()}>
-              {changePlanMut.isPending ? "Saving…" : "Update Plan"}
+              {changePlanMut.isPending ? "Savingâ€¦" : "Update Plan"}
             </Button>
           </div>
         </Modal>
       )}
 
-      {/* ── Extend Subscription Modal ─────────────────────────────────────────── */}
+      {/* â”€â”€ Extend Subscription Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {extendOpen && (
         <Modal title="Extend Subscription" onClose={() => setExtendOpen(false)}>
           <div className="space-y-4">
@@ -519,7 +519,7 @@ function Content() {
               disabled={!extendDays || Number(extendDays) < 1 || extendMut.isPending}
               onClick={() => extendMut.mutate()}
             >
-              {extendMut.isPending ? "Saving…" : `Extend by ${extendDays} days`}
+              {extendMut.isPending ? "Savingâ€¦" : `Extend by ${extendDays} days`}
             </Button>
           </div>
         </Modal>
@@ -532,108 +532,3 @@ export default function AdminUserDetailPage() {
   return <Content />;
 }
 
-function Content() {
-  const { id } = useParams<{ id: string }>();
-  const router = useRouter();
-  const locale = useLocale();
-  const queryClient = useQueryClient();
-  const { setToken, setUser, setImpersonating } = useAuthStore();
-
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["admin-user", id],
-    queryFn: () => adminApi.getUser(Number(id)).then((r) => r.data),
-  });
-
-  const impersonateMutation = useMutation({
-    mutationFn: () => adminApi.impersonateUser(Number(id)),
-    onSuccess: (res) => {
-      // Back up the admin token so it can be restored on exit
-      const adminToken = localStorage.getItem("eye_token");
-      if (adminToken) localStorage.setItem("eye_token_admin_backup", adminToken);
-
-      // Swap active token to the impersonation token
-      setToken(res.data.token);
-      setUser(null); // force re-fetch of user profile as target user
-      setImpersonating(true);
-
-      router.push(`/${locale}/dashboard`);
-    },
-  });
-
-  const banMutation = useMutation({
-    mutationFn: () => user?.banned_at
-      ? adminApi.unblockUser(Number(id))
-      : adminApi.blockUser(Number(id)),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-user", id] }),
-  });
-
-  const verifyEmailMutation = useMutation({
-    mutationFn: () => adminApi.verifyUserEmail(Number(id)),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-user", id] }),
-  });
-
-  if (isLoading) return <div className="h-40 bg-surface-container rounded-xl animate-pulse" />;
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <button onClick={() => router.back()} className="p-2 hover:bg-surface-container rounded-xl transition-colors text-on-surface-variant"><ArrowLeft className="w-4 h-4" /></button>
-        <div>
-          <h1 className="text-2xl font-black text-on-surface tracking-tight">{user?.name}</h1>
-          <p className="text-on-surface-variant text-sm">{user?.email}</p>
-        </div>
-        <div className="ml-auto flex gap-2">
-          {!user?.email_verified_at && (
-            <Button variant="outline" onClick={() => verifyEmailMutation.mutate()} disabled={verifyEmailMutation.isPending}>
-              <MailCheck className="w-4 h-4" /> Verify User
-            </Button>
-          )}
-          <Button variant="outline" onClick={() => impersonateMutation.mutate()} disabled={impersonateMutation.isPending}>
-            <ShieldAlert className="w-4 h-4" /> Impersonate
-          </Button>
-          <Button variant="destructive" onClick={() => banMutation.mutate()} disabled={banMutation.isPending}>
-            <UserX className="w-4 h-4" /> {user?.banned_at ? "Unban" : "Ban"}
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Account Details</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
-            {[
-              ["Role", <Badge key="role" variant={user?.role === "admin" ? "warning" : "secondary"}>{user?.role}</Badge>],
-              ["Status", <Badge key="status" variant={user?.banned_at ? "error" : "success"}>{user?.banned_at ? "Banned" : "Active"}</Badge>],
-              ["Email Verified", user?.email_verified_at ? formatDate(user.email_verified_at) : "—"],
-              ["2FA", user?.totp_enabled ? "Enabled" : "Disabled"],
-              ["Registered", formatDate(user?.created_at)],
-              ["Timezone", user?.timezone || "UTC"],
-            ].map(([label, value]) => (
-              <div key={String(label)} className="flex justify-between py-2 border-b border-outline-variant/10 last:border-0">
-                <span className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">{label}</span>
-                <span className="text-sm text-on-surface">{value as any}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Subscription</CardTitle></CardHeader>
-          <CardContent>
-            {user?.subscription ? (
-              <div className="space-y-2">
-                <p className="text-lg font-black text-on-surface">{user.subscription.plan?.name}</p>
-                <Badge variant={user.subscription.status === "active" ? "success" : "secondary"}>{user.subscription.status}</Badge>
-                <p className="text-xs text-on-surface-variant">Expires {user.subscription.current_period_end ? formatDate(user.subscription.current_period_end) : "—"}</p>
-              </div>
-            ) : <p className="text-on-surface-variant text-sm">Free tier (no active subscription)</p>}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-export default function AdminUserDetailPage() {
-  return <Content />;
-}
