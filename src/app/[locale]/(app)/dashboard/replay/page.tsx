@@ -1,5 +1,6 @@
 "use client";
 
+import "rrweb/dist/rrweb.min.css";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { replayApi } from "@/api";
