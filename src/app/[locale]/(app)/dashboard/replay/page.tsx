@@ -116,11 +116,14 @@ function ReplayPlayer({
       h: Number((metaEv?.data as any)?.height ?? 0),
     };
 
+    // Guard against the component unmounting while the async import is in flight.
+    let cancelled = false;
+
     // rrweb is installed at build time (package.json); ts-ignore until npm install runs
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     import("rrweb").then(({ Replayer }: { Replayer: any }) => {
-      if (!containerRef.current) return;
+      if (cancelled || !containerRef.current) return;
 
       const replayer = new Replayer(events, {
         root:         containerRef.current,
@@ -174,6 +177,7 @@ function ReplayPlayer({
     });
 
     return () => {
+      cancelled = true;
       clearInterval(progressRef.current);
       try { replayerRef.current?.pause(); } catch {
         // Suppress error if pause fails during cleanup

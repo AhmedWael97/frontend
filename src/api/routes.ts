@@ -203,12 +203,14 @@ export const REPLAY_ROUTES = {
 
 // ── AI ────────────────────────────────────────────────────────────────────────
 export const AI_ROUTES = {
-  segments: (domainId: number) => `/ai/${domainId}/segments`,
-  suggestions: (domainId: number) => `/ai/${domainId}/suggestions`,
-  analyze: (domainId: number) => `/ai/${domainId}/analyze`,
-  quota: (domainId: number) => `/ai/${domainId}/quota`,
-  dismissSuggestion: (id: number) => `/ai/suggestions/${id}/dismiss`,
-  chat: (domainId: number) => `/ai/${domainId}/chat`,
+  segments:         (domainId: number) => `/ai/${domainId}/segments`,
+  suggestions:      (domainId: number) => `/ai/${domainId}/suggestions`,
+  report:           (domainId: number) => `/ai/${domainId}/report`,
+  analyze:          (domainId: number) => `/ai/${domainId}/analyze`,
+  quota:            (domainId: number) => `/ai/${domainId}/quota`,
+  dismissSuggestion:(id: number)       => `/ai/suggestions/${id}/dismiss`,
+  tokenPacks:       "/ai/token-packs",
+  purchaseTokens:   "/ai/tokens/purchase",
 } as const;
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
@@ -226,6 +228,7 @@ export const ADMIN_ROUTES = {
   usersVerifyEmail: (id: number) => `/admin/users/${id}/verify-email`,
   usersDisable2fa: (id: number) => `/admin/users/${id}/disable-2fa`,
   usersToggleAdmin: (id: number) => `/admin/users/${id}/toggle-admin`,
+  usersGrantTokens: (id: number) => `/admin/users/${id}/grant-tokens`,
   usersAssignSubscription: (id: number) => `/admin/users/${id}/subscriptions`,
   // Plans
   plansList: "/admin/plans",
@@ -246,6 +249,7 @@ export const ADMIN_ROUTES = {
   subscriptionsCancel: (id: number) => `/admin/subscriptions/${id}/cancel`,
   subscriptionsPause: (id: number) => `/admin/subscriptions/${id}/pause`,
   subscriptionsResume: (id: number) => `/admin/subscriptions/${id}/resume`,
+  subscriptionsExtend: (id: number) => `/admin/subscriptions/${id}/extend`,
   // Payments
   paymentsList: "/admin/payments",
   paymentsShow: (id: number) => `/admin/payments/${id}`,

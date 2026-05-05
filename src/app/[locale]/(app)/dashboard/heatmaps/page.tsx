@@ -46,20 +46,38 @@ function useHeatmapScreenshot(domainId: number | undefined, pageUrl: string, ena
 
     const controller = new AbortController();
     const screenshotDomainId = Number(domainId);
+    let blobUrl: string | null = null;
 
     async function loadScreenshot() {
       setLoading(true);
       setError(null);
 
       try {
-        const response = await uxApi.heatmapScreenshot(screenshotDomainId, { url: pageUrl });
-        const resolvedUrl = response?.data?.url;
+        const token = typeof window !== "undefined" ? localStorage.getItem("eye_token") : null;
+        const apiBase = `${process.env.NEXT_PUBLIC_API_URL || ""}/api/${process.env.NEXT_PUBLIC_API_VERSION || "v1"}`;
+        const endpoint = `${apiBase}/ux/${screenshotDomainId}/heatmap/screenshot?url=${encodeURIComponent(pageUrl)}`;
 
-        if (!resolvedUrl) {
-          throw new Error("Screenshot URL was not returned.");
+        const res = await fetch(endpoint, {
+          signal: controller.signal,
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+            Accept: "image/png",
+            "X-Public-Key": process.env.NEXT_PUBLIC_APP_PUBLIC_KEY || "",
+            "X-Secret-Key": process.env.NEXT_PUBLIC_APP_SECRET_KEY || "",
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(`Screenshot unavailable (${res.status})`);
         }
 
-        setImageUrl(resolvedUrl);
+        const blob = await res.blob();
+        if (!blob.type.startsWith("image/")) {
+          throw new Error("Invalid response type from screenshot endpoint.");
+        }
+
+        blobUrl = URL.createObjectURL(blob);
+        setImageUrl(blobUrl);
       } catch (err) {
         if (!controller.signal.aborted) {
           setImageUrl(null);
@@ -76,6 +94,7 @@ function useHeatmapScreenshot(domainId: number | undefined, pageUrl: string, ena
 
     return () => {
       controller.abort();
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
     };
   }, [domainId, enabled, pageUrl]);
 

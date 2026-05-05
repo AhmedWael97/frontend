@@ -54,6 +54,10 @@ export const adminApi = {
   /** POST /admin/users/{id}/toggle-admin */
   toggleUserAdmin: (id: number) => client.post(ADMIN_ROUTES.usersToggleAdmin(id)),
 
+  /** POST /admin/users/{id}/grant-tokens */
+  grantAiTokens: (id: number, tokens: number, note?: string) =>
+    client.post(ADMIN_ROUTES.usersGrantTokens(id), { tokens, note }),
+
   /** POST /admin/users/{id}/subscriptions */
   assignUserSubscription: (
     id: number,
@@ -131,6 +135,10 @@ export const adminApi = {
   /** POST /admin/subscriptions/{id}/resume */
   resumeSubscription: (id: number) =>
     client.post(ADMIN_ROUTES.subscriptionsResume(id)),
+
+  /** POST /admin/subscriptions/{id}/extend */
+  extendSubscription: (id: number, days: number) =>
+    client.post(ADMIN_ROUTES.subscriptionsExtend(id), { days }),
 
   // ── Payments ─────────────────────────────────────────────────────────────────
   /** GET /admin/payments */
