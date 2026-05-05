@@ -103,7 +103,7 @@ export async function GET(req: NextRequest) {
 
       await writeFile(cacheFile, screenshot);
 
-      return new NextResponse(screenshot, {
+      return new NextResponse(new Uint8Array(screenshot), {
         status: 200,
         headers: screenshotHeaders(),
       });

@@ -110,7 +110,7 @@ function Content() {
   const trendData = Object.values(trendByDate).sort((a, b) =>
     String(a.date).localeCompare(String(b.date))
   );
-  const trendSources = [...new Set(rawTrend.map((r) => r.source))].slice(0, 5);
+  const trendSources = Array.from(new Set(rawTrend.map((r) => r.source))).slice(0, 5);
 
   // KPIs
   const totalSessions = campaigns.reduce((s, r) => s + Number(r.sessions), 0);
