@@ -197,10 +197,27 @@ function HeatmapCard({ page, domainId, expanded, onToggle }: { page: HeatmapPage
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs text-on-surface-variant">
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500" />click</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-500" />dead click</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" />rage click</span>
+          {/* Legend — what the colors and sizes mean */}
+          <div className="space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">How to read this map</p>
+            <div className="flex flex-wrap gap-4 text-xs text-on-surface-variant">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 opacity-70" />
+                <span><strong className="text-on-surface">Regular click</strong> — normal interaction</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+                <span><strong className="text-on-surface">Dead click</strong> — clicked but nothing happened</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                <span><strong className="text-on-surface">Rage click</strong> — frustrated repeated clicking</span>
+              </span>
+            </div>
+            <p className="text-xs text-on-surface-variant">
+              <strong className="text-on-surface">Bigger &amp; brighter</strong> = more clicks in that spot.
+              <span className="text-primary ml-2">Red zones = where people focus most.</span>
+            </p>
           </div>
         </CardContent>
       )}

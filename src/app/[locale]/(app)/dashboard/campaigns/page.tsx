@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +12,7 @@ import {
   LineChart, Line, Legend,
 } from "recharts";
 import {
-  TrendingUp, MousePointerClick, Users,
+  TrendingUp, MousePointerClick, Users, Link2,
 } from "lucide-react";
 
 const TOOLTIP_STYLE = {
@@ -144,10 +145,17 @@ function Content() {
         <div>
           <h1 className="text-2xl font-black text-on-surface tracking-tight">Campaigns</h1>
           <p className="text-on-surface-variant text-sm mt-0.5">
-            UTM campaign performance — which sources drive real engagement
+            Which marketing channels actually bring visitors to your site
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <a
+            href={`/${useLocale()}/tools/utm-builder`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline-variant/40 text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:border-primary/40 transition-colors"
+          >
+            <Link2 className="w-3.5 h-3.5" />
+            Build UTM Link
+          </a>
           <input
             className="px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant/30 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary/50 w-40"
             placeholder="Goal URL (optional)"

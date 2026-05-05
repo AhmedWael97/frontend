@@ -414,6 +414,23 @@ function Content() {
       report.growth_opportunities?.length ||
       report.risk_areas?.length);
 
+  // "What you'll get" preview — shown only before any report exists
+  const WhatYouGet = !hasReport && !analyzeTriggered && (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-primary/5 rounded-xl border border-primary/15">
+      {[
+        { icon: BarChart2,     title: "Traffic Summary",       desc: "What's working and what's not, in plain English" },
+        { icon: TrendingUp,    title: "Growth Opportunities",  desc: "Specific actions you can take to grow your traffic" },
+        { icon: AlertTriangle, title: "Risk Areas",            desc: "Issues silently losing you visitors right now" },
+      ].map((item) => (
+        <div key={item.title} className="flex flex-col items-center text-center gap-2 py-2">
+          <item.icon className="w-6 h-6 text-primary" />
+          <p className="text-sm font-semibold text-on-surface">{item.title}</p>
+          <p className="text-xs text-on-surface-variant leading-snug">{item.desc}</p>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -454,6 +471,9 @@ function Content() {
             "Analysis failed. Please try again."}
         </div>
       )}
+
+      {/* What you'll get — preview before first analysis */}
+      {WhatYouGet}
 
       {/* Analysis in progress banner */}
       {analyzeTriggered && (

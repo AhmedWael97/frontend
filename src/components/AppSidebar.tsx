@@ -8,86 +8,138 @@ import {
   LayoutDashboard, Radio, Users, BarChart3, GitMerge, Sparkles,
   Zap, Code2, UserCheck, Building2, PlaySquare, Share2, Download,
   MessageSquare, Globe, CreditCard, User, Shield,
-  Bell, Webhook, Link2, Eye,
+  Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
   ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star, SearchCheck,
 } from "lucide-react";
+import React, { useState } from "react";
 
-const navGroups = [
-  {
-    label: null,
-    items: [
-      { key: "dashboard", href: "/dashboard", icon: LayoutDashboard },
-      { key: "realtime", href: "/dashboard/realtime", icon: Radio },
-      { key: "summary", href: "/dashboard/summary", icon: Star },
-    ],
-  },
+// ── Human-readable labels (override translation keys for jargon-heavy items) ─
+const LABEL_OVERRIDES: Record<string, string> = {
+  engagedVisitors: "Hot Leads",
+  identities:      "Known Visitors",
+  ux:              "Site Health",
+  webVitals:       "Page Speed",
+  jsErrors:        "Broken Pages",
+  scrollDepth:     "Content Reach",
+  customEvents:    "Goal Tracking",
+  ownerBrief:      "Daily Brief",
+  companies:       "Company Visitors",
+  websiteChatbot:  "Live Chat",
+  sharedReports:   "Share Reports",
+  utmBuilder:      "UTM Link Builder",
+  seoChecker:      "SEO Checker",
+  realtime:        "Live Visitors",
+  summary:         "Full Summary",
+  heatmaps:        "Click Maps",
+  replay:          "Watch Sessions",
+  campaigns:       "Campaigns",
+  analytics:       "Deep Analytics",
+  visitors:        "All Visitors",
+  exports:         "Export Data",
+  domains:         "My Websites",
+  billing:         "Plans & Billing",
+};
+
+// ── Core nav (always visible — 5 items, minimal cognitive load) ───────────────
+const CORE_NAV = [
+  { key: "dashboard",     href: "/dashboard",           icon: LayoutDashboard },
+  { key: "realtime",      href: "/dashboard/realtime",  icon: Radio },
+  { key: "heatmaps",      href: "/dashboard/heatmaps",  icon: Flame },
+  { key: "replay",        href: "/dashboard/replay",    icon: PlaySquare },
+  { key: "ai",            href: "/dashboard/ai",        icon: Sparkles },
+];
+
+// ── Power nav (revealed via "More tools" toggle) ──────────────────────────────
+const MORE_NAV = [
   {
     label: "Analytics",
     items: [
-      { key: "visitors", href: "/dashboard/visitors", icon: Users },
-      { key: "analytics", href: "/dashboard/analytics", icon: BarChart3 },
-      { key: "campaigns", href: "/dashboard/campaigns", icon: Megaphone },
-      { key: "engagedVisitors", href: "/dashboard/engaged-visitors", icon: Flame },
-      { key: "funnels", href: "/dashboard/funnels", icon: GitMerge },
-      { key: "customEvents", href: "/dashboard/custom-events", icon: Code2 },
-      { key: "identities", href: "/dashboard/identities", icon: UserCheck },
-      { key: "companies", href: "/dashboard/companies", icon: Building2 },
+      { key: "summary",        href: "/dashboard/summary",          icon: Star },
+      { key: "visitors",       href: "/dashboard/visitors",         icon: Users },
+      { key: "analytics",      href: "/dashboard/analytics",        icon: BarChart3 },
+      { key: "campaigns",      href: "/dashboard/campaigns",        icon: Megaphone },
+      { key: "engagedVisitors",href: "/dashboard/engaged-visitors", icon: Flame },
+      { key: "funnels",        href: "/dashboard/funnels",          icon: GitMerge },
+      { key: "customEvents",   href: "/dashboard/custom-events",    icon: Code2 },
+      { key: "identities",     href: "/dashboard/identities",       icon: UserCheck },
+      { key: "companies",      href: "/dashboard/companies",        icon: Building2 },
     ],
   },
   {
     label: "Intelligence",
     items: [
-      { key: "ai", href: "/dashboard/ai", icon: Sparkles },
-      { key: "ux", href: "/dashboard/ux", icon: Zap },
-      { key: "heatmaps", href: "/dashboard/heatmaps", icon: Flame },
-      { key: "ownerBrief", href: "/dashboard/owner-brief", icon: Lightbulb },
-      { key: "replay", href: "/dashboard/replay", icon: PlaySquare },
-      { key: "websiteChatbot", href: "/dashboard/website-chatbot", icon: MessageSquare },
-      { key: "scrollDepth", href: "/dashboard/scroll-depth", icon: ArrowDownToLine },
-      { key: "webVitals", href: "/dashboard/web-vitals", icon: Gauge },
-      { key: "jsErrors", href: "/dashboard/errors", icon: Bug },
+      { key: "ux",             href: "/dashboard/ux",               icon: Zap },
+      { key: "ownerBrief",     href: "/dashboard/owner-brief",      icon: Lightbulb },
+      { key: "websiteChatbot", href: "/dashboard/website-chatbot",  icon: MessageSquare },
+      { key: "scrollDepth",    href: "/dashboard/scroll-depth",     icon: ArrowDownToLine },
+      { key: "webVitals",      href: "/dashboard/web-vitals",       icon: Gauge },
+      { key: "jsErrors",       href: "/dashboard/errors",           icon: Bug },
     ],
   },
   {
-    label: "Reports",
+    label: "Reports & Tools",
     items: [
-      { key: "sharedReports", href: "/dashboard/shared-reports", icon: Share2 },
-      { key: "exports", href: "/dashboard/exports", icon: Download },
+      { key: "sharedReports",  href: "/dashboard/shared-reports",   icon: Share2 },
+      { key: "exports",        href: "/dashboard/exports",          icon: Download },
+      { key: "utmBuilder",     href: "/tools/utm-builder",          icon: Link2 },
+      { key: "seoChecker",     href: "/tools/seo-checker",          icon: SearchCheck },
     ],
   },
   {
     label: "Settings",
     items: [
-      { key: "domains", href: "/settings/domains", icon: Globe },
-      { key: "billing", href: "/settings/billing", icon: CreditCard },
-      { key: "profile", href: "/settings/profile", icon: User },
-      { key: "security", href: "/settings/security", icon: Shield },
-      { key: "alerts", href: "/settings/alerts", icon: Bell },
-      { key: "webhooks", href: "/settings/webhooks", icon: Webhook },
-      { key: "notifications", href: "/settings/notifications", icon: Bell },
-    ],
-  },
-  {
-    label: "Tools",
-    items: [
-      { key: "utmBuilder", href: "/tools/utm-builder", icon: Link2 },
-      { key: "seoChecker", href: "/tools/seo-checker", icon: SearchCheck },
+      { key: "domains",        href: "/settings/domains",           icon: Globe },
+      { key: "billing",        href: "/settings/billing",           icon: CreditCard },
+      { key: "profile",        href: "/settings/profile",           icon: User },
+      { key: "security",       href: "/settings/security",          icon: Shield },
+      { key: "alerts",         href: "/settings/alerts",            icon: Bell },
+      { key: "webhooks",       href: "/settings/webhooks",          icon: Webhook },
+      { key: "notifications",  href: "/settings/notifications",     icon: Bell },
     ],
   },
 ];
 
-
-import React, { useState } from "react";
+// All items flat (for active-detection on power pages)
+const ALL_ITEMS = CORE_NAV.concat(MORE_NAV.flatMap((g) => g.items));
 
 export function AppSidebar() {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const locale = useLocale();
   const [open, setOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   const isActive = (href: string) => {
     const full = `/${locale}${href}`;
     return pathname === full || pathname.startsWith(`${full}/`);
+  };
+
+  // Auto-open "more" if the current page lives there
+  const currentInMore = MORE_NAV.flatMap((g) => g.items).some((item) => isActive(item.href));
+
+  const navLabel = (key: string): string => {
+    if (LABEL_OVERRIDES[key]) return LABEL_OVERRIDES[key];
+    try { return t(key as Parameters<typeof t>[0]); } catch { return key; }
+  };
+
+  const NavItem = ({ item }: { item: (typeof CORE_NAV)[0] }) => {
+    const Icon = item.icon;
+    const active = isActive(item.href);
+    return (
+      <Link
+        href={`/${locale}${item.href}`}
+        className={cn(
+          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+          active
+            ? "bg-gradient-to-r from-primary/20 to-primary-container/10 text-primary border border-primary/15"
+            : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+        )}
+        onClick={() => setOpen(false)}
+      >
+        <Icon className={cn("w-4 h-4 flex-shrink-0", active ? "text-primary" : "")} />
+        <span className="truncate">{navLabel(item.key)}</span>
+      </Link>
+    );
   };
 
   // Show sidebar always on desktop, toggle on mobile
@@ -130,38 +182,45 @@ export function AppSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-5 no-scrollbar">
-          {navGroups.map((group, gi) => (
-            <div key={gi}>
-              {group.label && (
-                <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/50">
-                  {group.label}
-                </p>
-              )}
-              <div className="space-y-0.5">
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  const active = isActive(item.href);
-                  return (
-                    <Link
-                      key={item.key}
-                      href={`/${locale}${item.href}`}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
-                        active
-                          ? "bg-gradient-to-r from-primary/20 to-primary-container/10 text-primary border border-primary/15"
-                          : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
-                      )}
-                      onClick={() => setOpen(false)}
-                    >
-                      <Icon className={cn("w-4 h-4 flex-shrink-0", active ? "text-primary" : "")} />
-                      <span className="truncate">{t(item.key as Parameters<typeof t>[0])}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 no-scrollbar">
+          {/* ── Core items (always visible) ─────────────────────────────── */}
+          {CORE_NAV.map((item) => (
+            <NavItem key={item.key} item={item} />
           ))}
+
+          {/* ── More tools toggle ────────────────────────────────────────── */}
+          <button
+            onClick={() => setMoreOpen((v) => !v)}
+            className={cn(
+              "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all mt-1",
+              (moreOpen || currentInMore)
+                ? "text-on-surface bg-surface-container"
+                : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+            )}
+          >
+            <span>More tools</span>
+            {(moreOpen || currentInMore)
+              ? <ChevronUp className="w-4 h-4 opacity-60" />
+              : <ChevronDown className="w-4 h-4 opacity-60" />}
+          </button>
+
+          {/* ── Power-user nav groups ────────────────────────────────────── */}
+          {(moreOpen || currentInMore) && (
+            <div className="space-y-4 mt-1 pt-1 border-t border-outline-variant/20">
+              {MORE_NAV.map((group, gi) => (
+                <div key={gi}>
+                  <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/50">
+                    {group.label}
+                  </p>
+                  <div className="space-y-0.5">
+                    {group.items.map((item) => (
+                      <NavItem key={item.key} item={item} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </nav>
       </aside>
     </>

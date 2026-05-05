@@ -1,28 +1,42 @@
 "use client";
 
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
+import Link from "next/link";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { Users, Activity, Clock, TrendingDown, TrendingUp } from "lucide-react";
+import {
+  Users, Activity, Clock, TrendingDown, TrendingUp, Flame, Globe,
+  Plus, AlertTriangle, Share2, BarChart2, Sparkles,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { formatNumber } from "@/lib/utils";
+import { toast } from "sonner";
+import WelcomeChecklist from "@/components/WelcomeChecklist";
 
+// ── KPI Card ─────────────────────────────────────────────────────────────────
 function KpiCard({
-  title, value, icon: Icon, trend, trendValue
+  title, value, icon: Icon, trend, trendValue, hint, clickHref,
 }: {
   title: string;
   value: string;
   icon: React.ElementType;
   trend?: "up" | "down";
   trendValue?: string;
+  hint?: string;
+  clickHref?: string;
 }) {
-  return (
-    <Card>
+  const locale = useLocale();
+  const inner = (
+    <Card className={clickHref ? "cursor-pointer hover:ring-2 ring-primary/30 transition-all" : ""}>
       <CardContent className="p-5">
         <div className="flex items-start justify-between">
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-2">{title}</p>
             <p className="text-3xl font-black text-on-surface tracking-tight">{value}</p>
             {trendValue && (
@@ -31,19 +45,27 @@ function KpiCard({
                 {trendValue}
               </div>
             )}
+            {hint && !trendValue && (
+              <p className="text-xs text-on-surface-variant mt-1.5 leading-snug">{hint}</p>
+            )}
           </div>
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 ml-3">
             <Icon className="w-5 h-5 text-primary" />
           </div>
         </div>
       </CardContent>
     </Card>
   );
+  if (clickHref) return <Link href={`/${locale}${clickHref}`}>{inner}</Link>;
+  return inner;
 }
 
+// ── Dashboard Content ──────────────────────────────────────────────────────────
 function DashboardContent() {
   const t = useTranslations("dashboard");
   const { selectedDomainId } = useAuthStore();
+  const locale = useLocale();
+  const router = useRouter();
 
   const { data, isLoading } = useQuery({
     queryKey: ["overview", selectedDomainId],
@@ -52,10 +74,36 @@ function DashboardContent() {
     refetchInterval: 60000,
   });
 
+  // ── Milestone toast: celebrate first 100 visitors ────────────────────────
+  useEffect(() => {
+    if (!data?.visitors) return;
+    const key = `eye_milestone_100_${selectedDomainId}`;
+    const already = localStorage.getItem(key);
+    if (!already && data.visitors >= 100) {
+      toast.success(`You just hit ${formatNumber(data.visitors)} visitors! Your tracking is working perfectly.`);
+      localStorage.setItem(key, "1");
+    }
+  }, [data?.visitors, selectedDomainId]);
+
+  // ── No domain selected — guide user to add their site ────────────────────
   if (!selectedDomainId) {
     return (
-      <div className="flex items-center justify-center h-64 text-on-surface-variant">
-        Select a domain from the top bar to view analytics
+      <div className="flex flex-col items-center justify-center h-72 gap-5 text-center px-4">
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+          <Globe className="w-8 h-8 text-primary" />
+        </div>
+        <div>
+          <p className="text-lg font-bold text-on-surface">Connect your first website</p>
+          <p className="text-sm text-on-surface-variant mt-1.5 max-w-xs mx-auto">
+            Add your domain and paste one line of code to start seeing who visits your site — in real time.
+          </p>
+        </div>
+        <Link href={`/${locale}/settings/domains`}>
+          <Button className="gap-2">
+            <Plus className="w-4 h-4" />
+            Add your website
+          </Button>
+        </Link>
       </div>
     );
   }
@@ -67,20 +115,81 @@ function DashboardContent() {
     return m > 0 ? `${m}m ${sec}s` : `${sec}s`;
   };
 
+  const bounceRate = data?.bounce_rate || 0;
+  const bounceHint = bounceRate > 70
+    ? "High — most visitors leave after 1 page. Check your top landing pages."
+    : bounceRate > 50
+      ? "Average — some pages may need stronger calls-to-action."
+      : "Healthy — visitors are exploring multiple pages.";
+
+  const uxScore = data?.ux_score?.score as number | undefined;
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-black text-on-surface tracking-tight">{t("overview")}</h1>
-        <p className="text-on-surface-variant text-sm mt-0.5">Last 30 days</p>
+      {/* Header */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-black text-on-surface tracking-tight">{t("overview")}</h1>
+          <p className="text-on-surface-variant text-sm mt-0.5">Last 30 days</p>
+        </div>
+        <Link href={`/${locale}/dashboard/shared-reports`}>
+          <Button variant="outline" size="sm" className="gap-2">
+            <Share2 className="w-3.5 h-3.5" />
+            Share Report
+          </Button>
+        </Link>
       </div>
 
-      {/* KPI cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard title={t("visitors")} value={isLoading ? "…" : formatNumber(data?.visitors || 0)} icon={Users} />
-        <KpiCard title={t("sessions")} value={isLoading ? "…" : formatNumber(data?.sessions || 0)} icon={Activity} />
-        <KpiCard title={t("avgTime")} value={isLoading ? "…" : formatSeconds(data?.avg_session_duration || 0)} icon={Clock} />
-        <KpiCard title={t("bounceRate")} value={isLoading ? "…" : `${(data?.bounce_rate || 0).toFixed(1)}%`} icon={TrendingDown} />
+      {/* Site Health alert — only when score is poor */}
+      {uxScore !== undefined && uxScore < 70 && (
+        <div className="flex items-center gap-3 p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-sm">
+          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+          <span className="text-on-surface flex-1">
+            Your <strong>Site Health score is {uxScore}/100</strong> — visitors may be running into problems on your site.
+          </span>
+          <Link href={`/${locale}/dashboard/ux`} className="text-xs text-primary font-semibold whitespace-nowrap">
+            See what to fix →
+          </Link>
+        </div>
+      )}
+
+      {/* KPI cards — 5 cards: core 4 + Hot Leads */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <KpiCard
+          title={t("visitors")}
+          value={isLoading ? "…" : formatNumber(data?.visitors || 0)}
+          icon={Users}
+        />
+        <KpiCard
+          title={t("sessions")}
+          value={isLoading ? "…" : formatNumber(data?.sessions || 0)}
+          icon={Activity}
+        />
+        <KpiCard
+          title={t("avgTime")}
+          value={isLoading ? "…" : formatSeconds(data?.avg_session_duration || 0)}
+          icon={Clock}
+        />
+        <KpiCard
+          title="Bounce Rate"
+          value={isLoading ? "…" : `${(bounceRate).toFixed(1)}%`}
+          icon={TrendingDown}
+          hint={bounceHint}
+        />
+        {/* Hot Leads — clickable shortcut to the Engaged Visitors feature */}
+        <KpiCard
+          title="Hot Leads"
+          value={isLoading ? "…" : formatNumber(data?.engaged_count || 0)}
+          icon={Flame}
+          hint="Visitors most likely to convert"
+          clickHref="/dashboard/engaged-visitors"
+        />
       </div>
+
+      {/* Onboarding checklist — shown until all steps complete or dismissed */}
+      {selectedDomainId && (
+        <WelcomeChecklist domainId={selectedDomainId} />
+      )}
 
       {/* Area chart */}
       <Card>
@@ -164,6 +273,26 @@ function DashboardContent() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Quick-access shortcuts */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { href: "/dashboard/ai",               icon: Sparkles,  label: "AI Insights",    desc: "Get growth ideas" },
+          { href: "/dashboard/heatmaps",          icon: Flame,     label: "Click Maps",     desc: "See where people click" },
+          { href: "/dashboard/engaged-visitors",  icon: Users,     label: "Hot Leads",      desc: "Your best visitors" },
+          { href: "/dashboard/ux",                icon: BarChart2, label: "Site Health",    desc: "Find broken experiences" },
+        ].map((s) => (
+          <Link key={s.href} href={`/${locale}${s.href}`}>
+            <Card className="hover:ring-2 ring-primary/20 transition-all cursor-pointer h-full">
+              <CardContent className="p-4 flex flex-col gap-1.5">
+                <s.icon className="w-5 h-5 text-primary" />
+                <p className="text-sm font-bold text-on-surface">{s.label}</p>
+                <p className="text-xs text-on-surface-variant">{s.desc}</p>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
       </div>
     </div>
   );

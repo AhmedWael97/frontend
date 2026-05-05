@@ -118,18 +118,29 @@ function Content() {
       <div>
         <h1 className="text-2xl font-black text-on-surface tracking-tight flex items-center gap-2">
           <Gauge className="w-6 h-6 text-primary" />
-          Web Vitals
+          Page Speed
         </h1>
         <p className="text-on-surface-variant text-sm mt-0.5">
-          Core Web Vitals per page — LCP, CLS, and INP measured from real visitors.
+          How fast your pages load and respond — measured from real visitors, not a lab test.
         </p>
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap gap-4 text-xs text-on-surface-variant">
-        <span><strong className="text-on-surface">LCP</strong> — Largest Contentful Paint (load speed, good &lt; 2.5 s)</span>
-        <span><strong className="text-on-surface">CLS</strong> — Cumulative Layout Shift (visual stability, good &lt; 0.1)</span>
-        <span><strong className="text-on-surface">INP</strong> — Interaction to Next Paint (responsiveness, good &lt; 200 ms)</span>
+      {/* Legend — human-readable metric explanations */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {[
+          { short: "LCP", name: "Load Speed",       full: "Largest Contentful Paint", target: "Under 2.5 sec",  desc: "How fast the main content appears on screen" },
+          { short: "CLS", name: "Layout Stability",  full: "Cumulative Layout Shift",  target: "Under 0.1",     desc: "Whether the page jumps around as it loads" },
+          { short: "INP", name: "Responsiveness",    full: "Interaction to Next Paint", target: "Under 200 ms", desc: "How quickly the page reacts when you tap or click" },
+        ].map((m) => (
+          <div key={m.short} className="p-3 rounded-xl bg-surface-container border border-outline-variant/20">
+            <div className="flex items-baseline gap-2">
+              <span className="text-base font-black text-primary">{m.name}</span>
+              <span className="text-[10px] text-on-surface-variant font-mono">{m.short}</span>
+            </div>
+            <p className="text-xs text-on-surface-variant mt-0.5">{m.desc}</p>
+            <p className="text-xs text-emerald-400 font-semibold mt-1">Good: {m.target}</p>
+          </div>
+        ))}
       </div>
 
       {!isLoading && pages.length > 0 && (
@@ -250,17 +261,17 @@ function Content() {
                 <div className="grid grid-cols-3 gap-4 border border-outline-variant/20 rounded-lg p-3">
                   <MetricCell
                     value={page.avg_lcp >= 1000 ? `${(page.avg_lcp / 1000).toFixed(1)}s` : `${page.avg_lcp}ms`}
-                    label="LCP"
+                    label="Load Speed"
                     rating={lcpLabel(page.avg_lcp)}
                   />
                   <MetricCell
                     value={String(page.avg_cls)}
-                    label="CLS"
+                    label="Layout Stability"
                     rating={clsLabel(page.avg_cls)}
                   />
                   <MetricCell
                     value={`${page.avg_inp}ms`}
-                    label="INP"
+                    label="Responsiveness"
                     rating={inpLabel(page.avg_inp)}
                   />
                 </div>

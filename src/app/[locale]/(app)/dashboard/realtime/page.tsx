@@ -14,20 +14,22 @@ export default function RealtimePage() {
   const { selectedDomainId, token } = useAuthStore();
     const t = useTranslations("realtime");
   const [activeCount, setActiveCount] = useState<number | null>(null);
-  const events: RealtimeEvent[] = [];
+  const [events, setEvents] = useState<RealtimeEvent[]>([]);
 
   useEffect(() => {
     if (!selectedDomainId || !token) return;
-    // Poll active visitors every 30s as fallback
+    // Poll every 10s for live feed + active count
     const poll = async () => {
       try {
         const res = await analyticsApi.realtime(selectedDomainId);
         setActiveCount(res.data.active_visitors ?? 0);
+        const recent: RealtimeEvent[] = (res.data.recent_events ?? []).slice(0, 10);
+        if (recent.length) setEvents(recent);
       } catch {}
     };
     poll();
-    const t = setInterval(poll, 30000);
-    return () => clearInterval(t);
+    const timer = setInterval(poll, 10000);
+    return () => clearInterval(timer);
   }, [selectedDomainId, token]);
 
   return (
