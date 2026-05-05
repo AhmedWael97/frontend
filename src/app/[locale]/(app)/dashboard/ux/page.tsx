@@ -1,13 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { uxApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { Smile, Meh, Frown, AlertTriangle, CheckCircle, CircleHelp, Film, Flame } from "lucide-react";
+import { Smile, Meh, Frown, AlertTriangle, CheckCircle, CircleHelp, Film } from "lucide-react";
 
 type IssueExplanation = {
   label: string;
@@ -299,7 +298,8 @@ function Content() {
       // Reliability + page flow quality
       performance: breakdown.performance ?? averageScores([errorScore, bounceScore]),
       // Are users staying and moving through the experience?
-      engagement: breakdown.engagement ?? averageScores([avgSessionScore, bounceScore]),
+      // Backend stores this as avg_session (session duration score), not engagement
+      engagement: breakdown.engagement ?? Number(breakdown.avg_session ?? 0),
       // Do users feel friction or frustration?
       satisfaction: breakdown.satisfaction ?? averageScores([rageScore, formScore]),
     };
@@ -331,25 +331,6 @@ function Content() {
           </Card>
         ))}
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
-            <Flame className="w-4 h-4" /> Heatmaps
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <p className="text-sm text-on-surface-variant">
-            Heatmaps moved to a dedicated page with on-demand screenshot loading and server-side caching.
-          </p>
-          <Link
-            href="../../heatmaps"
-            className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90"
-          >
-            Open Heatmaps
-          </Link>
-        </CardContent>
-      </Card>
 
       {/* UX Issues */}
       <Card>

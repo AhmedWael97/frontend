@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { uxApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { ArrowDownToLine, TrendingDown } from "lucide-react";
+import { ArrowDownToLine, TrendingDown, TrendingUp, Award } from "lucide-react";
 
 type PageDepth = {
   url: string;
@@ -63,6 +63,19 @@ function Content() {
 
   const pages = data ?? [];
 
+  // Compute completion rate (% of visitors who scroll to 100%) for each page
+  const pagesWithCompletion = pages
+    .filter((p) => p.total > 0)
+    .map((p) => ({ ...p, completion: Math.min(100, Math.round((p.d100 / p.total) * 100)) }));
+
+  const bestPages = [...pagesWithCompletion]
+    .sort((a, b) => b.completion - a.completion)
+    .slice(0, 3);
+
+  const worstPages = [...pagesWithCompletion]
+    .sort((a, b) => a.completion - b.completion)
+    .slice(0, 3);
+
   return (
     <div className="space-y-6">
       <div>
@@ -94,38 +107,90 @@ function Content() {
       )}
 
       {!isLoading && pages.length > 0 && (
-        <div className="space-y-3">
-          {pages.map((page) => (
-            <Card key={page.url}>
+        <>
+          {/* ── Best & Worst pages by full-scroll completion ─────────────── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
               <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <div className="min-w-0">
-                    <CardTitle className="text-sm font-semibold truncate" title={page.url}>
-                      {shortUrl(page.url)}
-                    </CardTitle>
-                    <a
-                      href={page.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[11px] text-primary/70 hover:text-primary truncate block max-w-xs"
-                    >
-                      {page.url}
-                    </a>
-                  </div>
-                  <span className="text-xs text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full flex-shrink-0">
-                    {page.total.toLocaleString()} visitors
-                  </span>
-                </div>
+                <CardTitle className="text-xs uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+                  <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                  Best Performing Pages
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2 pt-0">
-                <DepthBar value={page.d25}  max={page.total} label="25%"  color="bg-emerald-500" />
-                <DepthBar value={page.d50}  max={page.total} label="50%"  color="bg-yellow-400" />
-                <DepthBar value={page.d75}  max={page.total} label="75%"  color="bg-orange-400" />
-                <DepthBar value={page.d100} max={page.total} label="100%" color="bg-rose-500" />
+              <CardContent className="space-y-2">
+                <p className="text-[11px] text-on-surface-variant/70 mb-3">
+                  Highest % of visitors scrolling to the bottom — strong content engagement.
+                </p>
+                {bestPages.map((p, i) => (
+                  <div key={i} className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <Award className="w-3 h-3 text-emerald-400 shrink-0" />
+                      <span className="text-xs text-on-surface truncate font-mono" title={p.url}>{shortUrl(p.url)}</span>
+                    </div>
+                    <span className="text-xs font-semibold text-emerald-400 shrink-0">{p.completion}% read all</span>
+                  </div>
+                ))}
               </CardContent>
             </Card>
-          ))}
-        </div>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+                  <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
+                  Needs Attention
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <p className="text-[11px] text-on-surface-variant/70 mb-3">
+                  Lowest completion rate — visitors leave before reaching the bottom.
+                </p>
+                {worstPages.map((p, i) => (
+                  <div key={i} className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <TrendingDown className="w-3 h-3 text-rose-400 shrink-0" />
+                      <span className="text-xs text-on-surface truncate font-mono" title={p.url}>{shortUrl(p.url)}</span>
+                    </div>
+                    <span className="text-xs font-semibold text-rose-400 shrink-0">{p.completion}% read all</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* ── Per-page breakdown ──────────────────────────────────────── */}
+          <div className="space-y-3">
+            {pages.map((page) => (
+              <Card key={page.url}>
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <div className="min-w-0">
+                      <CardTitle className="text-sm font-semibold truncate" title={page.url}>
+                        {shortUrl(page.url)}
+                      </CardTitle>
+                      <a
+                        href={page.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-primary/70 hover:text-primary truncate block max-w-xs"
+                      >
+                        {page.url}
+                      </a>
+                    </div>
+                    <span className="text-xs text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full flex-shrink-0">
+                      {page.total.toLocaleString()} visitors
+                    </span>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-2 pt-0">
+                  <DepthBar value={page.d25}  max={page.total} label="25%"  color="bg-emerald-500" />
+                  <DepthBar value={page.d50}  max={page.total} label="50%"  color="bg-yellow-400" />
+                  <DepthBar value={page.d75}  max={page.total} label="75%"  color="bg-orange-400" />
+                  <DepthBar value={page.d100} max={page.total} label="100%" color="bg-rose-500" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

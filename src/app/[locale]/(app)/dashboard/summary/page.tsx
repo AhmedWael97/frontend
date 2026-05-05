@@ -9,7 +9,7 @@ import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip as ChartTooltip, ResponsiveContainer,
-  CartesianGrid, PieChart, Pie, Cell,
+  CartesianGrid, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import {
   Users, Eye, Clock, TrendingDown, TrendingUp, Globe, Monitor, Smartphone,
@@ -157,6 +157,17 @@ const PERIODS = [
   { label: "90 days", value: "90d" },
 ];
 
+/** Strip scheme+host from a URL, returning only the path (and query if present). */
+function pathOnly(url: string): string {
+  try {
+    const u = new URL(url);
+    const path = u.pathname + (u.search ? u.search : "");
+    return path || "/";
+  } catch {
+    return url;
+  }
+}
+
 function Section({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
     <div>
@@ -300,6 +311,7 @@ function Content() {
                 <XAxis dataKey="date" tick={{ fill: "#c7c4d7", fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: "#c7c4d7", fontSize: 10 }} axisLine={false} tickLine={false} />
                 <ChartTooltip contentStyle={TOOLTIP_STYLE} />
+                <Legend wrapperStyle={{ fontSize: 11, color: "#c7c4d7" }} />
                 <Area type="monotone" dataKey="visitors" stroke="#c0c1ff" fill="url(#gV)" strokeWidth={2} dot={false} name="Visitors" />
                 <Area type="monotone" dataKey="sessions" stroke="#a78bfa" fill="url(#gS)" strokeWidth={2} dot={false} name="Sessions" />
               </AreaChart>
@@ -321,7 +333,7 @@ function Content() {
                 ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} />)
                 : (d?.top_pages ?? []).map((p, i) => (
                     <div key={i} className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-on-surface truncate max-w-[160px]" title={p.url}>{p.url}</span>
+                      <span className="text-xs text-on-surface truncate max-w-[160px] font-mono" title={p.url}>{pathOnly(p.url)}</span>
                       <Badge variant="secondary" className="text-xs shrink-0">{Number(p.views).toLocaleString()}</Badge>
                     </div>
                   ))}
@@ -357,7 +369,7 @@ function Content() {
                 ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} />)
                 : (d?.top_referrers ?? []).map((r, i) => (
                     <div key={i} className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-on-surface truncate max-w-[160px]" title={r.referrer}>{r.referrer}</span>
+                      <span className="text-xs text-on-surface truncate max-w-[160px]" title={r.referrer}>{pathOnly(r.referrer) || r.referrer || "(direct)"}</span>
                       <Badge variant="secondary" className="text-xs">{Number(r.sessions).toLocaleString()}</Badge>
                     </div>
                   ))}
@@ -377,6 +389,8 @@ function Content() {
             <CardContent className="flex flex-col items-center gap-3">
               {isLoading ? (
                 <div className="h-40 bg-surface-container rounded animate-pulse w-full" />
+              ) : (d?.devices ?? []).length === 0 ? (
+                <p className="text-xs text-on-surface-variant text-center py-6">No device data yet.</p>
               ) : (
                 <>
                   <ResponsiveContainer width="100%" height={140}>
@@ -402,6 +416,7 @@ function Content() {
                         <span className="w-2 h-2 rounded-full" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
                         <DeviceIcon type={dv.device_type} />
                         {dv.device_type}
+                        <span className="text-on-surface-variant/60">({Number(dv.sessions).toLocaleString()})</span>
                       </span>
                     ))}
                   </div>

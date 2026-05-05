@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { uxApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { Gauge, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { Gauge, CheckCircle, AlertTriangle, XCircle, TrendingUp, TrendingDown } from "lucide-react";
 
 type PageVitals = {
   url: string;
@@ -107,6 +107,12 @@ function Content() {
   const niCount = pages.filter((p) => p.rating === "needs-improvement").length;
   const poorCount = pages.filter((p) => p.rating === "poor").length;
 
+  // Best page: good rating + lowest avg_lcp; worst page: poor rating + highest avg_lcp
+  const goodPages = pages.filter((p) => p.rating === "good").sort((a, b) => a.avg_lcp - b.avg_lcp);
+  const poorPages = pages.filter((p) => p.rating === "poor").sort((a, b) => b.avg_lcp - a.avg_lcp);
+  const bestPage = goodPages[0] ?? null;
+  const worstPage = poorPages[0] ?? null;
+
   return (
     <div className="space-y-6">
       <div>
@@ -168,8 +174,54 @@ function Content() {
       )}
 
       {!isLoading && pages.length > 0 && (
-        <div className="space-y-3">
-          {pages.map((page) => (
+        <>
+          {/* ── Best & Worst page highlight ──────────────────────────────── */}
+          {(bestPage || worstPage) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {bestPage && (
+                <Card className="border-emerald-500/30">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+                      <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                      Best Performing Page
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-1">
+                    <p className="text-sm font-semibold text-emerald-400 truncate font-mono" title={bestPage.url}>
+                      {shortUrl(bestPage.url)}
+                    </p>
+                    <p className="text-xs text-on-surface-variant">
+                      LCP {bestPage.avg_lcp >= 1000 ? `${(bestPage.avg_lcp / 1000).toFixed(1)}s` : `${bestPage.avg_lcp}ms`}
+                      {" · "}Good rating · {bestPage.total.toLocaleString()} samples
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+              {worstPage && (
+                <Card className="border-rose-500/30">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+                      <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
+                      Needs Most Attention
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-1">
+                    <p className="text-sm font-semibold text-rose-400 truncate font-mono" title={worstPage.url}>
+                      {shortUrl(worstPage.url)}
+                    </p>
+                    <p className="text-xs text-on-surface-variant">
+                      LCP {worstPage.avg_lcp >= 1000 ? `${(worstPage.avg_lcp / 1000).toFixed(1)}s` : `${worstPage.avg_lcp}ms`}
+                      {" · "}Poor rating · consider optimizing images and third-party scripts
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
+
+          {/* ── Per-page breakdown ──────────────────────────────────────── */}
+          <div className="space-y-3">
+            {pages.map((page) => (
             <Card key={page.url}>
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
@@ -243,6 +295,7 @@ function Content() {
             </Card>
           ))}
         </div>
+        </>
       )}
     </div>
   );

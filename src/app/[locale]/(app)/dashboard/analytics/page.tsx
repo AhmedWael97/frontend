@@ -150,34 +150,39 @@ function Content() {
             <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Where Visitors Come From</CardTitle></CardHeader>
             <CardContent>
               {refRows.length ? (
-                <div className="space-y-2">
-                  {refRows.map((r: any, i: number) => {
-                    const host = referrerHost(r.referrer);
-                    return (
-                      <div key={i} className="flex items-center gap-2">
-                        {host ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={`https://www.google.com/s2/favicons?domain=${host}&sz=16`}
-                            alt=""
-                            width={14} height={14}
-                            className="rounded-sm shrink-0 opacity-80"
-                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                          />
-                        ) : <span className="w-3.5 shrink-0" />}
-                        <span
-                          className="text-xs text-on-surface flex-1 min-w-0"
-                          style={{ direction: "rtl", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-                          title={r.referrer}
-                        >
-                          {r.referrer || "(direct)"}
-                        </span>
-                        <span className="text-xs text-on-surface-variant shrink-0">{Number(r.visits).toLocaleString()}</span>
-                        {comparing && <DeltaBadge current={Number(r.visits)} prev={prevVisits(refPrev, "referrer", r.referrer)} />}
-                      </div>
-                    );
-                  })}
-                </div>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-outline-variant/20 text-on-surface-variant">
+                      <th className="text-left py-1.5 font-medium">Source</th>
+                      <th className="text-right py-1.5 font-medium pr-2">Visits</th>
+                      {comparing && <th className="text-right py-1.5 font-medium">vs Prev</th>}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-outline-variant/10">
+                    {refRows.map((r: any, i: number) => {
+                      const host = referrerHost(r.referrer);
+                      return (
+                        <tr key={i} className="hover:bg-surface-container/50 transition-colors">
+                          <td className="py-1.5 flex items-center gap-2 max-w-xs">
+                            {host ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={`https://www.google.com/s2/favicons?domain=${host}&sz=16`}
+                                alt=""
+                                width={14} height={14}
+                                className="rounded-sm shrink-0 opacity-80"
+                                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                              />
+                            ) : <span className="w-3.5 shrink-0" />}
+                            <span className="text-on-surface truncate" title={r.referrer}>{r.referrer || "(direct)"}</span>
+                          </td>
+                          <td className="py-1.5 text-right text-on-surface-variant pr-2">{Number(r.visits).toLocaleString()}</td>
+                          {comparing && <td className="py-1.5 text-right"><DeltaBadge current={Number(r.visits)} prev={prevVisits(refPrev, "referrer", r.referrer)} /></td>}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               ) : <NoData />}
             </CardContent>
           </Card>
@@ -188,21 +193,24 @@ function Content() {
             <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Pages Visited Most</CardTitle></CardHeader>
             <CardContent>
               {pagesRows.length ? (
-                <div className="space-y-2">
-                  {pagesRows.map((p: any, i: number) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <span
-                        className="text-xs text-on-surface flex-1 min-w-0 font-mono"
-                        style={{ direction: "rtl", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-                        title={p.url}
-                      >
-                        {shortUrl(p.url)}
-                      </span>
-                      <span className="text-xs text-on-surface-variant shrink-0">{Number(p.pageviews).toLocaleString()} views</span>
-                      {comparing && <DeltaBadge current={Number(p.pageviews)} prev={prevVisits(pagesPrev, "url", p.url)} />}
-                    </div>
-                  ))}
-                </div>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-outline-variant/20 text-on-surface-variant">
+                      <th className="text-left py-1.5 font-medium">Page</th>
+                      <th className="text-right py-1.5 font-medium pr-2">Views</th>
+                      {comparing && <th className="text-right py-1.5 font-medium">vs Prev</th>}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-outline-variant/10">
+                    {pagesRows.map((p: any, i: number) => (
+                      <tr key={i} className="hover:bg-surface-container/50 transition-colors">
+                        <td className="py-1.5 font-mono text-on-surface truncate max-w-xs" title={p.url}>{shortUrl(p.url)}</td>
+                        <td className="py-1.5 text-right text-on-surface-variant pr-2">{Number(p.pageviews).toLocaleString()}</td>
+                        {comparing && <td className="py-1.5 text-right"><DeltaBadge current={Number(p.pageviews)} prev={prevVisits(pagesPrev, "url", p.url)} /></td>}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               ) : <NoData />}
             </CardContent>
           </Card>
@@ -214,7 +222,17 @@ function Content() {
               <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Device Types</CardTitle></CardHeader>
               <CardContent>
                 {devData?.devices?.length ? (
-                  <SimpleBarChart data={devData.devices} dataKey="visits" nameKey="device_type" />
+                  <>
+                    <table className="w-full text-xs mb-4">
+                      <thead><tr className="border-b border-outline-variant/20 text-on-surface-variant"><th className="text-left py-1 font-medium">Device</th><th className="text-right py-1 font-medium">Visits</th></tr></thead>
+                      <tbody className="divide-y divide-outline-variant/10">
+                        {devData.devices.map((d: any, i: number) => (
+                          <tr key={i}><td className="py-1 text-on-surface">{d.device_type}</td><td className="py-1 text-right text-on-surface-variant">{Number(d.visits).toLocaleString()}</td></tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <SimpleBarChart data={devData.devices} dataKey="visits" nameKey="device_type" />
+                  </>
                 ) : <NoData />}
               </CardContent>
             </Card>
@@ -222,7 +240,17 @@ function Content() {
               <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Browsers</CardTitle></CardHeader>
               <CardContent>
                 {devData?.browsers?.length ? (
-                  <SimpleBarChart data={devData.browsers} dataKey="visits" nameKey="browser" />
+                  <>
+                    <table className="w-full text-xs mb-4">
+                      <thead><tr className="border-b border-outline-variant/20 text-on-surface-variant"><th className="text-left py-1 font-medium">Browser</th><th className="text-right py-1 font-medium">Visits</th></tr></thead>
+                      <tbody className="divide-y divide-outline-variant/10">
+                        {devData.browsers.map((d: any, i: number) => (
+                          <tr key={i}><td className="py-1 text-on-surface">{d.browser}</td><td className="py-1 text-right text-on-surface-variant">{Number(d.visits).toLocaleString()}</td></tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <SimpleBarChart data={devData.browsers} dataKey="visits" nameKey="browser" />
+                  </>
                 ) : <NoData />}
               </CardContent>
             </Card>
@@ -230,7 +258,17 @@ function Content() {
               <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Operating Systems</CardTitle></CardHeader>
               <CardContent>
                 {devData?.os?.length ? (
-                  <SimpleBarChart data={devData.os} dataKey="visits" nameKey="os" />
+                  <>
+                    <table className="w-full text-xs mb-4">
+                      <thead><tr className="border-b border-outline-variant/20 text-on-surface-variant"><th className="text-left py-1 font-medium">OS</th><th className="text-right py-1 font-medium">Visits</th></tr></thead>
+                      <tbody className="divide-y divide-outline-variant/10">
+                        {devData.os.map((d: any, i: number) => (
+                          <tr key={i}><td className="py-1 text-on-surface">{d.os}</td><td className="py-1 text-right text-on-surface-variant">{Number(d.visits).toLocaleString()}</td></tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <SimpleBarChart data={devData.os} dataKey="visits" nameKey="os" />
+                  </>
                 ) : <NoData />}
               </CardContent>
             </Card>
@@ -242,7 +280,17 @@ function Content() {
             <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Custom Events</CardTitle></CardHeader>
             <CardContent>
               {Array.isArray(events) && events.length ? (
-                <SimpleBarChart data={events} dataKey="occurrences" nameKey="name" />
+                <>
+                  <table className="w-full text-xs mb-4">
+                    <thead><tr className="border-b border-outline-variant/20 text-on-surface-variant"><th className="text-left py-1 font-medium">Event</th><th className="text-right py-1 font-medium">Occurrences</th></tr></thead>
+                    <tbody className="divide-y divide-outline-variant/10">
+                      {events.map((e: any, i: number) => (
+                        <tr key={i}><td className="py-1 text-on-surface font-mono">{e.name}</td><td className="py-1 text-right text-on-surface-variant">{Number(e.occurrences).toLocaleString()}</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <SimpleBarChart data={events} dataKey="occurrences" nameKey="name" />
+                </>
               ) : <NoData message="No custom events tracked yet. Use eye.track() in your website code." />}
             </CardContent>
           </Card>
