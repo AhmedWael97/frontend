@@ -6,6 +6,7 @@ import { useLocale } from "next-intl";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AppHeader } from "@/components/AppHeader";
 import { ImpersonationBanner } from "@/components/ImpersonationBanner";
+import { AiChatBubble } from "@/components/AiChatBubble";
 import { useAuthStore } from "@/store/auth";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -55,6 +56,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <AppHeader />
         <main className="flex-1 p-6">{children}</main>
       </div>
+      <AiChatBubble />
     </div>
   );
 }
