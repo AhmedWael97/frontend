@@ -101,7 +101,7 @@ export default function AiAssistantPage() {
 
   const { data: sessions = [], isLoading: loadingSessions } = useQuery({
     queryKey: ["chatbot-sessions", domainId],
-    queryFn: () => chatbotApi.sessions(domainId!),
+    queryFn: () => chatbotApi.sessions(domainId!).then((r) => r.data),
     enabled: !!domainId,
   });
 
@@ -112,7 +112,7 @@ export default function AiAssistantPage() {
       if (!domainId) return;
       setActiveSessionId(id);
       setMessages([]);
-      const session: ChatbotSession = await chatbotApi.showSession(domainId, id);
+      const session: ChatbotSession = (await chatbotApi.showSession(domainId, id)).data;
       setMessages(session.messages ?? []);
     },
     [domainId]
@@ -121,7 +121,7 @@ export default function AiAssistantPage() {
   // ── New session ───────────────────────────────────────────────────────────
 
   const startMutation = useMutation({
-    mutationFn: () => chatbotApi.startSession(domainId!),
+    mutationFn: () => chatbotApi.startSession(domainId!).then((r) => r.data),
     onSuccess: (session: ChatbotSession) => {
       qc.invalidateQueries({ queryKey: ["chatbot-sessions", domainId] });
       setActiveSessionId(session.id);
@@ -156,7 +156,7 @@ export default function AiAssistantPage() {
       };
       setMessages((prev) => [...prev, userMsg]);
       setIsTyping(true);
-      const reply = await chatbotApi.sendMessage(domainId!, activeSessionId!, text);
+      const reply = (await chatbotApi.sendMessage(domainId!, activeSessionId!, text)).data;
       return reply;
     },
     onSuccess: (reply: ChatbotMessage) => {
@@ -331,7 +331,7 @@ export default function AiAssistantPage() {
                   key={q}
                   className="text-left px-4 py-3 rounded-xl border border-outline-variant/30 bg-surface-container/50 hover:bg-surface-container hover:border-primary/30 text-xs text-on-surface-variant hover:text-on-surface transition-all"
                   onClick={async () => {
-                    const session: ChatbotSession = await chatbotApi.startSession(domainId!);
+                    const session: ChatbotSession = (await chatbotApi.startSession(domainId!)).data;
                     qc.invalidateQueries({ queryKey: ["chatbot-sessions", domainId] });
                     setActiveSessionId(session.id);
                     setMessages([]);

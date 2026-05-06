@@ -97,7 +97,7 @@ export function AiChatBubble() {
   // ── Sessions list (for history panel) ──────────────────────────────────────
   const { data: sessions = [] } = useQuery({
     queryKey: ["chatbot-sessions", domainId],
-    queryFn: () => chatbotApi.sessions(domainId!),
+    queryFn: () => chatbotApi.sessions(domainId!).then((r) => r.data),
     enabled: !!domainId && isOpen,
   });
 
@@ -107,13 +107,13 @@ export function AiChatBubble() {
     setShowHistory(false);
     setActiveSessionId(id);
     setMessages([]);
-    const session: ChatbotSession = await chatbotApi.showSession(domainId, id);
+    const session: ChatbotSession = (await chatbotApi.showSession(domainId, id)).data;
     setMessages(session.messages ?? []);
   };
 
   // ── Start new session ───────────────────────────────────────────────────────
   const startMutation = useMutation({
-    mutationFn: () => chatbotApi.startSession(domainId!),
+    mutationFn: () => chatbotApi.startSession(domainId!).then((r) => r.data),
     onSuccess: (session: ChatbotSession) => {
       qc.invalidateQueries({ queryKey: ["chatbot-sessions", domainId] });
       setActiveSessionId(session.id);
@@ -140,7 +140,7 @@ export function AiChatBubble() {
       // If no active session, start one first
       let sessionId = activeSessionId;
       if (!sessionId) {
-        const session: ChatbotSession = await chatbotApi.startSession(domainId!);
+        const session: ChatbotSession = (await chatbotApi.startSession(domainId!)).data;
         qc.invalidateQueries({ queryKey: ["chatbot-sessions", domainId] });
         setActiveSessionId(session.id);
         sessionId = session.id;
@@ -154,7 +154,7 @@ export function AiChatBubble() {
       };
       setMessages((prev) => [...prev, userMsg]);
       setIsTyping(true);
-      return chatbotApi.sendMessage(domainId!, sessionId, text);
+      return chatbotApi.sendMessage(domainId!, sessionId, text).then((r) => r.data);
     },
     onSuccess: (reply: ChatbotMessage) => {
       setIsTyping(false);
