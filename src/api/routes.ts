@@ -213,6 +213,14 @@ export const AI_ROUTES = {
   purchaseTokens:   "/ai/tokens/purchase",
 } as const;
 
+// ── Chatbot ───────────────────────────────────────────────────────────────────
+export const CHATBOT_ROUTES = {
+  sessions:    (domainId: number)                        => `/chatbot/${domainId}/sessions`,
+  showSession: (domainId: number, sessionId: number)     => `/chatbot/${domainId}/sessions/${sessionId}`,
+  sendMessage: (domainId: number, sessionId: number)     => `/chatbot/${domainId}/sessions/${sessionId}/message`,
+  deleteSession:(domainId: number, sessionId: number)    => `/chatbot/${domainId}/sessions/${sessionId}`,
+} as const;
+
 // ── Admin ─────────────────────────────────────────────────────────────────────
 export const ADMIN_ROUTES = {
   stats: "/admin/stats",

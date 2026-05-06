@@ -9,7 +9,7 @@ import {
   Zap, Code2, UserCheck, Building2, PlaySquare, Share2, Download,
   MessageSquare, Globe, CreditCard, User, Shield,
   Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
-  ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star, SearchCheck,
+  ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star, SearchCheck, Bot,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -23,8 +23,9 @@ const LABEL_OVERRIDES: Record<string, string> = {
   scrollDepth:     "Content Reach",
   customEvents:    "Goal Tracking",
   ownerBrief:      "Daily Brief",
+  aiChatbot:       "AI Chat",
   companies:       "Company Visitors",
-  websiteChatbot:  "Live Chat",
+  websiteChatbot:  "AI Assistant",
   sharedReports:   "Share Reports",
   utmBuilder:      "UTM Link Builder",
   seoChecker:      "SEO Checker",
@@ -69,6 +70,7 @@ const MORE_NAV = [
     label: "Intelligence",
     items: [
       { key: "ux",             href: "/dashboard/ux",               icon: Zap },
+      { key: "aiChatbot",      href: "/dashboard/ai/chatbot",       icon: Bot },
       { key: "ownerBrief",     href: "/dashboard/owner-brief",      icon: Lightbulb },
       { key: "websiteChatbot", href: "/dashboard/website-chatbot",  icon: MessageSquare },
       { key: "scrollDepth",    href: "/dashboard/scroll-depth",     icon: ArrowDownToLine },

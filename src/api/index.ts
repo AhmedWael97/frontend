@@ -30,6 +30,8 @@ export { analyticsApi } from "./analytics";
 export { uxApi } from "./ux";
 export { replayApi } from "./replay";
 export { aiApi } from "./ai";
+export { chatbotApi } from "./chatbot";
+export type { ChatbotMessage, ChatbotSession, ChatbotSessionSummary } from "./chatbot";
 export { notificationsApi, notificationPrefsApi } from "./notifications";
 export { billingApi } from "./billing";
 export { exportsApi } from "./exports";

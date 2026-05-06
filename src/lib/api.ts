@@ -20,6 +20,7 @@ export {
   uxApi,
   replayApi,
   aiApi,
+  chatbotApi,
   notificationsApi,
   notificationPrefsApi,
   billingApi,
