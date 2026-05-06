@@ -1,10 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Circle, X, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
+import { onboardingApi } from "@/lib/api";
+
+// Backend step → frontend step id mapping
+const BACKEND_TO_FRONTEND: Record<string, string> = {
+  domain_added: "domain",
+  script_installed: "first_visitor",
+  first_event_received: "first_visitor",
+  funnel_created: "funnel",
+};
 
 const STEPS = [
   {
@@ -58,6 +68,13 @@ export default function WelcomeChecklist({ domainId, onDismiss }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
+  // Fetch backend onboarding status
+  const { data: backendStatus } = useQuery({
+    queryKey: ["onboarding"],
+    queryFn: () => onboardingApi.show().then((r) => r.data?.data ?? r.data),
+    staleTime: 30_000,
+  });
+
   // Load persisted progress
   useEffect(() => {
     try {
@@ -65,6 +82,22 @@ export default function WelcomeChecklist({ domainId, onDismiss }: Props) {
       if (saved) setDone(new Set(JSON.parse(saved) as string[]));
     } catch {}
   }, [storageKey]);
+
+  // Merge backend flags into local done set
+  useEffect(() => {
+    if (!backendStatus) return;
+    const extra: string[] = [];
+    for (const [backendKey, frontendId] of Object.entries(BACKEND_TO_FRONTEND)) {
+      if (backendStatus[backendKey]) extra.push(frontendId);
+    }
+    if (extra.length === 0) return;
+    setDone((prev) => {
+      const next = new Set(prev);
+      extra.forEach((id) => next.add(id));
+      try { localStorage.setItem(storageKey, JSON.stringify(Array.from(next))); } catch {}
+      return next;
+    });
+  }, [backendStatus, storageKey]);
 
   // Auto-mark "domain" step if a domain is selected
   useEffect(() => {
