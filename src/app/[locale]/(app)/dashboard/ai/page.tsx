@@ -50,11 +50,16 @@ interface QuotaData {
   token_packs: TokenPack[];
 }
 
+interface ReportItem {
+  title: string;
+  detail: string;
+}
+
 interface ReportData {
   summary: string;
   top_insight: string;
-  growth_opportunities: string[];
-  risk_areas: string[];
+  growth_opportunities: ReportItem[];
+  risk_areas: ReportItem[];
 }
 
 interface Segment {
@@ -67,10 +72,10 @@ interface Segment {
 
 interface Suggestion {
   id: number;
-  title: string;
-  description: string;
+  text: string;
+  category: string;
   priority: "high" | "medium" | "low";
-  impact: number | null;
+  estimated_impact: string | null;
 }
 
 // ── Token Balance Badge ───────────────────────────────────────────────────────
@@ -299,7 +304,7 @@ function ReportSection({ report }: { report: ReportData }) {
                 {report.growth_opportunities.map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs text-on-surface-variant">
                     <ChevronRight className="w-3.5 h-3.5 mt-0.5 text-green-500 shrink-0" />
-                    {item}
+                    <span><strong className="text-on-surface">{item.title}</strong> — {item.detail}</span>
                   </li>
                 ))}
               </ul>
@@ -321,7 +326,7 @@ function ReportSection({ report }: { report: ReportData }) {
                 {report.risk_areas.map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs text-on-surface-variant">
                     <ChevronRight className="w-3.5 h-3.5 mt-0.5 text-red-500 shrink-0" />
-                    {item}
+                    <span><strong className="text-on-surface">{item.title}</strong> — {item.detail}</span>
                   </li>
                 ))}
               </ul>
@@ -571,21 +576,21 @@ function Content() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <p className="text-sm font-semibold text-on-surface">
-                        {s.title}
-                      </p>
                       <Badge variant={priorityColor(s.priority) as any}>
                         {s.priority}
                       </Badge>
+                      {s.category && (
+                        <Badge variant="outline" className="capitalize">{s.category}</Badge>
+                      )}
                     </div>
                     <p className="text-xs text-on-surface-variant">
-                      {s.description}
+                      {s.text}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    {s.impact != null && (
+                    {s.estimated_impact && (
                       <span className="text-xs font-bold text-green-600 dark:text-green-400">
-                        +{s.impact}%
+                        {s.estimated_impact}
                       </span>
                     )}
                     <button
