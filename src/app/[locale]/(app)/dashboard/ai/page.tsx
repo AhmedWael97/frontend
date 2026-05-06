@@ -118,7 +118,7 @@ function TokenBadge({
   );
 }
 
-// ── Purchase Modal ────────────────────────────────────────────────────────────
+// ── Purchase Modal ─────────────────────────────────────
 
 function PurchaseModal({
   open,
