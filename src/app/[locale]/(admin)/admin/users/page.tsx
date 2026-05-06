@@ -146,6 +146,10 @@ function Content() {
     setGrantUser(u); setGrantAmount("10"); setGrantNote(""); setGrantError("");
   };
 
+  const openEdit = (u: any) => {
+    setEditUser(u); setEName(u.name ?? ""); setEEmail(u.email ?? ""); setERole(u.role ?? "user"); setEError("");
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

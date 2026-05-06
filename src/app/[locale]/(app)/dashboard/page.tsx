@@ -186,7 +186,7 @@ function DashboardContent() {
 
       {/* Onboarding checklist — shown until all steps complete or dismissed */}
       {selectedDomainId && (
-        <WelcomeChecklist domainId={selectedDomainId} />
+        <WelcomeChecklist domainId={String(selectedDomainId)} />
       )}
 
       {/* Area chart */}
