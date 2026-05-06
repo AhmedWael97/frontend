@@ -11,7 +11,7 @@ import { toast } from "@/lib/use-toast";
 import { formatDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { Search, Plus, X, Shield, Trash2, Ban, CheckCircle, UserCheck, LogIn } from "lucide-react";
+import { Search, Plus, X, Shield, Trash2, Ban, CheckCircle, UserCheck, LogIn, Zap } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 
 // ── Simple inline modal ───────────────────────────────────────────────────────
@@ -126,8 +126,24 @@ function Content() {
     onError: (e: any) => toast.error(e.message || "Failed to impersonate user"),
   });
 
-  const openEdit = (u: any) => {
-    setEditUser(u); setEName(u.name); setEEmail(u.email); setERole(u.role); setEError("");
+  // grant tokens state
+  const [grantUser, setGrantUser] = useState<any>(null);
+  const [grantAmount, setGrantAmount] = useState("10");
+  const [grantNote, setGrantNote] = useState("");
+  const [grantError, setGrantError] = useState("");
+
+  const grantMutation = useMutation({
+    mutationFn: () => adminApi.grantAiTokens(grantUser.id, parseInt(grantAmount, 10), grantNote || undefined),
+    onSuccess: (r: any) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      toast.success(r.data?.message ?? `Granted ${grantAmount} tokens to ${grantUser.name}`);
+      setGrantUser(null); setGrantAmount("10"); setGrantNote(""); setGrantError("");
+    },
+    onError: (e: any) => setGrantError(e.message || "Failed to grant tokens"),
+  });
+
+  const openGrant = (u: any) => {
+    setGrantUser(u); setGrantAmount("10"); setGrantNote(""); setGrantError("");
   };
 
   return (
@@ -135,7 +151,7 @@ function Content() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-on-surface tracking-tight">Users</h1>
-          <p className="text-on-surface-variant text-sm mt-0.5">All registered accounts</p>
+          <p className="text-on-surface-variant text-sm mt-0.5">All registered accounts — including admins</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative w-56">
@@ -151,7 +167,7 @@ function Content() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-outline-variant/20">
-                {["Name", "Email", "Role", "Plan", "Status", "Created", "Actions"].map((h) => (
+                {["Name", "Email", "Role", "Plan", "AI Tokens", "Status", "Created", "Actions"].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-widest text-on-surface-variant">{h}</th>
                 ))}
               </tr>
@@ -159,7 +175,7 @@ function Content() {
             <tbody>
               {isLoading ? Array.from({ length: 8 }).map((_, i) => (
                 <tr key={i} className="border-b border-outline-variant/10">
-                  {Array.from({ length: 7 }).map((_, j) => (
+                  {Array.from({ length: 8 }).map((_, j) => (
                     <td key={j} className="px-4 py-3"><div className="h-4 bg-surface-container-high rounded animate-pulse w-24" /></td>
                   ))}
                 </tr>
@@ -171,6 +187,16 @@ function Content() {
                     <Badge variant={u.role === "superadmin" ? "warning" : "secondary"}>{u.role}</Badge>
                   </td>
                   <td className="px-4 py-3 text-on-surface-variant">{u.subscription?.plan?.name || "Free"}</td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => openGrant(u)}
+                      title="Grant AI tokens"
+                      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
+                    >
+                      <Zap className="w-3 h-3" />
+                      {u.ai_tokens ?? 0}
+                    </button>
+                  </td>
                   <td className="px-4 py-3">
                     <Badge variant={u.status === "blocked" ? "error" : u.email_verified_at ? "success" : "secondary"}>
                       {u.status === "blocked" ? "Blocked" : u.email_verified_at ? "Active" : "Unverified"}
@@ -186,6 +212,13 @@ function Content() {
                         disabled={impersonateMutation.isPending}
                       >
                         <LogIn className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => openGrant(u)}
+                        title="Grant AI tokens"
+                        className="p-1.5 hover:bg-surface-container rounded-lg text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <Zap className="w-3.5 h-3.5" />
                       </button>
                       <button onClick={() => openEdit(u)} title="Edit" className="p-1.5 hover:bg-surface-container rounded-lg text-on-surface-variant hover:text-primary transition-colors">
                         <Shield className="w-3.5 h-3.5" />
@@ -246,6 +279,60 @@ function Content() {
                 {createMutation.isPending ? "Creating…" : "Create User"}
               </Button>
               <Button variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Grant AI Tokens Modal */}
+      {grantUser && (
+        <Modal title={`Grant AI Tokens — ${grantUser.name}`} onClose={() => setGrantUser(null)}>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20 text-sm">
+              <Zap className="w-4 h-4 text-primary shrink-0" />
+              <span className="text-on-surface-variant">
+                Current balance: <strong className="text-primary">{grantUser.ai_tokens ?? 0} tokens</strong>
+              </span>
+            </div>
+            <FieldRow label="Tokens to add">
+              <div className="flex gap-2">
+                {[5, 10, 25, 50, 100].map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setGrantAmount(String(n))}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors ${
+                      grantAmount === String(n)
+                        ? "bg-primary text-on-primary border-primary"
+                        : "border-outline-variant/40 text-on-surface-variant hover:border-primary/40"
+                    }`}
+                  >
+                    +{n}
+                  </button>
+                ))}
+              </div>
+              <Input
+                type="number"
+                min="1"
+                max="10000"
+                value={grantAmount}
+                onChange={(e) => setGrantAmount(e.target.value)}
+                placeholder="Custom amount"
+                className="mt-2"
+              />
+            </FieldRow>
+            <FieldRow label="Note (optional)">
+              <Input value={grantNote} onChange={(e) => setGrantNote(e.target.value)} placeholder="e.g. Testing, bonus, refund…" />
+            </FieldRow>
+            {grantError && <p className="text-sm text-error">{grantError}</p>}
+            <div className="flex gap-3 pt-2">
+              <Button
+                className="flex-1"
+                onClick={() => grantMutation.mutate()}
+                disabled={!grantAmount || parseInt(grantAmount) < 1 || grantMutation.isPending}
+              >
+                {grantMutation.isPending ? "Granting…" : `Grant ${grantAmount} Token${parseInt(grantAmount) !== 1 ? "s" : ""}`}
+              </Button>
+              <Button variant="ghost" onClick={() => setGrantUser(null)}>Cancel</Button>
             </div>
           </div>
         </Modal>
