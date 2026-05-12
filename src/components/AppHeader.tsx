@@ -91,6 +91,8 @@ export function AppHeader() {
     }
   };
 
+  const isSuperAdmin = user?.role === "superadmin";
+
   return (
     <header className="h-14 flex items-center justify-between px-6 border-b border-outline-variant/20 bg-surface-container-low/80 backdrop-blur-sm sticky top-0 z-30">
       {/* Domain Selector */}
@@ -104,7 +106,7 @@ export function AppHeader() {
             <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant" />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-60">
+        <DropdownMenuContent align="start" className="w-72">
           <DropdownMenuLabel>{t("nav.domains")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {domains.map((d) => (
@@ -113,8 +115,13 @@ export function AppHeader() {
               onClick={() => setSelectedDomainId(d.id)}
               className={cn(selectedDomainId === d.id && "text-primary")}
             >
-              <Globe className="w-3.5 h-3.5" />
-              {d.domain}
+              <Globe className="w-3.5 h-3.5 shrink-0" />
+              <span className="flex flex-col min-w-0">
+                <span className="truncate">{d.domain}</span>
+                {isSuperAdmin && d.owner_email && (
+                  <span className="text-[10px] text-on-surface-variant truncate">{d.owner_name || d.owner_email}</span>
+                )}
+              </span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
