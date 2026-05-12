@@ -143,7 +143,7 @@ export default function SitemapCreatorPage() {
     pollRef.current = setInterval(async () => {
       try {
         const res = await sitemapApi.status(jobId);
-        const data = res.data?.data ?? res.data;
+        const data = res.data;
         setJobData(data);
         if (data.status === "completed" || data.status === "failed") {
           stopPolling();
@@ -160,7 +160,7 @@ export default function SitemapCreatorPage() {
 
   useEffect(() => {
     sitemapApi.history()
-      .then((res) => setHistory(res.data?.data?.jobs ?? res.data?.jobs ?? []))
+      .then((res) => setHistory(res.data.jobs ?? []))
       .catch(() => {});
   }, []);
 
@@ -184,7 +184,7 @@ export default function SitemapCreatorPage() {
         include_zero_traffic: includeZero,
         include_analytics_only: includeOnly,
       });
-      const data = res.data?.data ?? res.data;
+      const data = res.data;
       setActiveJobId(data.job_id);
       // Start with a pending state so the progress UI shows
       setJobData({
@@ -212,7 +212,7 @@ export default function SitemapCreatorPage() {
   async function loadHistoryJob(jobId: number) {
     try {
       const res = await sitemapApi.status(jobId);
-      const data = res.data?.data ?? res.data;
+      const data = res.data;
       setJobData(data);
       setActiveJobId(jobId);
       setHistoryOpen(false);
