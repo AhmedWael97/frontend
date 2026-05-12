@@ -51,6 +51,7 @@ function FeatureCard({
 // ── Main ─────────────────────────────────────────────────────────────────────
 function Content() {
   const th = useTranslations("hubs.reports");
+  const locale = useLocale();
   const { selectedDomainId } = useAuthStore();
 
   // Load recent AI reports for summary
