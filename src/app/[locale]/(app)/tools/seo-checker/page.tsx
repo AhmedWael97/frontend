@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useAuthStore } from "@/store/auth";
@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Search, CheckCircle2, XCircle, AlertTriangle, Info,
-  Globe, RefreshCw, ChevronDown, ChevronUp,
+  Globe, RefreshCw, ChevronDown, ChevronUp, ScanSearch,
 } from "lucide-react";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type Severity = "critical" | "high" | "warning" | "info" | "pass";
 type Status   = "pass" | "fail" | "warn";
 
@@ -31,9 +31,17 @@ type SeoResult = {
   total: number;
   issues: Check[];
   passing: Check[];
+  error?: string;
 };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+type CrawlResult = {
+  start_url: string;
+  pages_crawled: number;
+  site_score: number;
+  results: SeoResult[];
+};
+
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const severityOrder: Record<Severity, number> = {
   critical: 0,
   high: 1,
@@ -72,7 +80,7 @@ function SeverityBadge({ severity, status }: { severity: Severity; status: Statu
   return <Badge variant="secondary">Info</Badge>;
 }
 
-// ── Check row ─────────────────────────────────────────────────────────────────
+// â”€â”€ Check row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CheckRow({ check }: { check: Check }) {
   const [open, setOpen] = useState(false);
   return (
@@ -98,7 +106,7 @@ function CheckRow({ check }: { check: Check }) {
       {open && check.suggestion && (
         <div className="px-11 pb-3">
           <p className="text-xs text-primary bg-primary/5 rounded-lg px-3 py-2 border border-primary/20">
-            💡 {check.suggestion}
+            ðŸ’¡ {check.suggestion}
           </p>
         </div>
       )}
@@ -106,7 +114,7 @@ function CheckRow({ check }: { check: Check }) {
   );
 }
 
-// ── Score gauge ───────────────────────────────────────────────────────────────
+// â”€â”€ Score gauge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ScoreGauge({ score }: { score: number }) {
   const radius = 52;
   const circ   = 2 * Math.PI * radius;
@@ -135,48 +143,209 @@ function ScoreGauge({ score }: { score: number }) {
   );
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────────
+// â”€â”€ Single page result panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function SinglePageResult({ result }: { result: SeoResult }) {
+  const [showPassing, setShowPassing] = useState(false);
+  const critical = result.issues.filter(c => c.severity === "critical").length;
+  const warnings = result.issues.filter(c => c.severity === "warning").length;
+
+  return (
+    <>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card className="col-span-2 md:col-span-1">
+          <CardContent className="p-4 flex flex-col items-center justify-center h-full">
+            <ScoreGauge score={result.score} />
+          </CardContent>
+        </Card>
+        {[
+          { label: "Checks Run", value: result.total,   color: "text-on-surface" },
+          { label: "Passing",    value: result.passed,  color: "text-green-500" },
+          { label: "Critical",   value: critical,       color: "text-red-500" },
+          { label: "Warnings",   value: warnings,       color: "text-yellow-500" },
+        ].map((s) => (
+          <Card key={s.label}>
+            <CardContent className="p-4 flex flex-col items-center justify-center gap-1 h-full">
+              <span className={`text-3xl font-black ${s.color}`}>{s.value}</span>
+              <span className="text-xs text-on-surface-variant font-medium uppercase tracking-widest">{s.label}</span>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-3">
+        <div className="flex-1 bg-outline-variant/20 rounded-full h-2">
+          <div
+            className={`h-2 rounded-full transition-all duration-700 ${scoreBg(result.score)}`}
+            style={{ width: `${result.score}%` }}
+          />
+        </div>
+        <span className={`text-sm font-bold ${scoreColor(result.score)}`}>{result.score}/100</span>
+      </div>
+
+      {result.issues.length > 0 && (
+        <Card>
+          <CardHeader className="px-4 py-3 border-b border-outline-variant/20">
+            <CardTitle className="text-sm font-bold">Issues Found ({result.issues.length})</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            {result.issues.map((c) => <CheckRow key={c.id} check={c} />)}
+          </CardContent>
+        </Card>
+      )}
+
+      {result.passing.length > 0 && (
+        <Card>
+          <button
+            className="w-full flex items-center justify-between px-4 py-3 border-b border-outline-variant/20 hover:bg-surface-container/20 transition-colors"
+            onClick={() => setShowPassing((v) => !v)}
+          >
+            <span className="text-sm font-bold text-green-500">âœ“ Passing Checks ({result.passing.length})</span>
+            {showPassing ? <ChevronUp className="w-4 h-4 text-on-surface-variant" /> : <ChevronDown className="w-4 h-4 text-on-surface-variant" />}
+          </button>
+          {showPassing && (
+            <CardContent className="p-0">
+              {result.passing.map((c) => <CheckRow key={c.id} check={c} />)}
+            </CardContent>
+          )}
+        </Card>
+      )}
+
+      <p className="text-xs text-on-surface-variant text-center">
+        Analysed: <span className="font-mono">{result.url}</span>
+      </p>
+    </>
+  );
+}
+
+// â”€â”€ Crawl result panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function CrawlResultPanel({ crawl }: { crawl: CrawlResult }) {
+  const [expanded, setExpanded] = useState<string | null>(crawl.results[0]?.url ?? null);
+
+  return (
+    <div className="space-y-4">
+      {/* Site summary */}
+      <div className="grid grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-4 flex flex-col items-center justify-center gap-1">
+            <ScoreGauge score={crawl.site_score} />
+            <span className="text-xs text-on-surface-variant uppercase tracking-widest">Site Score</span>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex flex-col items-center justify-center gap-1">
+            <span className="text-3xl font-black text-on-surface">{crawl.pages_crawled}</span>
+            <span className="text-xs text-on-surface-variant uppercase tracking-widest">Pages Crawled</span>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex flex-col items-center justify-center gap-1">
+            <span className="text-3xl font-black text-red-500">
+              {crawl.results.reduce((n, r) => n + (r.issues?.filter(c => c.severity === "critical").length ?? 0), 0)}
+            </span>
+            <span className="text-xs text-on-surface-variant uppercase tracking-widest">Critical Issues</span>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Per-page results */}
+      <div className="space-y-2">
+        {crawl.results.map((page) => (
+          <Card key={page.url}>
+            <button
+              className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-surface-container/20 transition-colors"
+              onClick={() => setExpanded(prev => prev === page.url ? null : page.url)}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <span className={`text-lg font-black shrink-0 ${scoreColor(page.score ?? 0)}`}>{page.score ?? "?"}</span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-on-surface truncate">{page.url}</p>
+                  {page.error ? (
+                    <p className="text-xs text-error">{page.error}</p>
+                  ) : (
+                    <p className="text-xs text-on-surface-variant">
+                      {page.issues?.length ?? 0} issues Â· {page.passing?.length ?? 0} passing
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {(page.issues?.filter(c => c.severity === "critical").length ?? 0) > 0 && (
+                  <Badge variant="error">{page.issues.filter(c => c.severity === "critical").length} critical</Badge>
+                )}
+                {expanded === page.url ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </div>
+            </button>
+            {expanded === page.url && !page.error && (
+              <CardContent className="pt-0 px-4 pb-4 border-t border-outline-variant/10">
+                <div className="space-y-3 mt-3">
+                  {page.issues?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-1">Issues</p>
+                      <div className="rounded-lg border border-outline-variant/20 overflow-hidden">
+                        {page.issues.map((c) => <CheckRow key={c.id} check={c} />)}
+                      </div>
+                    </div>
+                  )}
+                  {page.passing?.length > 0 && (
+                    <p className="text-xs text-green-500">âœ“ {page.passing.length} checks passing</p>
+                  )}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// â”€â”€ Main page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function SeoCheckerPage() {
   const { token } = useAuthStore();
-  const [url, setUrl]         = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult]   = useState<SeoResult | null>(null);
-  const [error, setError]     = useState("");
-  const [showPassing, setShowPassing] = useState(false);
+  const [url, setUrl]           = useState("");
+  const [mode, setMode]         = useState<"single" | "crawl">("single");
+  const [loading, setLoading]   = useState(false);
+  const [result, setResult]     = useState<SeoResult | null>(null);
+  const [crawl, setCrawl]       = useState<CrawlResult | null>(null);
+  const [error, setError]       = useState("");
 
   async function runCheck() {
     const target = url.trim().startsWith("http") ? url.trim() : `https://${url.trim()}`;
     setError("");
     setResult(null);
+    setCrawl(null);
     setLoading(true);
+
     try {
-      const res = await fetch("/api/v1/tools/seo-check", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ url: target }),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        setError(json?.data?.message || json?.message || "An error occurred.");
-        return;
+      if (mode === "single") {
+        const res = await fetch("/api/v1/tools/seo-check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` },
+          body: JSON.stringify({ url: target }),
+        });
+        const json = await res.json();
+        if (!res.ok) { setError(json?.data?.message || json?.message || "An error occurred."); return; }
+        const data: SeoResult = json.data;
+        data.issues.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+        setResult(data);
+      } else {
+        const res = await fetch("/api/v1/tools/seo-crawl", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` },
+          body: JSON.stringify({ url: target, max_pages: 20 }),
+        });
+        const json = await res.json();
+        if (!res.ok) { setError(json?.data?.message || json?.message || "An error occurred."); return; }
+        const data: CrawlResult = json.data;
+        data.results.forEach(r => r.issues?.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]));
+        setCrawl(data);
       }
-      const data: SeoResult = json.data;
-      // Sort issues by severity
-      data.issues.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
-      setResult(data);
     } catch (e: any) {
       setError(e.message || "Network error.");
     } finally {
       setLoading(false);
     }
   }
-
-  const critical = result?.issues.filter(c => c.severity === "critical").length ?? 0;
-  const warnings = result?.issues.filter(c => c.severity === "warning").length ?? 0;
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -186,13 +355,33 @@ export default function SeoCheckerPage() {
           <Globe className="w-6 h-6 text-primary" /> SEO Checker
         </h1>
         <p className="text-on-surface-variant text-sm mt-0.5">
-          Analyse any URL for on-page SEO issues and get actionable recommendations.
+          Analyse a single page or crawl your entire site for SEO issues and get actionable recommendations.
         </p>
       </div>
 
-      {/* URL input */}
+      {/* Mode selector + URL input */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-4 space-y-3">
+          {/* Mode tabs */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setMode("single")}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${mode === "single" ? "bg-primary text-white" : "bg-surface-container text-on-surface-variant hover:text-on-surface"}`}
+            >
+              <Search className="w-3.5 h-3.5" /> Single Page
+            </button>
+            <button
+              onClick={() => setMode("crawl")}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${mode === "crawl" ? "bg-primary text-white" : "bg-surface-container text-on-surface-variant hover:text-on-surface"}`}
+            >
+              <ScanSearch className="w-3.5 h-3.5" /> Full Site Crawl
+            </button>
+          </div>
+          {mode === "crawl" && (
+            <p className="text-xs text-on-surface-variant bg-surface-container rounded-lg px-3 py-2">
+              Crawls up to 20 internal pages starting from the URL you enter, following all public links. May take up to 2â€“3 minutes.
+            </p>
+          )}
           <div className="flex gap-3">
             <Input
               value={url}
@@ -202,93 +391,17 @@ export default function SeoCheckerPage() {
               className="flex-1 font-mono text-sm"
             />
             <Button onClick={runCheck} disabled={!url.trim() || loading} className="gap-2 shrink-0">
-              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-              {loading ? "Analysing…" : "Check SEO"}
+              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : mode === "crawl" ? <ScanSearch className="w-4 h-4" /> : <Search className="w-4 h-4" />}
+              {loading ? (mode === "crawl" ? "Crawlingâ€¦" : "Analysingâ€¦") : (mode === "crawl" ? "Crawl Site" : "Check SEO")}
             </Button>
           </div>
-          {error && <p className="mt-2 text-sm text-error">{error}</p>}
+          {error && <p className="mt-1 text-sm text-error">{error}</p>}
         </CardContent>
       </Card>
 
       {/* Results */}
-      {result && (
-        <>
-          {/* Score overview */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {/* Gauge */}
-            <Card className="col-span-2 md:col-span-1">
-              <CardContent className="p-4 flex flex-col items-center justify-center h-full">
-                <ScoreGauge score={result.score} />
-              </CardContent>
-            </Card>
-
-            {/* Stats */}
-            {[
-              { label: "Checks Run", value: result.total, color: "text-on-surface" },
-              { label: "Passing",    value: result.passed, color: "text-green-500" },
-              { label: "Critical",   value: critical,       color: "text-red-500" },
-              { label: "Warnings",   value: warnings,       color: "text-yellow-500" },
-            ].map((s) => (
-              <Card key={s.label}>
-                <CardContent className="p-4 flex flex-col items-center justify-center gap-1 h-full">
-                  <span className={`text-3xl font-black ${s.color}`}>{s.value}</span>
-                  <span className="text-xs text-on-surface-variant font-medium uppercase tracking-widest">{s.label}</span>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Score bar */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1 bg-outline-variant/20 rounded-full h-2">
-              <div
-                className={`h-2 rounded-full transition-all duration-700 ${scoreBg(result.score)}`}
-                style={{ width: `${result.score}%` }}
-              />
-            </div>
-            <span className={`text-sm font-bold ${scoreColor(result.score)}`}>{result.score}/100</span>
-          </div>
-
-          {/* Issues */}
-          {result.issues.length > 0 && (
-            <Card>
-              <CardHeader className="px-4 py-3 border-b border-outline-variant/20">
-                <CardTitle className="text-sm font-bold">
-                  Issues Found ({result.issues.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                {result.issues.map((c) => <CheckRow key={c.id} check={c} />)}
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Passing checks (collapsible) */}
-          {result.passing.length > 0 && (
-            <Card>
-              <button
-                className="w-full flex items-center justify-between px-4 py-3 border-b border-outline-variant/20 hover:bg-surface-container/20 transition-colors"
-                onClick={() => setShowPassing((v) => !v)}
-              >
-                <span className="text-sm font-bold text-green-500">
-                  ✓ Passing Checks ({result.passing.length})
-                </span>
-                {showPassing ? <ChevronUp className="w-4 h-4 text-on-surface-variant" /> : <ChevronDown className="w-4 h-4 text-on-surface-variant" />}
-              </button>
-              {showPassing && (
-                <CardContent className="p-0">
-                  {result.passing.map((c) => <CheckRow key={c.id} check={c} />)}
-                </CardContent>
-              )}
-            </Card>
-          )}
-
-          {/* Checked URL note */}
-          <p className="text-xs text-on-surface-variant text-center">
-            Analysed: <span className="font-mono">{result.url}</span>
-          </p>
-        </>
-      )}
+      {result && <SinglePageResult result={result} />}
+      {crawl  && <CrawlResultPanel crawl={crawl} />}
     </div>
   );
 }

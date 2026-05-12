@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/lib/use-toast";
 
-import { CreditCard, Zap, ArrowUpRight } from "lucide-react";
+import { CreditCard, Zap, ArrowUpRight, ExternalLink } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { billingApi } from "@/lib/api";
 
@@ -25,31 +25,21 @@ function Content() {
     queryFn: () => billingApi.show().then((r) => r.data),
   });
 
-  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
-  const [selectedMethodId, setSelectedMethodId] = useState<number | null>(null);
+  const [selectedPlanId, setSelectedPlanId]           = useState<number | null>(null);
+  const [selectedMethodId, setSelectedMethodId]       = useState<number | null>(null);
   const [transactionReference, setTransactionReference] = useState("");
-  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [receiptFile, setReceiptFile]                 = useState<File | null>(null);
+  const [paymobLoading, setPaymobLoading]             = useState(false);
 
-  const paymentMethods = useMemo(
-    () => billing?.payment_methods ?? [],
-    [billing?.payment_methods]
-  );
-  const bankTransfer = billing?.bank_transfer;
+  const paymentMethods = useMemo(() => billing?.payment_methods ?? [], [billing?.payment_methods]);
+  const bankTransfer   = billing?.bank_transfer;
+  const activePlanId   = billing?.subscription?.plan?.id ?? null;
 
-  const activePlanId = billing?.subscription?.plan?.id ?? null;
-
-  const effectivePlanId = selectedPlanId ?? activePlanId;
+  const effectivePlanId   = selectedPlanId ?? activePlanId;
   const effectiveMethodId = selectedMethodId ?? bankTransfer?.id ?? paymentMethods?.[0]?.id ?? null;
 
-  const selectedPlan = useMemo(
-    () => (billing?.plans ?? []).find((p: any) => p.id === effectivePlanId) ?? null,
-    [billing?.plans, effectivePlanId]
-  );
-
-  const selectedMethod = useMemo(
-    () => (paymentMethods ?? []).find((m: any) => m.id === effectiveMethodId) ?? null,
-    [paymentMethods, effectiveMethodId]
-  );
+  const selectedPlan   = useMemo(() => (billing?.plans ?? []).find((p: any) => p.id === effectivePlanId) ?? null, [billing?.plans, effectivePlanId]);
+  const selectedMethod = useMemo(() => (paymentMethods ?? []).find((m: any) => m.id === effectiveMethodId) ?? null, [paymentMethods, effectiveMethodId]);
 
   const subscribeMutation = useMutation({
     mutationFn: (formData: FormData) => billingApi.subscribe(formData),
@@ -62,35 +52,46 @@ function Content() {
   });
 
   const onSubmit = () => {
-    if (!effectivePlanId) {
-      toast.error("Please select a plan.");
-      return;
-    }
-    if (!effectiveMethodId) {
-      toast.error("Please select a payment method.");
-      return;
-    }
-
+    if (!effectivePlanId) { toast.error("Please select a plan."); return; }
+    if (!effectiveMethodId) { toast.error("Please select a payment method."); return; }
     if (selectedMethod?.type === "bank_transfer" && !receiptFile) {
-      toast.error("Please attach your bank transfer receipt image.");
-      return;
+      toast.error("Please attach your bank transfer receipt image."); return;
     }
-
     const form = new FormData();
     form.append("plan_id", String(effectivePlanId));
     form.append("payment_method_id", String(effectiveMethodId));
-    if (transactionReference.trim()) {
-      form.append("transaction_reference", transactionReference.trim());
-    }
-    if (receiptFile) {
-      form.append("receipt", receiptFile);
-    }
-
+    if (transactionReference.trim()) form.append("transaction_reference", transactionReference.trim());
+    if (receiptFile) form.append("receipt", receiptFile);
     subscribeMutation.mutate(form);
   };
 
-  const plan = billing?.subscription?.plan ?? billing?.plan;
-  const sub = billing?.subscription;
+  // â”€â”€ Paymob â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const onPaymob = async () => {
+    if (!effectivePlanId) { toast.error("Please select a plan."); return; }
+    setPaymobLoading(true);
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("eye_token") : null;
+      const res = await fetch("/api/v1/billing/paymob/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ plan_id: effectivePlanId }),
+      });
+      const json = await res.json();
+      if (!res.ok) { toast.error(json?.data?.message || json?.message || "Paymob initiation failed."); return; }
+      const iframeUrl: string = json?.data?.iframe_url;
+      if (iframeUrl) {
+        window.open(iframeUrl, "_blank", "noopener,noreferrer");
+        toast.success("Paymob checkout opened in a new tab. Complete your payment there.");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Network error.");
+    } finally {
+      setPaymobLoading(false);
+    }
+  };
+
+  const plan  = billing?.subscription?.plan ?? billing?.plan;
+  const sub   = billing?.subscription;
   const usage = billing?.usage;
   const limits = billing?.limits;
 
@@ -122,12 +123,11 @@ function Content() {
             </div>
           </div>
 
-          {/* Usage bars */}
           {(usage || limits) && (
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-outline-variant/10">
               {[
-                { label: "Domains", used: usage?.domains ?? 0, limit: limits?.domains ?? 0 },
-                { label: "Pageviews / month", used: usage?.pageviews ?? 0, limit: limits?.pageviews_per_month ?? 0 },
+                { label: "Domains",           used: usage?.domains ?? 0,    limit: limits?.domains ?? 0 },
+                { label: "Pageviews / month", used: usage?.pageviews ?? 0,  limit: limits?.pageviews_per_month ?? 0 },
               ].map((u) => (
                 <div key={u.label}>
                   <div className="flex justify-between text-xs mb-1">
@@ -144,27 +144,22 @@ function Content() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Choose Plan & Pay</CardTitle>
+          <CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">Choose Plan &amp; Pay</CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
+          {/* Plan cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {(billing?.plans ?? []).map((p: any) => {
               const isCurrent = activePlanId === p.id;
               const isSelected = effectivePlanId === p.id;
               return (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setSelectedPlanId(p.id)}
-                  className={`text-left rounded-xl border p-4 transition ${isSelected
-                    ? "border-primary bg-primary/5"
-                    : "border-outline-variant/25 hover:border-primary/40"
-                    }`}
+                <button key={p.id} type="button" onClick={() => setSelectedPlanId(p.id)}
+                  className={`text-left rounded-xl border p-4 transition ${isSelected ? "border-primary bg-primary/5" : "border-outline-variant/25 hover:border-primary/40"}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <p className="font-bold text-on-surface">{p.name}</p>
                     <div className="flex items-center gap-2">
-                      {isCurrent && <Badge variant="secondary">Current</Badge>}
+                      {isCurrent  && <Badge variant="secondary">Current</Badge>}
                       {isSelected && <Badge variant="success">Selected</Badge>}
                     </div>
                   </div>
@@ -176,6 +171,7 @@ function Content() {
           </div>
 
           <div className="rounded-xl border border-outline-variant/25 p-4 space-y-4">
+            {/* Payment method selector */}
             <div>
               <p className="text-sm font-semibold text-on-surface">Payment Method</p>
               <select
@@ -189,6 +185,23 @@ function Content() {
               </select>
             </div>
 
+            {/* Paymob payment */}
+            {selectedMethod?.type === "paymob" && (
+              <div className="rounded-lg bg-blue-500/5 border border-blue-500/20 p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-on-surface">Pay with Paymob</span>
+                  <Badge variant="secondary">Card / Wallet / Instalment</Badge>
+                </div>
+                <p className="text-xs text-on-surface-variant">
+                  You will be redirected to Paymob&#39;s secure checkout in a new tab. Accepted: Visa, Mastercard, Meeza, Fawry, Vodafone Cash, and more.
+                </p>
+                <Button onClick={onPaymob} disabled={paymobLoading || !effectivePlanId} className="gap-2">
+                  {paymobLoading ? "Opening\u2026" : <><ExternalLink className="w-4 h-4" /> Pay Now with Paymob</>}
+                </Button>
+              </div>
+            )}
+
+            {/* Bank transfer */}
             {selectedMethod?.type === "bank_transfer" && (
               <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
                 <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">Bank Transfer Details</p>
@@ -204,46 +217,43 @@ function Content() {
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <label className="text-sm text-on-surface">
-                <span className="block mb-1 font-medium">Transaction Reference (optional)</span>
-                <input
-                  type="text"
-                  value={transactionReference}
-                  onChange={(e) => setTransactionReference(e.target.value)}
-                  className="w-full rounded-md border border-outline-variant/25 bg-surface px-3 py-2"
-                  placeholder="Bank transfer reference"
-                />
-              </label>
-
-              <label className="text-sm text-on-surface">
-                <span className="block mb-1 font-medium">Transaction Receipt Image {selectedMethod?.type === "bank_transfer" ? "*" : ""}</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setReceiptFile(e.target.files?.[0] ?? null)}
-                  className="w-full rounded-md border border-outline-variant/25 bg-surface px-3 py-2"
-                />
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-xs text-on-surface-variant">
-                {selectedPlan
-                  ? `You are requesting ${selectedPlan.name} at $${Number(selectedPlan.price_monthly || 0).toFixed(2)} per month.`
-                  : "Select a plan to continue."}
-              </p>
-              <Button onClick={onSubmit} disabled={subscribeMutation.isPending || !selectedPlan}>
-                {subscribeMutation.isPending ? "Submitting..." : "Submit Payment Request"}
-              </Button>
-            </div>
+            {/* Non-Paymob form fields */}
+            {selectedMethod?.type !== "paymob" && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <label className="text-sm text-on-surface">
+                    <span className="block mb-1 font-medium">Transaction Reference (optional)</span>
+                    <input type="text" value={transactionReference} onChange={(e) => setTransactionReference(e.target.value)}
+                      className="w-full rounded-md border border-outline-variant/25 bg-surface px-3 py-2"
+                      placeholder="Bank transfer reference" />
+                  </label>
+                  <label className="text-sm text-on-surface">
+                    <span className="block mb-1 font-medium">Transaction Receipt Image {selectedMethod?.type === "bank_transfer" ? "*" : ""}</span>
+                    <input type="file" accept="image/*" onChange={(e) => setReceiptFile(e.target.files?.[0] ?? null)}
+                      className="w-full rounded-md border border-outline-variant/25 bg-surface px-3 py-2" />
+                  </label>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-on-surface-variant">
+                    {selectedPlan ? `Requesting ${selectedPlan.name} at $${Number(selectedPlan.price_monthly || 0).toFixed(2)}/mo.` : "Select a plan to continue."}
+                  </p>
+                  <Button onClick={onSubmit} disabled={subscribeMutation.isPending || !selectedPlan}>
+                    {subscribeMutation.isPending ? "Submitting..." : "Submit Payment Request"}
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>
 
       {/* Payment History */}
       <Card>
-        <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant flex items-center gap-2"><CreditCard className="w-4 h-4" /> Payment History</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+            <CreditCard className="w-4 h-4" /> Payment History
+          </CardTitle>
+        </CardHeader>
         <CardContent className="p-0">
           <table className="w-full text-sm">
             <thead>

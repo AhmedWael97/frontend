@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
 
       const screenshot = await page.screenshot({
         type: "png",
-        fullPage: false,
+        fullPage: true,
       });
 
       await writeFile(cacheFile, screenshot);
