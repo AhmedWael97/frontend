@@ -129,6 +129,9 @@ export default function SitemapCreatorPage() {
   // Copy XML
   const [copied, setCopied] = useState(false);
 
+  // Download loading
+  const [downloadingFormat, setDownloadingFormat] = useState<"xml" | "json" | "csv" | null>(null);
+
   // ── Polling ─────────────────────────────────────────────────────────────────
 
   const stopPolling = useCallback(() => {
@@ -220,25 +223,45 @@ export default function SitemapCreatorPage() {
   // ── Download ─────────────────────────────────────────────────────────────────
 
   async function handleDownload(format: "xml" | "json" | "csv") {
-    if (!activeJobId) return;
+    if (!activeJobId || downloadingFormat) return;
+    setDownloadingFormat(format);
     try {
       const res = await sitemapApi.download(activeJobId, format);
-      const blob = new Blob([res.data], {
+      const blob = new Blob([res.data as BlobPart], {
         type: format === "xml" ? "application/xml" : format === "json" ? "application/json" : "text/csv",
       });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = `sitemap.${format}`;
+      document.body.appendChild(a);
       a.click();
+      a.remove();
       URL.revokeObjectURL(a.href);
-    } catch {}
+    } catch (err: unknown) {
+      const errAny = err as { response?: { data?: Blob } };
+      if (errAny?.response?.data instanceof Blob) {
+        // error body came back as a blob — try to read the message
+        try {
+          const text = await errAny.response.data.text();
+          const parsed = JSON.parse(text);
+          const msg = parsed?.data?.message ?? parsed?.message ?? "Download failed.";
+          console.error("Sitemap download error:", msg);
+        } catch {
+          console.error("Sitemap download failed.");
+        }
+      }
+    } finally {
+      setDownloadingFormat(null);
+    }
   }
 
   async function handleCopyXml() {
     if (!activeJobId) return;
     try {
       const res = await sitemapApi.download(activeJobId, "xml");
-      await navigator.clipboard.writeText(res.data as string);
+      const blob = res.data as Blob;
+      const text = blob instanceof Blob ? await blob.text() : String(blob);
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {}
@@ -702,8 +725,9 @@ export default function SitemapCreatorPage() {
                     <FileCode className="w-8 h-8 text-indigo-400 mx-auto" />
                     <p className="text-sm font-medium text-white">XML</p>
                     <p className="text-xs text-neutral-500">{t("xmlDesc")}</p>
-                    <Button onClick={() => handleDownload("xml")} variant="outline" size="sm" className="w-full gap-2">
-                      <Download className="w-3.5 h-3.5" /> {t("downloadXml")}
+                    <Button onClick={() => handleDownload("xml")} disabled={!!downloadingFormat} variant="outline" size="sm" className="w-full gap-2">
+                      {downloadingFormat === "xml" ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                      {downloadingFormat === "xml" ? t("downloading") : t("downloadXml")}
                     </Button>
                   </CardContent>
                 </Card>
@@ -712,8 +736,9 @@ export default function SitemapCreatorPage() {
                     <FileJson className="w-8 h-8 text-yellow-400 mx-auto" />
                     <p className="text-sm font-medium text-white">JSON</p>
                     <p className="text-xs text-neutral-500">{t("jsonDesc")}</p>
-                    <Button onClick={() => handleDownload("json")} variant="outline" size="sm" className="w-full gap-2">
-                      <Download className="w-3.5 h-3.5" /> {t("downloadJson")}
+                    <Button onClick={() => handleDownload("json")} disabled={!!downloadingFormat} variant="outline" size="sm" className="w-full gap-2">
+                      {downloadingFormat === "json" ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                      {downloadingFormat === "json" ? t("downloading") : t("downloadJson")}
                     </Button>
                   </CardContent>
                 </Card>
@@ -722,8 +747,9 @@ export default function SitemapCreatorPage() {
                     <FileSpreadsheet className="w-8 h-8 text-green-400 mx-auto" />
                     <p className="text-sm font-medium text-white">CSV</p>
                     <p className="text-xs text-neutral-500">{t("csvDesc")}</p>
-                    <Button onClick={() => handleDownload("csv")} variant="outline" size="sm" className="w-full gap-2">
-                      <Download className="w-3.5 h-3.5" /> {t("downloadCsv")}
+                    <Button onClick={() => handleDownload("csv")} disabled={!!downloadingFormat} variant="outline" size="sm" className="w-full gap-2">
+                      {downloadingFormat === "csv" ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                      {downloadingFormat === "csv" ? t("downloading") : t("downloadCsv")}
                     </Button>
                   </CardContent>
                 </Card>

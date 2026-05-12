@@ -30,6 +30,10 @@ export const aiApi = {
   report: (domainId: number) =>
     client.get(AI_ROUTES.report(domainId)),
 
+  /** GET /ai/{domainId}/reports — list of past AI reports (id, type, status, created_at) */
+  reports: (domainId: number) =>
+    client.get(AI_ROUTES.reports(domainId)),
+
   /** POST /ai/{domainId}/analyze → 202 */
   analyze: (domainId: number) =>
     client.post(AI_ROUTES.analyze(domainId)),

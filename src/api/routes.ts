@@ -216,6 +216,7 @@ export const AI_ROUTES = {
   segments:         (domainId: number) => `/ai/${domainId}/segments`,
   suggestions:      (domainId: number) => `/ai/${domainId}/suggestions`,
   report:           (domainId: number) => `/ai/${domainId}/report`,
+  reports:          (domainId: number) => `/ai/${domainId}/reports`,
   analyze:          (domainId: number) => `/ai/${domainId}/analyze`,
   quota:            (domainId: number) => `/ai/${domainId}/quota`,
   dismissSuggestion:(id: number)       => `/ai/suggestions/${id}/dismiss`,

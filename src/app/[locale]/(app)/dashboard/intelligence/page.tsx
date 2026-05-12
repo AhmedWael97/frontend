@@ -48,10 +48,17 @@ function Content() {
   const th = useTranslations("hubs.intelligence");
   const { selectedDomainId } = useAuthStore();
 
-  // Load UX scores for the summary card
+  // Load UX score for the summary card
   const { data: uxData, isLoading } = useQuery({
-    queryKey: ["ux-scores", selectedDomainId],
-    queryFn: () => uxApi.scores(selectedDomainId!).then((r) => r.data),
+    queryKey: ["ux-score", selectedDomainId],
+    queryFn: () => uxApi.score(selectedDomainId!).then((r) => r.data),
+    enabled: !!selectedDomainId,
+  });
+
+  // Load active issues count
+  const { data: issuesData } = useQuery({
+    queryKey: ["ux-issues-count", selectedDomainId],
+    queryFn: () => uxApi.issues(selectedDomainId!).then((r) => r.data),
     enabled: !!selectedDomainId,
   });
 
@@ -114,14 +121,14 @@ function Content() {
             </div>
             <div>
               <p className="text-xl font-black text-on-surface">
-                {isLoading ? "…" : (uxData?.issues?.length ?? 0)}
+                {isLoading ? "…" : (Array.isArray(issuesData) ? issuesData.length : issuesData?.data?.length ?? 0)}
               </p>
               <p className="text-xs text-on-surface-variant">{th("statActiveIssues" as never)}</p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Heatmap pages */}
+        {/* Rage-click sub-score */}
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <div className="p-2 rounded-lg bg-rose-400/10">
@@ -129,14 +136,14 @@ function Content() {
             </div>
             <div>
               <p className="text-xl font-black text-on-surface">
-                {isLoading ? "…" : (uxData?.heatmap_pages ?? "—")}
+                {isLoading ? "…" : uxData?.breakdown?.rage_click_rate !== undefined ? `${uxData.breakdown.rage_click_rate}/100` : "—"}
               </p>
               <p className="text-xs text-on-surface-variant">{th("statHeatmapPages" as never)}</p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Replays */}
+        {/* Bounce-rate sub-score */}
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <div className="p-2 rounded-lg bg-violet-400/10">
@@ -144,7 +151,7 @@ function Content() {
             </div>
             <div>
               <p className="text-xl font-black text-on-surface">
-                {isLoading ? "…" : (uxData?.replay_sessions ?? "—")}
+                {isLoading ? "…" : uxData?.breakdown?.bounce_rate !== undefined ? `${uxData.breakdown.bounce_rate}/100` : "—"}
               </p>
               <p className="text-xs text-on-surface-variant">{th("statReplays" as never)}</p>
             </div>
@@ -165,7 +172,7 @@ function Content() {
       </div>
 
       {/* Issues list — if any */}
-      {!isLoading && uxData?.issues?.length > 0 && (
+      {!isLoading && Array.isArray(issuesData) && issuesData.length > 0 && (
         <Card>
           <CardHeader className="border-b border-outline-variant/20 pb-3">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -174,7 +181,7 @@ function Content() {
             </CardTitle>
           </CardHeader>
           <div>
-            {uxData.issues.slice(0, 6).map((issue: { type: string; count: number; severity: string }, i: number) => (
+            {(issuesData as { type: string; count: number; severity: string }[]).slice(0, 6).map((issue, i: number) => (
               <div key={i} className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/10 last:border-0">
                 <span className="text-sm text-on-surface capitalize">{issue.type.replace(/_/g, " ")}</span>
                 <div className="flex items-center gap-2">

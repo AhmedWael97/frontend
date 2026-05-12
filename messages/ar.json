@@ -291,6 +291,7 @@
     "csvDesc": "مناسب للجداول مع بيانات الزيارات",
     "downloadXml": "تنزيل XML",
     "downloadJson": "تنزيل JSON",
+    "downloading": "جاري التنزيل…",
     "downloadCsv": "تنزيل CSV",
     "previewXml": "معاينة XML",
     "copyXml": "نسخ XML",
