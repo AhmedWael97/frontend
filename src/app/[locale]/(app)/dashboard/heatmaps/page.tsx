@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { uxApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, LoaderCircle, ImageOff, ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
+import { Flame, LoaderCircle, ImageOff, ChevronDown, ChevronUp, RefreshCw, X, Maximize2 } from "lucide-react";
 
 type HeatmapRow = {
   url: string;
@@ -104,7 +104,15 @@ function useHeatmapScreenshot(domainId: number | undefined, pageUrl: string, ena
 
 function HeatmapCard({ page, domainId, expanded, onToggle }: { page: HeatmapPage; domainId?: number; expanded: boolean; onToggle: () => void }) {
   const [bust, setBust] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const { imageUrl, error, loading } = useHeatmapScreenshot(domainId, page.url, expanded, bust);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setLightboxOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxOpen]);
   const maxCount = page.rows.reduce((max, row) => Math.max(max, Number(row.count || 0)), 1);
 
   const dots = page.rows
@@ -135,6 +143,7 @@ function HeatmapCard({ page, domainId, expanded, onToggle }: { page: HeatmapPage
     });
 
   return (
+    <>
     <Card>
       <CardHeader className="space-y-3">
         <button
@@ -192,14 +201,24 @@ function HeatmapCard({ page, domainId, expanded, onToggle }: { page: HeatmapPage
               </div>
             )}
             {!loading && (
-              <button
-                title="Refresh screenshot (bypass cache)"
-                onClick={() => setBust((b) => !b)}
-                className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-xs text-white hover:bg-black/80 transition-colors"
-                style={{ zIndex: 20 }}
-              >
-                <RefreshCw className="h-3 w-3" /> Refresh
-              </button>
+              <div className="absolute top-3 right-3 flex items-center gap-1.5" style={{ zIndex: 20 }}>
+                {imageUrl && (
+                  <button
+                    title="View full size heatmap"
+                    onClick={() => setLightboxOpen(true)}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-xs text-white hover:bg-black/80 transition-colors"
+                  >
+                    <Maximize2 className="h-3 w-3" /> Full size
+                  </button>
+                )}
+                <button
+                  title="Refresh screenshot (bypass cache)"
+                  onClick={() => setBust((b) => !b)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-xs text-white hover:bg-black/80 transition-colors"
+                >
+                  <RefreshCw className="h-3 w-3" /> Refresh
+                </button>
+              </div>
             )}
 
             {error && (
@@ -234,6 +253,64 @@ function HeatmapCard({ page, domainId, expanded, onToggle }: { page: HeatmapPage
         </CardContent>
       )}
     </Card>
+
+    {/* ── Fullscreen lightbox ───────────────────────────────────────────── */}
+    {lightboxOpen && imageUrl && (
+      <div
+        className="fixed inset-0 z-50 bg-black/92 overflow-y-auto"
+        onClick={(e) => { if (e.target === e.currentTarget) setLightboxOpen(false); }}
+      >
+        {/* Close button — stays in corner while scrolling */}
+        <button
+          onClick={() => setLightboxOpen(false)}
+          className="fixed top-4 right-4 z-[60] flex items-center gap-1.5 rounded-full bg-black/80 px-3 py-1.5 text-sm text-white hover:bg-white/10 border border-white/20 transition-colors"
+        >
+          <X className="w-4 h-4" /> Close
+        </button>
+
+        {/* URL bar */}
+        <div className="sticky top-0 z-[55] bg-black/80 backdrop-blur-sm border-b border-white/10 px-4 py-2 flex items-center gap-3 pr-28">
+          <Flame className="w-4 h-4 text-orange-400 shrink-0" />
+          <span className="text-xs text-white/70 truncate">{page.url}</span>
+        </div>
+
+        {/* Image + click dots */}
+        <div className="relative w-full">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt={`Full page heatmap for ${page.url}`}
+            className="block w-full"
+            draggable={false}
+          />
+          <div className="absolute inset-0 pointer-events-none">
+            {dots.map((dot) => (
+              <div
+                key={`lb-${dot.id}`}
+                className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full blur-[3px]"
+                title={`${dot.type.replaceAll("_", " ")} \u2022 ${dot.count} events`}
+                style={{
+                  left: `${dot.x}%`,
+                  top: `${dot.y}%`,
+                  width: `${dot.size * 1.4}px`,
+                  height: `${dot.size * 1.4}px`,
+                  background: `radial-gradient(circle, ${dot.color} 0%, rgba(0,0,0,0) 72%)`,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="bg-black/80 border-t border-white/10 px-4 py-3 flex flex-wrap gap-x-6 gap-y-2 items-center text-xs text-white/60">
+          <span className="inline-flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-blue-500/80 shrink-0" /> Regular click</span>
+          <span className="inline-flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-orange-500 shrink-0" /> Dead click</span>
+          <span className="inline-flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-red-500 shrink-0" /> Rage click</span>
+          <span className="ml-auto font-medium text-white/40">{dots.length.toLocaleString()} click points</span>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 
