@@ -11,7 +11,7 @@ import { toast } from "@/lib/use-toast";
 import { CreditCard, Key, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 type MethodTemplate = {
-  id: "stripe" | "paypal" | "bank_transfer";
+  id: "stripe" | "paypal" | "bank_transfer" | "paymob";
   name: string;
   icon: string;
   fields: Array<{ key: string; label: string; placeholder: string; secret?: boolean }>;
@@ -57,6 +57,17 @@ const GATEWAYS: MethodTemplate[] = [
       { key: "account_number", label: "Account Number", placeholder: "0000000000" },
       { key: "iban", label: "IBAN", placeholder: "IBANXXXXXXXXXXXX" },
       { key: "swift", label: "SWIFT", placeholder: "ABCDEF12" },
+    ],
+  },
+  {
+    id: "paymob",
+    name: "Paymob",
+    icon: "💰",
+    fields: [
+      { key: "api_key", label: "API Key", placeholder: "ZXlKaGJHY...", secret: true },
+      { key: "integration_id", label: "Integration ID", placeholder: "123456" },
+      { key: "iframe_id", label: "iFrame ID", placeholder: "654321" },
+      { key: "hmac_secret", label: "HMAC Secret", placeholder: "abc123...", secret: true },
     ],
   },
 ];
@@ -193,6 +204,14 @@ function GatewayCard({ gateway, method }: GatewayCardProps) {
         {gateway.id === "bank_transfer" && (
           <p className="text-xs text-on-surface-variant text-center">
             These bank transfer details are shown to users on the Billing page.
+          </p>
+        )}
+
+        {gateway.id === "paymob" && (
+          <p className="text-xs text-on-surface-variant text-center">
+            Credentials are also read from{" "}
+            <code className="font-mono">PAYMOB_*</code> env vars at runtime.
+            Saving here stores them in the database for display purposes.
           </p>
         )}
       </CardContent>
