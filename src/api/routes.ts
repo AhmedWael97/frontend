@@ -91,6 +91,15 @@ export const EXPORT_ROUTES = {
   download: (id: number) => `/exports/${id}/download`,
 } as const;
 
+// ── Sitemap Creator ───────────────────────────────────────────────────────────
+export const SITEMAP_ROUTES = {
+  generate: "/tools/sitemap/generate",
+  history: "/tools/sitemap/history",
+  status: (jobId: number) => `/tools/sitemap/${jobId}`,
+  download: (jobId: number, format: string) =>
+    `/tools/sitemap/${jobId}/download?format=${format}`,
+} as const;
+
 // ── Shared Reports ────────────────────────────────────────────────────────────
 export const REPORT_ROUTES = {
   list: (domainId: number) => `/shared-reports/${domainId}`,

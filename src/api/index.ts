@@ -35,6 +35,17 @@ export type { ChatbotMessage, ChatbotSession, ChatbotSessionSummary } from "./ch
 export { notificationsApi, notificationPrefsApi } from "./notifications";
 export { billingApi } from "./billing";
 export { exportsApi } from "./exports";
+export { sitemapApi } from "./sitemap";
+export type {
+  SitemapGenerateParams,
+  SitemapJobResponse,
+  SitemapHistoryItem,
+  SitemapUrlEntry,
+  SitemapAiAnalysis,
+  SitemapJobSummary,
+  SitemapJobStatus,
+  TrafficLabel,
+} from "./sitemap";
 export { reportsApi } from "./reports";
 export { gdprApi } from "./gdpr";
 export { adminApi } from "./admin";

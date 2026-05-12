@@ -25,6 +25,7 @@ export {
   notificationPrefsApi,
   billingApi,
   exportsApi,
+  sitemapApi,
   gdprApi,
   adminApi,
   themeApi,

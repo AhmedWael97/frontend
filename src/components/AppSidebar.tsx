@@ -10,7 +10,7 @@ import {
   Globe, CreditCard, User, Shield,
   Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
   ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star,
-  SearchCheck, Settings, FileText,
+  SearchCheck, Settings, FileText, Layers,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -61,6 +61,7 @@ const HUB_GROUPS = [
       { key: "exports",        href: "/dashboard/exports",          icon: Download },
       { key: "utmBuilder",     href: "/tools/utm-builder",          icon: Link2 },
       { key: "seoChecker",     href: "/tools/seo-checker",          icon: SearchCheck },
+      { key: "sitemapCreator", href: "/tools/sitemap-creator",      icon: Layers },
     ],
   },
   {

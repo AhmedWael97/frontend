@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import {
   Sparkles, Share2, Download, Link2, SearchCheck,
-  FileText, Clock, ArrowUpRight,
+  FileText, Clock, ArrowUpRight, Layers,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +69,8 @@ function Content() {
     { href: "/dashboard/shared-reports", icon: Share2,      label: th("sharedReports" as never)|| "Share Reports",    desc: th("sharedDesc" as never)      || "Shareable links for stakeholders",              color: "text-sky-400"    },
     { href: "/dashboard/exports",        icon: Download,    label: th("exports" as never)     || "Export Data",       desc: th("exportsDesc" as never)     || "Download raw data as CSV",                      color: "text-emerald-400"},
     { href: "/tools/utm-builder",        icon: Link2,       label: th("utmBuilder" as never)  || "UTM Link Builder",  desc: th("utmDesc" as never)         || "Build UTM campaign tracking links",             color: "text-orange-400" },
-    { href: "/tools/seo-checker",        icon: SearchCheck, label: th("seoChecker" as never)  || "SEO Checker",       desc: th("seoDesc" as never)         || "Audit any page or crawl your full site",        color: "text-teal-400"   },
+    { href: "/tools/seo-checker",        icon: SearchCheck, label: th("seoChecker" as never)      || "SEO Checker",         desc: th("seoDesc" as never)             || "Audit any page or crawl your full site",        color: "text-teal-400"   },
+    { href: "/tools/sitemap-creator",    icon: Layers,      label: th("sitemapCreator" as never)  || "Sitemap Creator",      desc: th("sitemapCreatorDesc" as never)  || "Generate an AI-enriched sitemap from your site", color: "text-indigo-400" },
   ];
 
   const STATUS_COLOR: Record<string, string> = {
