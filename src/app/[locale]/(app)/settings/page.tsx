@@ -104,11 +104,11 @@ function Content() {
                 </Badge>
                 {user.email_verified_at ? (
                   <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-semibold">
-                    <CheckCircle className="w-3 h-3" /> Verified
+                    <CheckCircle className="w-3 h-3" /> {th("emailVerified" as never)}
                   </span>
                 ) : (
                   <span className="flex items-center gap-1 text-[10px] text-amber-400 font-semibold">
-                    <AlertTriangle className="w-3 h-3" /> Email not verified
+                    <AlertTriangle className="w-3 h-3" /> {th("emailNotVerified" as never)}
                   </span>
                 )}
               </div>
@@ -128,7 +128,7 @@ function Content() {
         <div className="flex items-center gap-3 p-4 rounded-xl border border-outline-variant/20 bg-surface-container/30">
           <Globe className="w-5 h-5 text-primary shrink-0" />
           <div className="flex-1">
-            <p className="text-sm font-bold text-on-surface">{domains.length} website{domains.length !== 1 ? "s" : ""} connected</p>
+            <p className="text-sm font-bold text-on-surface">{th("connectedWebsites" as never)}: {domains.length}</p>
             <p className="text-xs text-on-surface-variant mt-0.5">
               {domains.map((d) => d.domain).slice(0, 3).join(", ")}
               {domains.length > 3 ? ` +${domains.length - 3} more` : ""}

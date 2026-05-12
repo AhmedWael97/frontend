@@ -101,7 +101,7 @@ function Content() {
               <p className={`text-xl font-black ${isLoading ? "text-on-surface-variant" : SCORE_COLOR[rating]}`}>
                 {isLoading ? "…" : score !== undefined ? `${score}/100` : "N/A"}
               </p>
-              <p className="text-xs text-on-surface-variant">Site Health</p>
+              <p className="text-xs text-on-surface-variant">{th("statSiteHealth" as never)}</p>
             </div>
           </CardContent>
         </Card>
@@ -116,7 +116,7 @@ function Content() {
               <p className="text-xl font-black text-on-surface">
                 {isLoading ? "…" : (uxData?.issues?.length ?? 0)}
               </p>
-              <p className="text-xs text-on-surface-variant">Active Issues</p>
+              <p className="text-xs text-on-surface-variant">{th("statActiveIssues" as never)}</p>
             </div>
           </CardContent>
         </Card>
@@ -131,7 +131,7 @@ function Content() {
               <p className="text-xl font-black text-on-surface">
                 {isLoading ? "…" : (uxData?.heatmap_pages ?? "—")}
               </p>
-              <p className="text-xs text-on-surface-variant">Heatmap Pages</p>
+              <p className="text-xs text-on-surface-variant">{th("statHeatmapPages" as never)}</p>
             </div>
           </CardContent>
         </Card>
@@ -146,7 +146,7 @@ function Content() {
               <p className="text-xl font-black text-on-surface">
                 {isLoading ? "…" : (uxData?.replay_sessions ?? "—")}
               </p>
-              <p className="text-xs text-on-surface-variant">Session Replays</p>
+              <p className="text-xs text-on-surface-variant">{th("statReplays" as never)}</p>
             </div>
           </CardContent>
         </Card>
@@ -170,7 +170,7 @@ function Content() {
           <CardHeader className="border-b border-outline-variant/20 pb-3">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400" />
-              Current Site Issues
+              {th("currentIssues" as never)}
             </CardTitle>
           </CardHeader>
           <div>
@@ -182,7 +182,11 @@ function Content() {
                     issue.severity === "high" ? "bg-rose-400/15 text-rose-400" :
                     issue.severity === "medium" ? "bg-yellow-400/15 text-yellow-400" :
                     "bg-emerald-400/15 text-emerald-400"
-                  }`}>{issue.severity}</span>
+                  }`}>
+                    {issue.severity === "high" ? th("severityHigh" as never) :
+                     issue.severity === "medium" ? th("severityMedium" as never) :
+                     th("severityLow" as never)}
+                  </span>
                   <span className="text-sm font-black text-on-surface">{issue.count}×</span>
                 </div>
               </div>

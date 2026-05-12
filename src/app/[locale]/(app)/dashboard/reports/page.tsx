@@ -100,7 +100,7 @@ function Content() {
             </div>
             <div>
               <p className="text-xl font-black text-on-surface">{isLoading ? "…" : reports.length}</p>
-              <p className="text-xs text-on-surface-variant">AI Reports</p>
+              <p className="text-xs text-on-surface-variant">{th("totalReports" as never)}</p>
             </div>
           </CardContent>
         </Card>
@@ -113,7 +113,7 @@ function Content() {
               <p className="text-xl font-black text-on-surface">
                 {isLoading ? "…" : reports.filter((r) => r.status === "completed").length}
               </p>
-              <p className="text-xs text-on-surface-variant">Completed</p>
+              <p className="text-xs text-on-surface-variant">{th("completedReports" as never)}</p>
             </div>
           </CardContent>
         </Card>
@@ -124,7 +124,7 @@ function Content() {
             </div>
             <div>
               <p className="text-xl font-black text-on-surface">—</p>
-              <p className="text-xs text-on-surface-variant">Shared Links</p>
+              <p className="text-xs text-on-surface-variant">{th("sharedLinks" as never)}</p>
             </div>
           </CardContent>
         </Card>
@@ -135,7 +135,7 @@ function Content() {
             </div>
             <div>
               <p className="text-xl font-black text-on-surface">—</p>
-              <p className="text-xs text-on-surface-variant">Exports</p>
+              <p className="text-xs text-on-surface-variant">{th("exportJobs" as never)}</p>
             </div>
           </CardContent>
         </Card>
@@ -160,9 +160,9 @@ function Content() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
-                Recent AI Reports
+                {th("recentReports" as never)}
               </CardTitle>
-              <Link href={`/${useLocale()}/dashboard/ai`} className="text-xs text-primary font-semibold flex items-center gap-1 hover:underline">
+              <Link href={`/${locale}/dashboard/ai`} className="text-xs text-primary font-semibold flex items-center gap-1 hover:underline">
                 View all <ArrowUpRight className="w-3 h-3" />
               </Link>
             </div>
@@ -181,7 +181,9 @@ function Content() {
                   </p>
                 </div>
                 <Badge className={`text-[10px] font-bold ${STATUS_COLOR[report.status] ?? STATUS_COLOR.pending}`}>
-                  {report.status}
+                  {report.status === "completed" ? th("statusCompleted" as never) :
+                   report.status === "failed"    ? th("statusFailed" as never) :
+                   th("statusPending" as never)}
                 </Badge>
               </div>
             ))}

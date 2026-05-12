@@ -103,13 +103,13 @@ function AnalyticsHub() {
           <Globe className="w-8 h-8 text-primary" />
         </div>
         <div>
-          <p className="text-lg font-bold text-on-surface">Connect your first website</p>
+          <p className="text-lg font-bold text-on-surface">{th("noWebsiteTitle" as never)}</p>
           <p className="text-sm text-on-surface-variant mt-1.5 max-w-xs mx-auto">
-            Add your domain and paste one line of code to start seeing who visits your site — in real time.
+            {th("noWebsiteDesc" as never)}
           </p>
         </div>
         <Link href={`/${locale}/settings/domains`}>
-          <Button className="gap-2"><Plus className="w-4 h-4" />Add your website</Button>
+          <Button className="gap-2"><Plus className="w-4 h-4" />{th("addWebsite" as never)}</Button>
         </Link>
       </div>
     );
@@ -123,9 +123,9 @@ function AnalyticsHub() {
 
   const bounceRate = data?.bounce_rate || 0;
   const bounceHint =
-    bounceRate > 70 ? "High — check your landing pages." :
-    bounceRate > 50 ? "Average — try stronger calls-to-action." :
-    "Healthy — visitors are exploring.";
+    bounceRate > 70 ? th("bounceHintHigh" as never) :
+    bounceRate > 50 ? th("bounceHintMid" as never) :
+    th("bounceHintLow" as never);
 
   const uxScore = data?.ux_score?.score as number | undefined;
 
@@ -158,7 +158,7 @@ function AnalyticsHub() {
         <Link href={`/${locale}/dashboard/shared-reports`}>
           <Button variant="outline" size="sm" className="gap-2">
             <Share2 className="w-3.5 h-3.5" />
-            Share Report
+            {th("shareReport" as never)}
           </Button>
         </Link>
       </div>
@@ -168,10 +168,10 @@ function AnalyticsHub() {
         <div className="flex items-center gap-3 p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-sm">
           <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
           <span className="text-on-surface flex-1">
-            Your <strong>Site Health score is {uxScore}/100</strong> — visitors may be running into problems.
+            {th("siteHealthAlert" as never, { score: uxScore } as never)}
           </span>
           <Link href={`/${locale}/dashboard/ux`} className="text-xs text-primary font-semibold whitespace-nowrap">
-            See what to fix →
+            {th("seeIssues" as never)}
           </Link>
         </div>
       )}
@@ -193,9 +193,9 @@ function AnalyticsHub() {
         <KpiCard title={t("visitors")} value={isLoading ? "…" : formatNumber(data?.visitors || 0)} icon={Users} />
         <KpiCard title={t("sessions")} value={isLoading ? "…" : formatNumber(data?.sessions || 0)} icon={Activity} />
         <KpiCard title={t("avgTime")}  value={isLoading ? "…" : formatSeconds(data?.avg_session_duration || 0)} icon={Clock} />
-        <KpiCard title="Bounce Rate"  value={isLoading ? "…" : `${bounceRate.toFixed(1)}%`} icon={TrendingDown} hint={bounceHint} />
-        <KpiCard title="Hot Leads"    value={isLoading ? "…" : formatNumber(data?.engaged_count || 0)} icon={Flame}
-          hint="Most likely to convert" clickHref="/dashboard/engaged-visitors" />
+        <KpiCard title={th("bounceRate" as never)}  value={isLoading ? "…" : `${bounceRate.toFixed(1)}%`} icon={TrendingDown} hint={bounceHint} />
+        <KpiCard title={th("hotLeads" as never)}    value={isLoading ? "…" : formatNumber(data?.engaged_count || 0)} icon={Flame}
+          hint={th("hotLeadsHint" as never)} clickHref="/dashboard/engaged-visitors" />
       </div>
 
       {/* Onboarding checklist */}
@@ -205,12 +205,12 @@ function AnalyticsHub() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-semibold uppercase tracking-widest text-on-surface-variant">
-            Visitors & Sessions — 30 day trend
+            {th("chartTitle" as never)}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="h-56 flex items-center justify-center text-on-surface-variant text-sm">Loading chart…</div>
+            <div className="h-56 flex items-center justify-center text-on-surface-variant text-sm">{t("loading" as never) || "…"}</div>
           ) : (
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={data?.chart_data || []}>
@@ -256,14 +256,14 @@ function AnalyticsHub() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-sm font-semibold uppercase tracking-widest text-on-surface-variant">Devices</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm font-semibold uppercase tracking-widest text-on-surface-variant">{th("devices" as never)}</CardTitle></CardHeader>
           <CardContent>
             {isLoading ? <div className="text-on-surface-variant text-sm">Loading…</div> : (
               <div className="space-y-3">
                 {[
-                  { label: "Desktop", value: (data?.top_devices || []).find((d: { device: string }) => d.device === "desktop")?.count || 0, color: "bg-primary" },
-                  { label: "Mobile",  value: (data?.top_devices || []).find((d: { device: string }) => d.device === "mobile")?.count  || 0, color: "bg-secondary" },
-                  { label: "Tablet",  value: (data?.top_devices || []).find((d: { device: string }) => d.device === "tablet")?.count  || 0, color: "bg-tertiary" },
+                  { label: th("desktop" as never), value: (data?.top_devices || []).find((d: { device: string }) => d.device === "desktop")?.count || 0, color: "bg-primary" },
+                  { label: th("mobile" as never),  value: (data?.top_devices || []).find((d: { device: string }) => d.device === "mobile")?.count  || 0, color: "bg-secondary" },
+                  { label: th("tablet" as never),  value: (data?.top_devices || []).find((d: { device: string }) => d.device === "tablet")?.count  || 0, color: "bg-tertiary" },
                 ].map((d) => {
                   const total = (data?.top_devices || []).reduce((sum: number, x: { count?: number }) => sum + (x.count || 0), 0);
                   const pct = total ? Math.round((d.value / total) * 100) : 0;
