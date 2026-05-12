@@ -49,6 +49,7 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const targetUrl = String(searchParams.get("url") || "").trim();
+  const bust = searchParams.get("bust") === "1";
 
   if (!targetUrl) {
     return NextResponse.json({ error: "url is required." }, { status: 400 });
@@ -72,7 +73,7 @@ export async function GET(req: NextRequest) {
 
     try {
       const fileInfo = await stat(cacheFile);
-      if (Date.now() - fileInfo.mtimeMs < CACHE_TTL_MS) {
+      if (!bust && Date.now() - fileInfo.mtimeMs < CACHE_TTL_MS) {
         const cached = await readFile(cacheFile);
         return new NextResponse(cached, { status: 200, headers: screenshotHeaders() });
       }
@@ -91,10 +92,14 @@ export async function GET(req: NextRequest) {
       const page = await browser.newPage({
         viewport: { width: 1440, height: 900 },
         deviceScaleFactor: 1,
+        userAgent:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
       });
 
-      await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 30000 });
-      await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => undefined);
+      await page.goto(targetUrl, { waitUntil: "load", timeout: 30000 });
+      // Allow JS frameworks (React, Vue, etc.) to finish rendering after load.
+      await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => undefined);
+      await page.waitForTimeout(1500);
 
       const screenshot = await page.screenshot({
         type: "png",

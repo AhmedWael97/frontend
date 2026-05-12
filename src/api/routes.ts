@@ -192,6 +192,7 @@ export const UX_ROUTES = {
   errors: (domainId: number) => `/ux/${domainId}/errors`,
   scrollDepth: (domainId: number) => `/ux/${domainId}/scroll-depth`,
   webVitals: (domainId: number) => `/ux/${domainId}/web-vitals`,
+  performance: (domainId: number) => `/ux/${domainId}/performance`,
 } as const;
 
 // ── Session Replay ────────────────────────────────────────────────────────────

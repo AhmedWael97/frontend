@@ -5,55 +5,24 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard, Radio, Users, BarChart3, GitMerge, Sparkles,
+  Radio, Users, BarChart3, GitMerge, Sparkles,
   Zap, Code2, UserCheck, Building2, PlaySquare, Share2, Download,
   Globe, CreditCard, User, Shield,
   Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
-  ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star, SearchCheck,
+  ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star,
+  SearchCheck, Settings, FileText,
 } from "lucide-react";
 import React, { useState } from "react";
 
-// ── Human-readable labels (override translation keys for jargon-heavy items) ─
-const LABEL_OVERRIDES: Record<string, string> = {
-  engagedVisitors: "Hot Leads",
-  identities:      "Known Visitors",
-  ux:              "Site Health",
-  webVitals:       "Page Speed",
-  jsErrors:        "Broken Pages",
-  scrollDepth:     "Content Reach",
-  customEvents:    "Goal Tracking",
-  ownerBrief:      "Daily Brief",
-  companies:       "Company Visitors",
-  sharedReports:   "Share Reports",
-  utmBuilder:      "UTM Link Builder",
-  seoChecker:      "SEO Checker",
-  realtime:        "Live Visitors",
-  summary:         "Full Summary",
-  heatmaps:        "Click Maps",
-  replay:          "Watch Sessions",
-  campaigns:       "Campaigns",
-  analytics:       "Deep Analytics",
-  visitors:        "All Visitors",
-  exports:         "Export Data",
-  domains:         "My Websites",
-  billing:         "Plans & Billing",
-};
-
-// ── Core nav (always visible — 5 items, minimal cognitive load) ───────────────
-const CORE_NAV = [
-  { key: "dashboard",     href: "/dashboard",           icon: LayoutDashboard },
-  { key: "realtime",      href: "/dashboard/realtime",  icon: Radio },
-  { key: "heatmaps",      href: "/dashboard/heatmaps",  icon: Flame },
-  { key: "replay",        href: "/dashboard/replay",    icon: PlaySquare },
-  { key: "ai",            href: "/dashboard/ai",        icon: Sparkles },
-];
-
-// ── Power nav (revealed via "More tools" toggle) ──────────────────────────────
-const MORE_NAV = [
+// ── Hub groups — the 4 mini-dashboards ───────────────────────────────────────
+const HUB_GROUPS = [
   {
-    label: "Analytics",
+    groupKey: "analyticsHub" as const,
+    hubHref:  "/dashboard",
+    hubIcon:  BarChart3,
+    color:    "text-primary",
     items: [
-      { key: "summary",        href: "/dashboard/summary",          icon: Star },
+      { key: "realtime",       href: "/dashboard/realtime",         icon: Radio },
       { key: "visitors",       href: "/dashboard/visitors",         icon: Users },
       { key: "analytics",      href: "/dashboard/analytics",        icon: BarChart3 },
       { key: "campaigns",      href: "/dashboard/campaigns",        icon: Megaphone },
@@ -62,21 +31,32 @@ const MORE_NAV = [
       { key: "customEvents",   href: "/dashboard/custom-events",    icon: Code2 },
       { key: "identities",     href: "/dashboard/identities",       icon: UserCheck },
       { key: "companies",      href: "/dashboard/companies",        icon: Building2 },
+      { key: "summary",        href: "/dashboard/summary",          icon: Star },
     ],
   },
   {
-    label: "Intelligence",
+    groupKey: "intelligenceHub" as const,
+    hubHref:  "/dashboard/intelligence",
+    hubIcon:  Zap,
+    color:    "text-sky-400",
     items: [
       { key: "ux",             href: "/dashboard/ux",               icon: Zap },
-      { key: "ownerBrief",     href: "/dashboard/owner-brief",      icon: Lightbulb },
+      { key: "heatmaps",       href: "/dashboard/heatmaps",         icon: Flame },
+      { key: "replay",         href: "/dashboard/replay",           icon: PlaySquare },
+      { key: "performance",    href: "/dashboard/performance",      icon: Gauge },
       { key: "scrollDepth",    href: "/dashboard/scroll-depth",     icon: ArrowDownToLine },
       { key: "webVitals",      href: "/dashboard/web-vitals",       icon: Gauge },
       { key: "jsErrors",       href: "/dashboard/errors",           icon: Bug },
+      { key: "ownerBrief",     href: "/dashboard/owner-brief",      icon: Lightbulb },
     ],
   },
   {
-    label: "Reports & Tools",
+    groupKey: "reportsHub" as const,
+    hubHref:  "/dashboard/reports",
+    hubIcon:  FileText,
+    color:    "text-violet-400",
     items: [
+      { key: "ai",             href: "/dashboard/ai",               icon: Sparkles },
       { key: "sharedReports",  href: "/dashboard/shared-reports",   icon: Share2 },
       { key: "exports",        href: "/dashboard/exports",          icon: Download },
       { key: "utmBuilder",     href: "/tools/utm-builder",          icon: Link2 },
@@ -84,7 +64,10 @@ const MORE_NAV = [
     ],
   },
   {
-    label: "Settings",
+    groupKey: "settingsHub" as const,
+    hubHref:  "/settings",
+    hubIcon:  Settings,
+    color:    "text-on-surface-variant",
     items: [
       { key: "domains",        href: "/settings/domains",           icon: Globe },
       { key: "billing",        href: "/settings/billing",           icon: CreditCard },
@@ -95,55 +78,61 @@ const MORE_NAV = [
       { key: "notifications",  href: "/settings/notifications",     icon: Bell },
     ],
   },
-];
-
-// All items flat (for active-detection on power pages)
-const ALL_ITEMS = CORE_NAV.concat(MORE_NAV.flatMap((g) => g.items));
+] as const;
 
 export function AppSidebar() {
   const t = useTranslations("nav");
   const pathname = usePathname();
-  const locale = useLocale();
-  const [open, setOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
+  const locale   = useLocale();
+  const [open, setOpen]           = useState(false);
+  // Which groups are manually collapsed (by default all are expanded if active)
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
-  const isActive = (href: string) => {
-    const full = `/${locale}${href}`;
-    return pathname === full || pathname.startsWith(`${full}/`);
+  const full = (href: string) => `/${locale}${href}`;
+
+  const isActive = (href: string) =>
+    pathname === full(href) || pathname.startsWith(`${full(href)}/`);
+
+  const groupIsActive = (group: (typeof HUB_GROUPS)[number]) =>
+    isActive(group.hubHref) ||
+    group.items.some((i) => isActive(i.href));
+
+  const isExpanded = (group: (typeof HUB_GROUPS)[number]) => {
+    // If manually toggled respect that, otherwise auto-expand when group is active
+    if (collapsed[group.groupKey] !== undefined) return !collapsed[group.groupKey];
+    return groupIsActive(group);
   };
 
-  // Auto-open "more" if the current page lives there
-  const currentInMore = MORE_NAV.flatMap((g) => g.items).some((item) => isActive(item.href));
+  const toggleGroup = (key: string, currentlyExpanded: boolean) =>
+    setCollapsed((prev) => ({ ...prev, [key]: currentlyExpanded }));
 
-  const navLabel = (key: string): string => {
-    if (LABEL_OVERRIDES[key]) return LABEL_OVERRIDES[key];
+  const navLabel = (key: string) => {
     try { return t(key as Parameters<typeof t>[0]); } catch { return key; }
   };
 
-  const NavItem = ({ item }: { item: (typeof CORE_NAV)[0] }) => {
-    const Icon = item.icon;
+  const NavItem = ({ item }: { item: { key: string; href: string; icon: React.ElementType } }) => {
+    const Icon   = item.icon;
     const active = isActive(item.href);
     return (
       <Link
-        href={`/${locale}${item.href}`}
+        href={full(item.href)}
         className={cn(
-          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+          "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all",
           active
-            ? "bg-gradient-to-r from-primary/20 to-primary-container/10 text-primary border border-primary/15"
+            ? "bg-primary/15 text-primary border border-primary/15"
             : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
         )}
         onClick={() => setOpen(false)}
       >
-        <Icon className={cn("w-4 h-4 flex-shrink-0", active ? "text-primary" : "")} />
+        <Icon className={cn("w-3.5 h-3.5 flex-shrink-0", active ? "text-primary" : "")} />
         <span className="truncate">{navLabel(item.key)}</span>
       </Link>
     );
   };
 
-  // Show sidebar always on desktop, toggle on mobile
   return (
     <>
-      {/* Mobile toggle button */}
+      {/* Mobile toggle */}
       <button
         className="fixed top-4 ltr:left-4 rtl:right-4 z-50 md:hidden bg-primary text-on-primary p-2 rounded-lg shadow-lg"
         onClick={() => setOpen((v) => !v)}
@@ -152,12 +141,8 @@ export function AppSidebar() {
         <span className="material-symbols-outlined">menu</span>
       </button>
 
-      {/* Sidebar overlay for mobile */}
       {open && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
-          onClick={() => setOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/40 z-40 md:hidden" onClick={() => setOpen(false)} />
       )}
 
       <aside
@@ -179,46 +164,59 @@ export function AppSidebar() {
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 no-scrollbar">
-          {/* ── Core items (always visible) ─────────────────────────────── */}
-          {CORE_NAV.map((item) => (
-            <NavItem key={item.key} item={item} />
-          ))}
+        {/* Navigation — 4 hub groups */}
+        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1 no-scrollbar">
+          {HUB_GROUPS.map((group) => {
+            const HubIcon  = group.hubIcon;
+            const expanded = isExpanded(group);
+            const active   = groupIsActive(group);
+            const hubExact = isActive(group.hubHref) &&
+              !group.items.some((i) => isActive(i.href));
 
-          {/* ── More tools toggle ────────────────────────────────────────── */}
-          <button
-            onClick={() => setMoreOpen((v) => !v)}
-            className={cn(
-              "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all mt-1",
-              (moreOpen || currentInMore)
-                ? "text-on-surface bg-surface-container"
-                : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
-            )}
-          >
-            <span>More tools</span>
-            {(moreOpen || currentInMore)
-              ? <ChevronUp className="w-4 h-4 opacity-60" />
-              : <ChevronDown className="w-4 h-4 opacity-60" />}
-          </button>
+            return (
+              <div key={group.groupKey} className="mb-0.5">
+                {/* Group header — hub link + collapse toggle */}
+                <div className={cn(
+                  "flex items-center rounded-xl transition-all",
+                  active ? "bg-surface-container/60" : ""
+                )}>
+                  <Link
+                    href={full(group.hubHref)}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2.5 flex-1 px-3 py-2.5 text-sm font-bold rounded-l-xl transition-all",
+                      hubExact
+                        ? "text-primary"
+                        : active
+                          ? "text-on-surface"
+                          : "text-on-surface-variant hover:text-on-surface"
+                    )}
+                  >
+                    <HubIcon className={cn("w-4 h-4 flex-shrink-0", active ? group.color : "")} />
+                    <span>{navLabel(group.groupKey)}</span>
+                  </Link>
+                  <button
+                    onClick={() => toggleGroup(group.groupKey, expanded)}
+                    className="p-2 rounded-r-xl text-on-surface-variant hover:text-on-surface transition-colors"
+                    aria-label={expanded ? "Collapse" : "Expand"}
+                  >
+                    {expanded
+                      ? <ChevronUp className="w-3.5 h-3.5 opacity-50" />
+                      : <ChevronDown className="w-3.5 h-3.5 opacity-50" />}
+                  </button>
+                </div>
 
-          {/* ── Power-user nav groups ────────────────────────────────────── */}
-          {(moreOpen || currentInMore) && (
-            <div className="space-y-4 mt-1 pt-1 border-t border-outline-variant/20">
-              {MORE_NAV.map((group, gi) => (
-                <div key={gi}>
-                  <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/50">
-                    {group.label}
-                  </p>
-                  <div className="space-y-0.5">
+                {/* Sub-items */}
+                {expanded && (
+                  <div className="mt-0.5 ms-3 ps-3 border-s border-outline-variant/20 space-y-0.5">
                     {group.items.map((item) => (
                       <NavItem key={item.key} item={item} />
                     ))}
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                )}
+              </div>
+            );
+          })}
         </nav>
       </aside>
     </>

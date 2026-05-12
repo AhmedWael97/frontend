@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { uxApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, LoaderCircle, ImageOff, ChevronDown, ChevronUp } from "lucide-react";
+import { Flame, LoaderCircle, ImageOff, ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 
 type HeatmapRow = {
   url: string;
@@ -31,7 +31,7 @@ function toPageLabel(pageUrl: string) {
   }
 }
 
-function useHeatmapScreenshot(domainId: number | undefined, pageUrl: string, enabled: boolean) {
+function useHeatmapScreenshot(domainId: number | undefined, pageUrl: string, enabled: boolean, bust: boolean) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -55,7 +55,8 @@ function useHeatmapScreenshot(domainId: number | undefined, pageUrl: string, ena
       try {
         const token = typeof window !== "undefined" ? localStorage.getItem("eye_token") : null;
         const apiBase = `${process.env.NEXT_PUBLIC_API_URL || ""}/api/${process.env.NEXT_PUBLIC_API_VERSION || "v1"}`;
-        const endpoint = `${apiBase}/ux/${screenshotDomainId}/heatmap/screenshot?url=${encodeURIComponent(pageUrl)}`;
+        const bustParam = bust ? "&bust=1" : "";
+        const endpoint = `${apiBase}/ux/${screenshotDomainId}/heatmap/screenshot?url=${encodeURIComponent(pageUrl)}${bustParam}`;
 
         const res = await fetch(endpoint, {
           signal: controller.signal,
@@ -102,7 +103,8 @@ function useHeatmapScreenshot(domainId: number | undefined, pageUrl: string, ena
 }
 
 function HeatmapCard({ page, domainId, expanded, onToggle }: { page: HeatmapPage; domainId?: number; expanded: boolean; onToggle: () => void }) {
-  const { imageUrl, error, loading } = useHeatmapScreenshot(domainId, page.url, expanded);
+  const [bust, setBust] = useState(false);
+  const { imageUrl, error, loading } = useHeatmapScreenshot(domainId, page.url, expanded, bust);
   const maxCount = page.rows.reduce((max, row) => Math.max(max, Number(row.count || 0)), 1);
 
   const dots = page.rows
@@ -188,6 +190,16 @@ function HeatmapCard({ page, domainId, expanded, onToggle }: { page: HeatmapPage
               <div className="absolute top-3 right-3 inline-flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs text-white" style={{ zIndex: 20 }}>
                 <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> Capturing screenshot
               </div>
+            )}
+            {!loading && (
+              <button
+                title="Refresh screenshot (bypass cache)"
+                onClick={() => setBust((b) => !b)}
+                className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-xs text-white hover:bg-black/80 transition-colors"
+                style={{ zIndex: 20 }}
+              >
+                <RefreshCw className="h-3 w-3" /> Refresh
+              </button>
             )}
 
             {error && (

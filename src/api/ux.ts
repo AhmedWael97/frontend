@@ -38,4 +38,8 @@ export const uxApi = {
   /** GET /ux/{domainId}/web-vitals */
   webVitals: (domainId: number, params?: DateParams) =>
     client.get(UX_ROUTES.webVitals(domainId), { params }),
+
+  /** GET /ux/{domainId}/performance */
+  performance: (domainId: number, params?: DateParams) =>
+    client.get(UX_ROUTES.performance(domainId), { params }),
 };
