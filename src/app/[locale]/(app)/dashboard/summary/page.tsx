@@ -152,9 +152,10 @@ function fmtDuration(secs: number): string {
 }
 
 const PERIODS = [
-  { label: "7 days", value: "7d" },
+  { label: "7 days",  value: "7d" },
   { label: "30 days", value: "30d" },
   { label: "90 days", value: "90d" },
+  { label: "Custom",  value: "custom" },
 ];
 
 /** Strip scheme+host from a URL, returning only the path (and query if present). */
@@ -184,10 +185,25 @@ function Content() {
   const { selectedDomainId } = useAuthStore();
   const [period, setPeriod] = useState("30d");
 
+  // Custom date range
+  const today = new Date().toISOString().slice(0, 10);
+  const thirtyAgo = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+  const [customFrom, setCustomFrom] = useState(thirtyAgo);
+  const [customTo, setCustomTo]     = useState(today);
+  // Only fire the query when the user has finished picking both dates
+  const [appliedFrom, setAppliedFrom] = useState(thirtyAgo);
+  const [appliedTo, setAppliedTo]     = useState(today);
+
+  const isCustom = period === "custom";
+
+  const queryParams = isCustom
+    ? { from: appliedFrom, to: appliedTo }
+    : { period };
+
   const { data: raw, isLoading } = useQuery({
-    queryKey: ["summary", selectedDomainId, period],
+    queryKey: ["summary", selectedDomainId, isCustom ? `${appliedFrom}__${appliedTo}` : period],
     queryFn: () =>
-      analyticsApi.summary(selectedDomainId!, { period }).then((r) => r.data?.data ?? r.data),
+      analyticsApi.summary(selectedDomainId!, queryParams).then((r) => r.data?.data ?? r.data),
     enabled: !!selectedDomainId,
   });
 
@@ -220,20 +236,48 @@ function Content() {
             Everything about your website in one view — traffic, campaigns, engagement & health
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {PERIODS.map((p) => (
-            <button
-              key={p.value}
-              onClick={() => setPeriod(p.value)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                period === p.value
-                  ? "bg-primary text-on-primary"
-                  : "bg-surface-container text-on-surface-variant hover:text-on-surface"
-              }`}
-            >
-              {p.label}
-            </button>
-          ))}
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2">
+            {PERIODS.map((p) => (
+              <button
+                key={p.value}
+                onClick={() => setPeriod(p.value)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  period === p.value
+                    ? "bg-primary text-on-primary"
+                    : "bg-surface-container text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+          {isCustom && (
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={customFrom}
+                max={customTo}
+                onChange={(e) => setCustomFrom(e.target.value)}
+                className="rounded-lg border border-outline-variant/30 bg-surface-container px-2 py-1 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <span className="text-xs text-on-surface-variant">to</span>
+              <input
+                type="date"
+                value={customTo}
+                min={customFrom}
+                max={today}
+                onChange={(e) => setCustomTo(e.target.value)}
+                className="rounded-lg border border-outline-variant/30 bg-surface-container px-2 py-1 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <button
+                onClick={() => { setAppliedFrom(customFrom); setAppliedTo(customTo); }}
+                className="px-3 py-1 rounded-lg bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity"
+              >
+                Apply
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -293,9 +337,9 @@ function Content() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="h-52 bg-surface-container rounded animate-pulse" />
+            <div className="h-96 bg-surface-container rounded animate-pulse" />
           ) : (
-            <ResponsiveContainer width="100%" height={220}>
+            <ResponsiveContainer width="100%" height={380}>
               <AreaChart data={d?.trend ?? []} margin={{ left: 0, right: 0 }}>
                 <defs>
                   <linearGradient id="gV" x1="0" y1="0" x2="0" y2="1">
