@@ -129,8 +129,8 @@ function RatingBadge({ rating }: { rating: keyof typeof RATING_TONE }) {
 }
 
 // Page-load benchmark thresholds (ms)
-const LOAD_GOOD = 2500;
-const LOAD_OK = 4000;
+const LOAD_GOOD = 4000;
+const LOAD_OK = 8000;
 const TTFB_GOOD = 200;
 const TTFB_OK = 600;
 
@@ -146,7 +146,7 @@ function ttfbColor(v: number) {
 }
 
 // Load-time progress bar (0 → 6s budget)
-function LoadBar({ value, budget = 6000 }: { value: number; budget?: number }) {
+function LoadBar({ value, budget = 9000 }: { value: number; budget?: number }) {
   const pct = Math.min(100, Math.max(2, (value / budget) * 100));
   const tone = value <= LOAD_GOOD ? "from-emerald-500 to-emerald-400"
     : value <= LOAD_OK ? "from-amber-500 to-amber-400"
@@ -192,7 +192,8 @@ function computeHealth(pages: PageLoad[], slowCount: number) {
 
   // 60% pages rating, 20% TTFB, 20% slow assets penalty
   const pagesScore = (good * 100 + ni * 60 + poor * 20) / pages.length;
-  const avgTtfb = pages.reduce((s, p) => s + p.avg_ttfb, 0) / pages.length;
+  const totalSamples = pages.reduce((s, p) => s + p.samples, 0);
+  const avgTtfb = totalSamples > 0 ? pages.reduce((s, p) => s + p.avg_ttfb * p.samples, 0) / totalSamples : 0;
   const ttfbScore = avgTtfb <= TTFB_GOOD ? 100 : avgTtfb <= TTFB_OK ? 70 : Math.max(20, 100 - avgTtfb / 20);
   const assetScore = Math.max(0, 100 - slowCount * 6);
 
@@ -496,8 +497,9 @@ function Content() {
   const niCount   = pages.filter((p) => p.rating === "needs-improvement").length;
   const poorCount = pages.filter((p) => p.rating === "poor").length;
 
-  const avgLoad = pages.length ? Math.round(pages.reduce((s, p) => s + p.avg_load_event, 0) / pages.length) : 0;
-  const avgTtfb = pages.length ? Math.round(pages.reduce((s, p) => s + p.avg_ttfb, 0) / pages.length) : 0;
+  const totalSamples = pages.reduce((s, p) => s + p.samples, 0);
+  const avgLoad = totalSamples > 0 ? Math.round(pages.reduce((s, p) => s + p.avg_load_event * p.samples, 0) / totalSamples) : 0;
+  const avgTtfb = totalSamples > 0 ? Math.round(pages.reduce((s, p) => s + p.avg_ttfb * p.samples, 0) / totalSamples) : 0;
 
   const health = computeHealth(pages, slowAssets.length);
   const quickWins = useMemo(() => buildQuickWins(pages, slowAssets), [pages, slowAssets]);
@@ -632,7 +634,7 @@ function Content() {
               label="Avg page load"
               value={ms(avgLoad)}
               tone={loadColor(avgLoad)}
-              hint={avgLoad <= LOAD_GOOD ? "Within good budget" : avgLoad <= LOAD_OK ? "Needs work — aim under 2.5s" : "Too slow — above 4s"}
+              hint={avgLoad <= LOAD_GOOD ? "Within budget" : avgLoad <= LOAD_OK ? "Needs work — aim under 4s" : "Too slow — above 8s"}
             />
             <KpiTile
               icon={<Zap className="w-5 h-5 text-sky-400" />}

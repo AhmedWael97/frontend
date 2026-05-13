@@ -272,6 +272,7 @@ export const ADMIN_ROUTES = {
   // Payments
   paymentsList: "/admin/payments",
   paymentsShow: (id: number) => `/admin/payments/${id}`,
+  paymentsApprove: (id: number) => `/admin/payments/${id}/approve`,
   paymentsRefund: (id: number) => `/admin/payments/${id}/refund`,
   // Domains
   domainsList: "/admin/domains",

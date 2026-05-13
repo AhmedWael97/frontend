@@ -453,10 +453,11 @@ function Content() {
     return sum;
   }, [pages]);
 
-  // Average each metric across pages
-  const avgLcp = pages.length ? pages.reduce((s, p) => s + p.avg_lcp, 0) / pages.length : 0;
-  const avgCls = pages.length ? pages.reduce((s, p) => s + p.avg_cls, 0) / pages.length : 0;
-  const avgInp = pages.length ? pages.reduce((s, p) => s + p.avg_inp, 0) / pages.length : 0;
+  // Average each metric across pages (sample-weighted by p.total)
+  const totalSamples = pages.reduce((s, p) => s + p.total, 0);
+  const avgLcp = totalSamples > 0 ? pages.reduce((s, p) => s + p.avg_lcp * p.total, 0) / totalSamples : 0;
+  const avgCls = totalSamples > 0 ? pages.reduce((s, p) => s + p.avg_cls * p.total, 0) / totalSamples : 0;
+  const avgInp = totalSamples > 0 ? pages.reduce((s, p) => s + p.avg_inp * p.total, 0) / totalSamples : 0;
 
   const lcpTotals = useMemo(() => ({
     good: pages.filter((p) => lcpRating(p.avg_lcp) === "good").length,

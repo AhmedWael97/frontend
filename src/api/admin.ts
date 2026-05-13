@@ -152,6 +152,9 @@ export const adminApi = {
   /** GET /admin/payments/{id} */
   getPayment: (id: number) => client.get(ADMIN_ROUTES.paymentsShow(id)),
 
+  /** POST /admin/payments/{id}/approve */
+  approvePayment: (id: number) => client.post(ADMIN_ROUTES.paymentsApprove(id)),
+
   /** POST /admin/payments/{id}/refund */
   refundPayment: (id: number) => client.post(ADMIN_ROUTES.paymentsRefund(id)),
 
