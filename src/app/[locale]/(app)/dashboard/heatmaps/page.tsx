@@ -35,12 +35,14 @@ function useHeatmapScreenshot(domainId: number | undefined, pageUrl: string, ena
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
     if (!enabled || !domainId || !pageUrl) {
       setImageUrl(null);
       setError(null);
       setLoading(false);
+      setDimensions(null);
       return;
     }
 
@@ -78,7 +80,24 @@ function useHeatmapScreenshot(domainId: number | undefined, pageUrl: string, ena
         }
 
         blobUrl = URL.createObjectURL(blob);
-        setImageUrl(blobUrl);
+
+        // Read natural dimensions so the heatmap container can match the
+        // screenshot's aspect ratio exactly — otherwise object-cover crops
+        // the tall full-page image and dots at lower y% positions appear
+        // floating in empty space instead of over the matching content.
+        const img = new Image();
+        img.onload = () => {
+          if (!controller.signal.aborted) {
+            setDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+            setImageUrl(blobUrl);
+          }
+        };
+        img.onerror = () => {
+          if (!controller.signal.aborted) {
+            setError("Failed to decode screenshot.");
+          }
+        };
+        img.src = blobUrl;
       } catch (err) {
         if (!controller.signal.aborted) {
           setImageUrl(null);
@@ -99,13 +118,13 @@ function useHeatmapScreenshot(domainId: number | undefined, pageUrl: string, ena
     };
   }, [domainId, enabled, pageUrl]);
 
-  return { imageUrl, error, loading };
+  return { imageUrl, error, loading, dimensions };
 }
 
 function HeatmapCard({ page, domainId, expanded, onToggle }: { page: HeatmapPage; domainId?: number; expanded: boolean; onToggle: () => void }) {
   const [bust, setBust] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const { imageUrl, error, loading } = useHeatmapScreenshot(domainId, page.url, expanded, bust);
+  const { imageUrl, error, loading, dimensions } = useHeatmapScreenshot(domainId, page.url, expanded, bust);
 
   useEffect(() => {
     if (!lightboxOpen) return;
@@ -164,9 +183,16 @@ function HeatmapCard({ page, domainId, expanded, onToggle }: { page: HeatmapPage
 
       {expanded && (
         <CardContent className="space-y-4">
-          <div className="relative w-full aspect-[16/9] overflow-hidden rounded-xl border border-outline-variant/30 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.08),transparent_36%),linear-gradient(180deg,#0f172a_0%,#1e293b_100%)]">
+          <div
+            className="relative w-full overflow-hidden rounded-xl border border-outline-variant/30 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.08),transparent_36%),linear-gradient(180deg,#0f172a_0%,#1e293b_100%)]"
+            style={
+              imageUrl && dimensions
+                ? { aspectRatio: `${dimensions.width} / ${dimensions.height}` }
+                : { aspectRatio: "16 / 9" }
+            }
+          >
             {imageUrl ? (
-              <img src={imageUrl} alt={`Heatmap screenshot for ${page.url}`} className="absolute inset-0 h-full w-full object-cover" />
+              <img src={imageUrl} alt={`Heatmap screenshot for ${page.url}`} className="absolute inset-0 h-full w-full object-contain" />
             ) : (
               <div
                 className="absolute inset-0 opacity-20"

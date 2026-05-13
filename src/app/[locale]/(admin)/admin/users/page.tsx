@@ -152,23 +152,23 @@ function Content() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-black text-on-surface tracking-tight">Users</h1>
           <p className="text-on-surface-variant text-sm mt-0.5">All registered accounts — including admins</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative w-56">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
-            <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Search users…" className="pl-9" />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <div className="relative w-full sm:w-56">
+            <Search className="absolute ltr:left-3 rtl:right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
+            <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Search users…" className="ltr:pl-9 rtl:pr-9" />
           </div>
-          <Button onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4" /> Add User</Button>
+          <Button onClick={() => setCreateOpen(true)} className="shrink-0"><Plus className="w-4 h-4" /> Add User</Button>
         </div>
       </div>
 
       <Card>
-        <CardContent className="p-0">
-          <table className="w-full text-sm">
+        <CardContent className="p-0 overflow-x-auto">
+          <table className="w-full text-sm min-w-[900px]">
             <thead>
               <tr className="border-b border-outline-variant/20">
                 {["Name", "Email", "Role", "Plan", "AI Tokens", "Status", "Created", "Actions"].map((h) => (

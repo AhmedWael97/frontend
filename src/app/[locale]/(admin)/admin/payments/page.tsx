@@ -19,8 +19,8 @@ function Content() {
         <p className="text-on-surface-variant text-sm mt-0.5">All payment transactions</p>
       </div>
       <Card>
-        <CardContent className="p-0">
-          <table className="w-full text-sm">
+        <CardContent className="p-0 overflow-x-auto">
+          <table className="w-full text-sm min-w-[720px]">
             <thead>
               <tr className="border-b border-outline-variant/20">
                 {["Date", "User", "Amount", "Status", "Gateway ID"].map((h) => (

@@ -367,11 +367,11 @@ function Content() {
             Domains ({domains.length})
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           {domains.length === 0 ? (
             <p className="px-4 py-6 text-sm text-on-surface-variant">No domains registered yet.</p>
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full text-sm min-w-[640px]">
               <thead>
                 <tr className="border-b border-outline-variant/20">
                   {["Domain", "Status", "Created", "Actions"].map((h) => (
