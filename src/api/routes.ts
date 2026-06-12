@@ -188,6 +188,13 @@ export const ANALYTICS_ROUTES = {
   companiesShow: (domainId: number, companyDomain: string) =>
     `/analytics/${domainId}/companies/${companyDomain}`,
   campaigns: (domainId: number) => `/analytics/${domainId}/campaigns`,
+  retention: (domainId: number) => `/analytics/${domainId}/retention`,
+  experiments: (domainId: number) => `/analytics/${domainId}/experiments`,
+  experimentResults: (domainId: number, id: number) => `/analytics/${domainId}/experiments/${id}/results`,
+  experimentDelete: (domainId: number, id: number) => `/analytics/${domainId}/experiments/${id}`,
+  adSpend: (domainId: number) => `/analytics/${domainId}/ad-spend`,
+  adSpendImport: (domainId: number) => `/analytics/${domainId}/ad-spend/import`,
+  adSpendDelete: (domainId: number, id: number) => `/analytics/${domainId}/ad-spend/${id}`,
   engagedVisitors: (domainId: number) => `/analytics/${domainId}/engaged-visitors`,
   summary: (domainId: number) => `/analytics/${domainId}/summary`,
   botStats: (domainId: number) => `/analytics/${domainId}/bot-stats`,
@@ -207,7 +214,9 @@ export const UX_ROUTES = {
 // ── Session Replay ────────────────────────────────────────────────────────────
 export const REPLAY_ROUTES = {
   sessions: (domainId: number) => `/replay/${domainId}/sessions`,
+  funnelDrops: (domainId: number) => `/replay/${domainId}/funnel-drops`,
   events:   (domainId: number, sessionId: string) => `/replay/${domainId}/sessions/${sessionId}`,
+  markers:  (domainId: number, sessionId: string) => `/replay/${domainId}/sessions/${sessionId}/markers`,
   destroy:  (domainId: number, sessionId: string) => `/replay/${domainId}/sessions/${sessionId}`,
 } as const;
 

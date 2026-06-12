@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
+import { AdSpendDialog } from "./AdSpendDialog";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   LineChart, Line, Legend,
@@ -23,6 +24,7 @@ import {
   Mail,
   Sparkles,
   Bot,
+  DollarSign,
 } from "lucide-react";
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -46,6 +48,11 @@ type CampaignRow = {
   avg_pages: number;
   bounce_rate: number;
   conversions: number;
+  orders: number;
+  revenue: number;
+  spend: number;
+  roas: number | null;
+  cpa: number | null;
 };
 type SourceRow = { source: string; medium?: string; sessions: number; visitors: number };
 type TrendRow  = { date: string; source: string; sessions: number };
@@ -129,6 +136,11 @@ function compactNumber(n: number) {
   if (n >= 1_000) return `${(n / 1000).toFixed(1)}K`;
   return n.toLocaleString();
 }
+function fmtMoney(n: number, currency?: string) {
+  const v = Number(n) || 0;
+  const amount = v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  return currency ? `${currency} ${amount}` : amount;
+}
 
 // ── Pieces ───────────────────────────────────────────────────────────────────
 function SourceTag({ name }: { name: string }) {
@@ -186,6 +198,7 @@ function Content() {
   const { selectedDomainId } = useAuthStore();
   const locale = useLocale();
   const [days, setDays] = useState("30");
+  const [attribution, setAttribution] = useState("last_touch");
   const [goalFilter, setGoalFilter] = useState("");
   const [sortCol, setSortCol] = useState<keyof CampaignRow>("sessions");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
@@ -196,11 +209,12 @@ function Content() {
   const end = new Date().toISOString().slice(0, 10);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["campaigns", selectedDomainId, days, goalFilter],
+    queryKey: ["campaigns", selectedDomainId, days, goalFilter, attribution],
     queryFn: () =>
       analyticsApi.campaigns(selectedDomainId!, {
         start,
         end,
+        attribution,
         ...(goalFilter ? { goal: goalFilter } : {}),
       }).then((r) => r.data?.data ?? r.data),
     enabled: !!selectedDomainId,
@@ -217,6 +231,9 @@ function Content() {
   const campaigns: CampaignRow[] = data?.campaigns ?? [];
   const topSources: SourceRow[]  = data?.top_sources ?? [];
   const rawTrend:   TrendRow[]   = data?.trend ?? [];
+  const totalRevenue: number     = Number(data?.total_revenue ?? 0);
+  const totalSpend: number       = Number(data?.total_spend ?? 0);
+  const currency: string         = data?.currency ?? "";
 
   // Trend pivoted by date
   const trendByDate: Record<string, Record<string, number | string>> = {};
@@ -262,6 +279,8 @@ function Content() {
   // ── KPIs ───────────────────────────────────────────────────────────────────
   const totalSessions = campaigns.reduce((s, r) => s + Number(r.sessions), 0);
   const totalVisitors = campaigns.reduce((s, r) => s + Number(r.visitors), 0);
+  const totalOrders = campaigns.reduce((s, r) => s + Number(r.orders ?? 0), 0);
+  const overallRoas = totalSpend > 0 ? totalRevenue / totalSpend : null;
   const avgBounce =
     campaigns.length
       ? campaigns.reduce((s, r) => s + Number(r.bounce_rate), 0) / campaigns.length
@@ -313,6 +332,18 @@ function Content() {
             <Link2 className="w-3.5 h-3.5" />
             Build UTM Link
           </a>
+          <AdSpendDialog domainId={selectedDomainId} start={start} end={end} defaultCurrency={currency} />
+          <select
+            value={attribution}
+            onChange={(e) => setAttribution(e.target.value)}
+            title="Revenue attribution model"
+            className="h-9 px-2 rounded-lg border border-outline-variant/40 bg-surface text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40"
+          >
+            <option value="last_touch">Attribution: Last touch</option>
+            <option value="first_touch">Attribution: First touch</option>
+            <option value="linear">Attribution: Linear</option>
+            <option value="time_decay">Attribution: Time decay</option>
+          </select>
           <Input
             className="px-3 py-1.5 w-40 h-9 text-sm"
             placeholder="Goal URL (optional)"
@@ -336,9 +367,11 @@ function Content() {
       </div>
 
       {/* KPI cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <KpiCard icon={Users} label="Total Sessions" value={totalSessions} />
         <KpiCard icon={Users} label="Unique Visitors" value={totalVisitors} />
+        <KpiCard icon={DollarSign} label="Revenue" value={fmtMoney(totalRevenue, currency)} sub={`${totalOrders.toLocaleString()} orders`} />
+        <KpiCard icon={DollarSign} label="Ad Spend" value={fmtMoney(totalSpend, currency)} sub={overallRoas !== null ? `${overallRoas.toFixed(2)}× ROAS` : "no spend set"} />
         <KpiCard icon={TrendingUp} label="Sources" value={topSources.length} sub={`${campaigns.length} campaigns`} />
         <KpiCard icon={MousePointerClick} label="Avg Bounce Rate" value={`${avgBounce.toFixed(1)}%`} />
       </div>
@@ -470,6 +503,10 @@ function Content() {
                 >
                   <option value="sessions">Sort: Sessions</option>
                   <option value="visitors">Sort: Visitors</option>
+                  <option value="revenue">Sort: Revenue</option>
+                  <option value="orders">Sort: Orders</option>
+                  <option value="spend">Sort: Spend</option>
+                  <option value="roas">Sort: ROAS</option>
                   <option value="avg_duration">Sort: Duration</option>
                   <option value="bounce_rate">Sort: Bounce %</option>
                   {goalFilter && <option value="conversions">Sort: Conversions</option>}
@@ -520,6 +557,10 @@ function Content() {
                     { key: "avg_duration", label: "Avg Duration" },
                     { key: "avg_pages",    label: "Avg Pages" },
                     { key: "bounce_rate",  label: "Bounce %" },
+                    { key: "revenue",      label: "Revenue" },
+                    { key: "orders",       label: "Orders" },
+                    { key: "spend",        label: "Spend" },
+                    { key: "roas",         label: "ROAS" },
                     ...(goalFilter ? [{ key: "conversions", label: "Conversions" }] : []),
                   ].map(({ key, label }) => (
                     <th
@@ -536,7 +577,7 @@ function Content() {
                 {isLoading
                   ? Array.from({ length: 6 }).map((_, i) => (
                       <tr key={i} className="border-b border-outline-variant/10">
-                        {Array.from({ length: 8 }).map((_, j) => (
+                        {Array.from({ length: goalFilter ? 13 : 12 }).map((_, j) => (
                           <td key={j} className="px-3 py-2.5">
                             <div className="h-4 bg-surface-container-high rounded animate-pulse w-20" />
                           </td>
@@ -563,6 +604,24 @@ function Content() {
                             {Number(row.bounce_rate).toFixed(1)}%
                           </span>
                         </td>
+                        <td className={tdCls + " font-semibold tabular-nums"}>
+                          {Number(row.revenue) > 0
+                            ? <span className="text-emerald-400">{fmtMoney(Number(row.revenue), currency)}</span>
+                            : <span className="text-on-surface-variant">—</span>}
+                        </td>
+                        <td className={tdCls + " tabular-nums"}>
+                          {Number(row.orders) > 0 ? Number(row.orders).toLocaleString() : "—"}
+                        </td>
+                        <td className={tdCls + " tabular-nums"}>
+                          {Number(row.spend) > 0 ? fmtMoney(Number(row.spend), currency) : "—"}
+                        </td>
+                        <td className={tdCls + " font-semibold tabular-nums"}>
+                          {row.roas != null
+                            ? <span className={Number(row.roas) >= 1 ? "text-emerald-400" : "text-rose-400"} title={row.cpa != null ? `CPA: ${fmtMoney(Number(row.cpa), currency)}` : undefined}>
+                                {Number(row.roas).toFixed(2)}×
+                              </span>
+                            : <span className="text-on-surface-variant">—</span>}
+                        </td>
                         {goalFilter && (
                           <td className={tdCls + " font-semibold text-primary tabular-nums"}>
                             {Number(row.conversions).toLocaleString()}
@@ -572,7 +631,7 @@ function Content() {
                     ))}
                 {!isLoading && filtered.length === 0 && (
                   <tr>
-                    <td colSpan={goalFilter ? 9 : 8} className="px-3 py-10 text-center text-on-surface-variant text-sm">
+                    <td colSpan={goalFilter ? 13 : 12} className="px-3 py-10 text-center text-on-surface-variant text-sm">
                       No campaigns match the current filters.
                     </td>
                   </tr>

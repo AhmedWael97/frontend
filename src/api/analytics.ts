@@ -91,6 +91,53 @@ export const analyticsApi = {
   campaigns: (domainId: number, params?: Record<string, unknown>) =>
     client.get(ANALYTICS_ROUTES.campaigns(domainId), { params }),
 
+  /** GET /analytics/{domainId}/retention */
+  retention: (domainId: number, params?: { period?: "week" | "month"; cohorts?: number }) =>
+    client.get(ANALYTICS_ROUTES.retention(domainId), { params }),
+
+  /** GET /analytics/{domainId}/experiments */
+  experimentsList: (domainId: number) =>
+    client.get(ANALYTICS_ROUTES.experiments(domainId)),
+
+  /** POST /analytics/{domainId}/experiments */
+  experimentsCreate: (domainId: number, data: { key: string; name: string; variants: string[] }) =>
+    client.post(ANALYTICS_ROUTES.experiments(domainId), data),
+
+  /** GET /analytics/{domainId}/experiments/{id}/results */
+  experimentResults: (domainId: number, id: number) =>
+    client.get(ANALYTICS_ROUTES.experimentResults(domainId, id)),
+
+  /** DELETE /analytics/{domainId}/experiments/{id} */
+  experimentsDelete: (domainId: number, id: number) =>
+    client.delete(ANALYTICS_ROUTES.experimentDelete(domainId, id)),
+
+  /** GET /analytics/{domainId}/ad-spend */
+  adSpendList: (domainId: number, params?: { start?: string; end?: string }) =>
+    client.get(ANALYTICS_ROUTES.adSpend(domainId), { params }),
+
+  /** POST /analytics/{domainId}/ad-spend */
+  adSpendStore: (
+    domainId: number,
+    data: {
+      date: string;
+      source: string;
+      campaign?: string;
+      medium?: string;
+      spend: number;
+      currency?: string;
+      clicks?: number;
+      impressions?: number;
+    }
+  ) => client.post(ANALYTICS_ROUTES.adSpend(domainId), data),
+
+  /** POST /analytics/{domainId}/ad-spend/import */
+  adSpendImport: (domainId: number, csv: string) =>
+    client.post(ANALYTICS_ROUTES.adSpendImport(domainId), { csv }),
+
+  /** DELETE /analytics/{domainId}/ad-spend/{id} */
+  adSpendDelete: (domainId: number, id: number) =>
+    client.delete(ANALYTICS_ROUTES.adSpendDelete(domainId, id)),
+
   /** GET /analytics/{domainId}/engaged-visitors */
   engagedVisitors: (domainId: number, params?: Record<string, unknown>) =>
     client.get(ANALYTICS_ROUTES.engagedVisitors(domainId), { params }),

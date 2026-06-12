@@ -1,19 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { analyticsApi, pipelinesApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { Plus, Trash2, GripVertical, ArrowDown, Target, X } from "lucide-react";
+import { Plus, Trash2, GripVertical, ArrowDown, Target, X, Film } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 type Step = { name: string; url_pattern: string; match_type: string };
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
+  const locale = useLocale();
   const qClient = useQueryClient();
   const [newName, setNewName] = useState("");
   const [steps, setSteps] = useState<Step[]>([{ name: "", url_pattern: "", match_type: "contains" }]);
@@ -321,6 +323,15 @@ function Content() {
                             <code className="text-primary">{s.url_pattern}</code>
                           </p>
                         </div>
+                        {i < sortedSteps.length - 1 && (
+                          <a
+                            href={`/${locale}/dashboard/replay?pipeline=${selectedFunnel.id}&step=${s.order ?? i + 1}&label=${encodeURIComponent(s.name || `Step ${i + 1}`)}`}
+                            title="Watch sessions that dropped after this step"
+                            className="text-on-surface-variant hover:text-primary transition-colors shrink-0"
+                          >
+                            <Film className="w-3.5 h-3.5" />
+                          </a>
+                        )}
                         <button
                           onClick={() => removeStepMutation.mutate(s.id)}
                           disabled={removeStepMutation.isPending}

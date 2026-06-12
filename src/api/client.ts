@@ -25,6 +25,17 @@ const client = axios.create({
 
 // ── Request: attach Bearer token ─────────────────────────────────────────────
 client.interceptors.request.use((config) => {
+  // Guard: never fire a domain-scoped request when the id is missing. A
+  // `null`/`undefined` path segment means no domain is selected yet (e.g. right
+  // after first login). Skipping it here avoids backend 404s
+  // ("No query results for model [Domain]") and the error toasts they trigger —
+  // across every page, without each page needing its own guard.
+  if (/\/(?:null|undefined)(?=\/|$|\?)/.test(config.url || "")) {
+    const skip = new Error("eye:skip — request with missing route param");
+    (skip as any).__eyeSkip = true;
+    throw skip;
+  }
+
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("eye_token");
     if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -52,6 +63,11 @@ client.interceptors.response.use(
     return res;
   },
   (err) => {
+    // Requests skipped by the missing-route-param guard above: stay silent.
+    if ((err as any)?.__eyeSkip) {
+      return Promise.reject(err);
+    }
+
     if (err.response?.status === 401 && typeof window !== "undefined") {
       localStorage.removeItem("eye_token");
       window.location.href = "/en/auth/login";

@@ -16,6 +16,11 @@ interface ToastStore {
 export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
   add: (t) => {
+    // De-dupe: if an identical message+variant is already showing, don't stack
+    // another copy (several queries failing with the same error shouldn't spam).
+    if (useToastStore.getState().toasts.some((x) => x.message === t.message && x.variant === t.variant)) {
+      return;
+    }
     const id = Math.random().toString(36).slice(2, 9);
     set((s) => ({ toasts: [...s.toasts, { ...t, id }] }));
     setTimeout(

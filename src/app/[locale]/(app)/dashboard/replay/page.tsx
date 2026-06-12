@@ -1,7 +1,9 @@
 "use client";
 
 import "rrweb/dist/rrweb.min.css";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { replayApi } from "@/api";
 import { useAuthStore } from "@/store/auth";
@@ -26,6 +28,28 @@ type RrwebEvent = {
   data: Record<string, unknown>;
   timestamp: number;
 };
+
+type MarkerRow = {
+  type: string;
+  url: string;
+  element_selector: string;
+  details: string;
+  ts_ms: number | string;
+};
+
+// Friction / error signals overlaid on the replay timeline.
+const MARKER_META: Record<string, { color: string; label: string }> = {
+  rage_click:       { color: "#fb7185", label: "Rage click" },
+  dead_click:       { color: "#fbbf24", label: "Dead click" },
+  js_error:         { color: "#f87171", label: "JS error" },
+  excessive_scroll: { color: "#a78bfa", label: "Excessive scroll" },
+  quick_back:       { color: "#38bdf8", label: "Quick back" },
+  form_abandon:     { color: "#f472b6", label: "Form abandon" },
+  broken_link:      { color: "#f97316", label: "Broken link" },
+};
+function markerMeta(type: string) {
+  return MARKER_META[type] ?? { color: "#9ca3af", label: type };
+}
 
 // ── Replay Player (client-only, imports rrweb dynamically) ────────────────────
 function ReplayPlayer({
@@ -55,6 +79,34 @@ function ReplayPlayer({
       replayApi.events(domainId, session.session_id).then((r) => r.data as RrwebEvent[]),
     staleTime: Infinity,
   });
+
+  // Notable UX events (rage clicks, errors, …) overlaid on the timeline.
+  // Positioned by their relative fraction within the markers' own time span —
+  // approximate, since ux_events use the server clock and rrweb the client clock.
+  const { data: markerData } = useQuery({
+    queryKey: ["replay-markers", domainId, session.session_id],
+    queryFn: () =>
+      replayApi.markers(domainId, session.session_id).then((r) => (r.data?.data ?? r.data) as MarkerRow[]),
+    staleTime: Infinity,
+  });
+
+  const markers = useMemo(() => {
+    const list = markerData ?? [];
+    if (!list.length) return [];
+    const ts = list.map((m) => Number(m.ts_ms));
+    const min = Math.min(...ts);
+    const span = Math.max(...ts) - min;
+    return list.map((m) => ({
+      ...m,
+      pct: span > 0 ? ((Number(m.ts_ms) - min) / span) * 100 : 50,
+    }));
+  }, [markerData]);
+
+  const markerCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const m of markers) counts[m.type] = (counts[m.type] ?? 0) + 1;
+    return counts;
+  }, [markers]);
 
   // Rebuild rrweb events from the backend format (type + data + timestamp)
   function toRrwebEvents(rows: RrwebEvent[]): RrwebEvent[] {
@@ -289,19 +341,57 @@ function ReplayPlayer({
 
         {/* Controls */}
         <div className="px-5 py-3 border-t border-outline-variant/20 space-y-2">
-          {/* Progress bar */}
-          <div
-            className="w-full h-2 bg-surface-container rounded-full cursor-pointer overflow-hidden"
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              seek(((e.clientX - rect.left) / rect.width) * 100);
-            }}
-          >
+          {/* Progress bar + marker dots */}
+          <div className="relative pt-2">
+            {markers.map((m, i) => {
+              const meta = markerMeta(m.type);
+              return (
+                <button
+                  key={i}
+                  title={`${meta.label}${m.url ? " · " + m.url : ""} (approx. position)`}
+                  onClick={() => seek(m.pct)}
+                  className="absolute top-0 -translate-x-1/2 w-2.5 h-2.5 rounded-full border border-black/40 hover:scale-150 transition-transform z-10"
+                  style={{ left: `${m.pct}%`, background: meta.color }}
+                />
+              );
+            })}
             <div
-              className="h-full bg-primary rounded-full transition-[width] duration-200"
-              style={{ width: `${progress}%` }}
-            />
+              className="w-full h-2 bg-surface-container rounded-full cursor-pointer overflow-hidden"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                seek(((e.clientX - rect.left) / rect.width) * 100);
+              }}
+            >
+              <div
+                className="h-full bg-primary rounded-full transition-[width] duration-200"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
+
+          {/* Notable events summary — click a type to jump to its first occurrence */}
+          {markers.length > 0 && (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="text-[10px] uppercase tracking-widest text-on-surface-variant">Notable</span>
+              {Object.entries(markerCounts).map(([type, count]) => {
+                const meta = markerMeta(type);
+                return (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      const first = markers.find((m) => m.type === type);
+                      if (first) seek(first.pct);
+                    }}
+                    className="inline-flex items-center gap-1 text-[11px] text-on-surface-variant hover:text-on-surface transition-colors"
+                  >
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: meta.color }} />
+                    {meta.label}
+                    <span className="tabular-nums opacity-70">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <div className="flex items-center justify-between gap-4">
             {/* Play / Pause */}
@@ -422,13 +512,27 @@ function SessionRow({
 // ── Page ──────────────────────────────────────────────────────────────────────
 function Content() {
   const { selectedDomainId } = useAuthStore();
+  const locale = useLocale();
+  const searchParams = useSearchParams();
   const [playing, setPlaying] = useState<ReplaySession | null>(null);
   const [hideShort, setHideShort] = useState(true);
 
+  // Funnel drop-off filter (deep-linked from the funnels page).
+  const pipelineId = searchParams.get("pipeline");
+  const stepOrder = searchParams.get("step");
+  const dropLabel = searchParams.get("label");
+  const isDropFilter = !!pipelineId && stepOrder !== null;
+
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["replay-sessions", selectedDomainId],
+    queryKey: ["replay-sessions", selectedDomainId, pipelineId, stepOrder],
     queryFn: () =>
-      replayApi.sessions(selectedDomainId!).then((r) => {
+      (isDropFilter
+        ? replayApi.funnelDrops(selectedDomainId!, {
+            pipeline_id: Number(pipelineId),
+            step_order: Number(stepOrder),
+          })
+        : replayApi.sessions(selectedDomainId!)
+      ).then((r) => {
         const d = r.data;
         return (Array.isArray(d) ? d : d?.data ?? []) as ReplaySession[];
       }),
@@ -457,6 +561,22 @@ function Content() {
           Watch recorded visitor sessions — every click, scroll, and navigation
         </p>
       </div>
+
+      {/* Funnel drop-off filter banner */}
+      {isDropFilter && (
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
+          <p className="text-sm text-on-surface">
+            Showing replayable sessions that <span className="font-semibold">dropped after</span>{" "}
+            <span className="font-semibold">{dropLabel || `step ${stepOrder}`}</span>.
+          </p>
+          <a
+            href={`/${locale}/dashboard/replay`}
+            className="text-xs font-semibold text-primary hover:underline shrink-0"
+          >
+            Clear filter
+          </a>
+        </div>
+      )}
 
       {/* Instructions banner */}
       <Card className="border-primary/20 bg-primary/5">
@@ -540,6 +660,10 @@ function Content() {
 }
 
 export default function ReplayPage() {
-  return <Content />;
+  return (
+    <Suspense fallback={null}>
+      <Content />
+    </Suspense>
+  );
 }
 

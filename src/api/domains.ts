@@ -97,10 +97,10 @@ export const alertRulesApi = {
   create: (
     domain: number | string,
     data: {
-      metric: string;
-      condition: string;
-      threshold: number;
-      channel: "email" | "in_app";
+      type: string;
+      threshold: Record<string, number>;
+      channel: string;
+      webhook_url?: string;
     }
   ) => client.post(DOMAIN_ROUTES.alertRulesCreate(domain), data),
 
