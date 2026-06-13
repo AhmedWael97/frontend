@@ -1,6 +1,7 @@
 {
   "nav": {
     "dashboard": "Dashboard",
+    "portfolio": "Portfolio",
     "realtime": "Live Visitors",
     "visitors": "All Visitors",
     "analytics": "Deep Analytics",

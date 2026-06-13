@@ -91,6 +91,14 @@ export const analyticsApi = {
   campaigns: (domainId: number, params?: Record<string, unknown>) =>
     client.get(ANALYTICS_ROUTES.campaigns(domainId), { params }),
 
+  /** GET /portfolio/overview — cross-site KPI table */
+  portfolioOverview: (params?: { days?: number }) =>
+    client.get(ANALYTICS_ROUTES.portfolioOverview(), { params }),
+
+  /** GET /portfolio/triage — ranked cross-site issues */
+  portfolioTriage: (params?: { days?: number }) =>
+    client.get(ANALYTICS_ROUTES.portfolioTriage(), { params }),
+
   /** GET /analytics/{domainId}/retention */
   retention: (domainId: number, params?: { period?: "week" | "month"; cohorts?: number }) =>
     client.get(ANALYTICS_ROUTES.retention(domainId), { params }),

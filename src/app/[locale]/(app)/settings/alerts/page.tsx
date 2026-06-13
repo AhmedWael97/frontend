@@ -68,6 +68,15 @@ function Content() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert-rules"] }),
   });
 
+  const applyDefaultsMutation = useMutation({
+    mutationFn: () => alertRulesApi.applyDefaults("email"),
+    onSuccess: (r) => {
+      const d = r.data?.data ?? r.data;
+      queryClient.invalidateQueries({ queryKey: ["alert-rules"] });
+      window.alert(`Added ${d?.created ?? 0} default rule(s) across ${d?.domains ?? 0} site(s).`);
+    },
+  });
+
   function onTypeChange(type: string) {
     setForm((f) => ({ ...f, type, value: typeConfig(type).def }));
   }
@@ -81,7 +90,12 @@ function Content() {
           <h1 className="text-2xl font-black text-on-surface tracking-tight">Alerts</h1>
           <p className="text-on-surface-variant text-sm mt-0.5">Get notified about drops, error spikes, and traffic anomalies — checked every 15 minutes</p>
         </div>
-        <Button onClick={() => setAdding(true)}><Plus className="w-4 h-4" /> Add Rule</Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" onClick={() => applyDefaultsMutation.mutate()} disabled={applyDefaultsMutation.isPending}>
+            {applyDefaultsMutation.isPending ? "Applying…" : "Apply defaults to all sites"}
+          </Button>
+          <Button onClick={() => setAdding(true)}><Plus className="w-4 h-4" /> Add Rule</Button>
+        </div>
       </div>
 
       {adding && (

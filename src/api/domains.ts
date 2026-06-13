@@ -111,6 +111,10 @@ export const alertRulesApi = {
   /** DELETE /domains/{domain}/alert-rules/{rule} */
   delete: (domain: number | string, rule: number) =>
     client.delete(DOMAIN_ROUTES.alertRulesDelete(domain, rule)),
+
+  /** POST /alert-rules/apply-defaults — bulk-apply recommended rules to all sites */
+  applyDefaults: (channel: string = "email") =>
+    client.post(DOMAIN_ROUTES.alertRulesApplyDefaults(), { channel }),
 };
 
 // ── Pipelines ─────────────────────────────────────────────────────────────────

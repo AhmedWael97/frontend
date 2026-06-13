@@ -50,13 +50,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-surface">
-      <AppSidebar />
-      <div className="md:ltr:pl-64 md:rtl:pr-64 flex flex-col min-h-screen">
-        <ImpersonationBanner />
-        <AppHeader />
-        <main className="flex-1 p-6">{children}</main>
+      <div className="print:hidden"><AppSidebar /></div>
+      <div className="md:ltr:pl-64 md:rtl:pr-64 print:!pl-0 print:!pr-0 flex flex-col min-h-screen">
+        <div className="print:hidden">
+          <ImpersonationBanner />
+          <AppHeader />
+        </div>
+        <main className="flex-1 p-6 print:p-0">{children}</main>
       </div>
-      <AiChatBubble />
+      <div className="print:hidden"><AiChatBubble /></div>
     </div>
   );
 }

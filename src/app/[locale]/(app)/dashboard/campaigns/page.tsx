@@ -25,6 +25,8 @@ import {
   Sparkles,
   Bot,
   DollarSign,
+  Lightbulb,
+  TrendingDown,
 } from "lucide-react";
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -281,6 +283,33 @@ function Content() {
   const totalVisitors = campaigns.reduce((s, r) => s + Number(r.visitors), 0);
   const totalOrders = campaigns.reduce((s, r) => s + Number(r.orders ?? 0), 0);
   const overallRoas = totalSpend > 0 ? totalRevenue / totalSpend : null;
+
+  // ── Budget recommendations ───────────────────────────────────────────────────
+  // Deterministic, derived from each campaign's spend / revenue / ROAS so it's
+  // always available and explainable — pause money-losers, scale winners, fix gaps.
+  const recommendations = useMemo(() => {
+    type Rec = { kind: "pause" | "scale" | "tag"; title: string; detail: string; impact: number };
+    const recs: Rec[] = [];
+    for (const r of campaigns) {
+      const spend = Number(r.spend ?? 0);
+      const rev = Number(r.revenue ?? 0);
+      const roas = r.roas;
+      const label = `${r.source}${r.campaign && r.campaign !== "(none)" ? " · " + r.campaign : ""}`;
+      if (spend >= 10 && roas != null && roas < 1) {
+        recs.push({ kind: "pause", title: `Pause “${label}”`, detail: `${Number(roas).toFixed(2)}× ROAS — spent ${fmtMoney(spend, currency)}, made ${fmtMoney(rev, currency)}. Losing ${fmtMoney(spend - rev, currency)}.`, impact: spend - rev });
+      } else if (spend >= 5 && roas != null && roas >= 3) {
+        recs.push({ kind: "scale", title: `Scale “${label}”`, detail: `${Number(roas).toFixed(2)}× ROAS on ${fmtMoney(spend, currency)} spend — a strong performer, consider increasing budget.`, impact: rev });
+      } else if (rev > 0 && spend === 0) {
+        recs.push({ kind: "tag", title: `Add spend for “${label}”`, detail: `Made ${fmtMoney(rev, currency)} but no ad spend recorded — add it to see true ROAS.`, impact: rev * 0.1 });
+      }
+    }
+    return recs.sort((a, b) => b.impact - a.impact).slice(0, 8);
+  }, [campaigns, currency]);
+  const REC_STYLE: Record<string, { icon: React.ElementType; cls: string }> = {
+    pause: { icon: TrendingDown, cls: "border-rose-500/40 bg-rose-500/10" },
+    scale: { icon: TrendingUp, cls: "border-emerald-500/40 bg-emerald-500/10" },
+    tag: { icon: Link2, cls: "border-outline-variant/30 bg-surface-container" },
+  };
   const avgBounce =
     campaigns.length
       ? campaigns.reduce((s, r) => s + Number(r.bounce_rate), 0) / campaigns.length
@@ -375,6 +404,34 @@ function Content() {
         <KpiCard icon={TrendingUp} label="Sources" value={topSources.length} sub={`${campaigns.length} campaigns`} />
         <KpiCard icon={MousePointerClick} label="Avg Bounce Rate" value={`${avgBounce.toFixed(1)}%`} />
       </div>
+
+      {/* Budget recommendations */}
+      {recommendations.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-on-surface flex items-center gap-2">
+              <Lightbulb className="w-4 h-4 text-amber-400" /> Budget recommendations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {recommendations.map((rec, i) => {
+                const meta = REC_STYLE[rec.kind];
+                const Icon = meta.icon;
+                return (
+                  <div key={i} className={`flex items-start gap-2.5 p-3 rounded-xl border ${meta.cls}`}>
+                    <Icon className="w-4 h-4 mt-0.5 shrink-0 text-on-surface-variant" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-on-surface">{rec.title}</p>
+                      <p className="text-xs text-on-surface-variant mt-0.5">{rec.detail}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Medium distribution */}
       {mediumShare.length > 0 && (

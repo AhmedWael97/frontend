@@ -141,6 +141,7 @@ export const DOMAIN_ROUTES = {
     `/domains/${domain}/alert-rules/${rule}`,
   alertRulesDelete: (domain: number | string, rule: number) =>
     `/domains/${domain}/alert-rules/${rule}`,
+  alertRulesApplyDefaults: () => `/alert-rules/apply-defaults`,
   // Pipelines
   pipelinesList: (domain: number | string) => `/domains/${domain}/pipelines`,
   pipelinesCreate: (domain: number | string) => `/domains/${domain}/pipelines`,
@@ -187,6 +188,8 @@ export const ANALYTICS_ROUTES = {
   companiesList: (domainId: number) => `/analytics/${domainId}/companies`,
   companiesShow: (domainId: number, companyDomain: string) =>
     `/analytics/${domainId}/companies/${companyDomain}`,
+  portfolioOverview: () => `/portfolio/overview`,
+  portfolioTriage: () => `/portfolio/triage`,
   campaigns: (domainId: number) => `/analytics/${domainId}/campaigns`,
   retention: (domainId: number) => `/analytics/${domainId}/retention`,
   experiments: (domainId: number) => `/analytics/${domainId}/experiments`,
