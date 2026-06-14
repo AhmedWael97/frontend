@@ -164,6 +164,12 @@ export default function DocsPage({ params }: { params: { locale: string } }) {
               <ShieldCheck className="w-4 h-4" />
               {content.noAuth}
             </div>
+            <div className="mt-4">
+              <Link href={`/${locale}/help`} className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                {locale === "ar" ? "تبحث عن أدلة خطوة بخطوة؟ افتح مركز المساعدة" : "Looking for step-by-step guides? Open the Help Center"}
+                <ArrowRight className="w-4 h-4 ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
+              </Link>
+            </div>
           </div>
         </section>
 

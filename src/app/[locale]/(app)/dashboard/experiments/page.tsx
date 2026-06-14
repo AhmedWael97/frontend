@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { FlaskConical, Plus, Trash2, Trophy, X } from "lucide-react";
+import { FlaskConical, Plus, Trash2, Trophy, X, Sparkles, ExternalLink, ChevronDown } from "lucide-react";
 
 type Experiment = { id: number; key: string; name: string; variants: string[]; is_active: boolean };
 type VariantResult = {
@@ -115,6 +115,124 @@ function Results({ domainId, experiment }: { domainId: number; experiment: Exper
   );
 }
 
+function fmtMoneyPlain(n: number, currency?: string) {
+  const amount = (Number(n) || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
+  return currency ? `${currency} ${amount}` : amount;
+}
+
+// EYE revenue overlay for a GrowthBook experiment (rigorous stats live in GrowthBook).
+function GbResults({ domainId, id, host }: { domainId: number; id: string; host?: string }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["gb-results", domainId, id],
+    queryFn: () => analyticsApi.gbResults(domainId, id).then((r) => r.data?.data ?? r.data),
+  });
+  const revenue: Record<string, { converters: number; orders: number; revenue: number }> = data?.revenue ?? {};
+  const entries = Object.entries(revenue);
+
+  return (
+    <div className="px-3 pb-3">
+      {isLoading ? (
+        <div className="h-16 bg-surface-container rounded animate-pulse" />
+      ) : (
+        <>
+          <p className="text-[11px] uppercase tracking-widest text-on-surface-variant mb-2">EYE revenue by variant</p>
+          {entries.length === 0 ? (
+            <p className="text-xs text-on-surface-variant">No revenue attributed yet for this experiment.</p>
+          ) : (
+            <table className="w-full text-sm">
+              <thead><tr className="text-[11px] uppercase tracking-wide text-on-surface-variant text-left">
+                <th className="py-1">Variant</th><th className="py-1 text-right">Converters</th><th className="py-1 text-right">Orders</th><th className="py-1 text-right">Revenue</th>
+              </tr></thead>
+              <tbody>
+                {entries.map(([variant, m]) => (
+                  <tr key={variant} className="border-t border-outline-variant/10">
+                    <td className="py-1 font-medium text-on-surface">{variant}</td>
+                    <td className="py-1 text-right tabular-nums">{m.converters.toLocaleString()}</td>
+                    <td className="py-1 text-right tabular-nums">{m.orders.toLocaleString()}</td>
+                    <td className="py-1 text-right tabular-nums font-semibold">{fmtMoneyPlain(m.revenue)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          {host && (
+            <a href={`${host}/experiment/${id}`} target="_blank" rel="noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2">
+              Open rigorous stats in GrowthBook <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function GrowthBookPanel({ domainId }: { domainId: number }) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const { data: status } = useQuery({
+    queryKey: ["gb-status", domainId],
+    queryFn: () => analyticsApi.gbStatus(domainId).then((r) => r.data?.data ?? r.data),
+  });
+  const connected = !!status?.connected;
+  const { data: list } = useQuery({
+    queryKey: ["gb-list", domainId],
+    queryFn: () => analyticsApi.gbList(domainId).then((r) => r.data?.data ?? r.data),
+    enabled: connected,
+  });
+  const experiments: { id: string; name: string; trackingKey: string | null; status: string | null; variations: string[] }[] = list?.experiments ?? [];
+
+  if (status === undefined) return null;
+
+  if (!connected) {
+    return (
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="p-4 text-sm">
+          <p className="font-semibold text-on-surface flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> Connect GrowthBook for rigorous experiments</p>
+          <p className="text-on-surface-variant mt-1">
+            Run experiments through GrowthBook (open-source) for a real stats engine — sequential/Bayesian significance, sample-size, and SRM checks — while EYE overlays your revenue per variant.
+          </p>
+          <p className="text-on-surface-variant mt-2 text-xs">
+            Set <code className="bg-surface px-1 rounded">GROWTHBOOK_API_HOST</code> and <code className="bg-surface px-1 rounded">GROWTHBOOK_API_KEY</code> on the backend, point GrowthBook at EYE’s ClickHouse, and add the GrowthBook SDK with a tracking callback that calls <code className="bg-surface px-1 rounded">EYE.experiment(key, variant)</code>. See integrations/growthbook/README.md.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-on-surface flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" /> GrowthBook experiments
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        {experiments.length === 0 ? (
+          <p className="text-sm text-on-surface-variant px-4 pb-4">No experiments in GrowthBook yet.</p>
+        ) : (
+          <div className="divide-y divide-outline-variant/10">
+            {experiments.map((ex) => (
+              <div key={ex.id}>
+                <button onClick={() => setOpenId(openId === ex.id ? null : ex.id)}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-surface-container/50 transition-colors">
+                  <FlaskConical className="w-4 h-4 text-primary shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-on-surface truncate">{ex.name}</p>
+                    <p className="text-xs text-on-surface-variant">{ex.variations.length} variations · {ex.trackingKey}</p>
+                  </div>
+                  {ex.status && <Badge variant="secondary">{ex.status}</Badge>}
+                  <ChevronDown className={`w-4 h-4 text-on-surface-variant transition-transform ${openId === ex.id ? "rotate-180" : ""}`} />
+                </button>
+                {openId === ex.id && <GbResults domainId={domainId} id={ex.id} host={status?.host} />}
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function Content() {
   const { selectedDomainId } = useAuthStore();
   const qc = useQueryClient();
@@ -169,6 +287,9 @@ function Content() {
         </div>
         <Button onClick={() => setAdding(true)}><Plus className="w-4 h-4" /> New Experiment</Button>
       </div>
+
+      {/* GrowthBook-powered experiments (rigorous engine) + EYE revenue overlay */}
+      <GrowthBookPanel domainId={selectedDomainId} />
 
       {adding && (
         <Card>

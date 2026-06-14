@@ -119,6 +119,16 @@ export const analyticsApi = {
   experimentsDelete: (domainId: number, id: number) =>
     client.delete(ANALYTICS_ROUTES.experimentDelete(domainId, id)),
 
+  /** GET /analytics/{domainId}/experiments/growthbook/status */
+  gbStatus: (domainId: number) => client.get(ANALYTICS_ROUTES.gbStatus(domainId)),
+
+  /** GET /analytics/{domainId}/experiments/growthbook */
+  gbList: (domainId: number) => client.get(ANALYTICS_ROUTES.gbList(domainId)),
+
+  /** GET /analytics/{domainId}/experiments/growthbook/{id}/results */
+  gbResults: (domainId: number, id: string) =>
+    client.get(ANALYTICS_ROUTES.gbResults(domainId, id)),
+
   /** GET /analytics/{domainId}/ad-spend */
   adSpendList: (domainId: number, params?: { start?: string; end?: string }) =>
     client.get(ANALYTICS_ROUTES.adSpend(domainId), { params }),
