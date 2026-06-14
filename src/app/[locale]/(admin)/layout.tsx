@@ -98,7 +98,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           transition-transform duration-200 ease-out
           ${sidebarOpen
             ? "translate-x-0"
-            : "ltr:-translate-x-full rtl:translate-x-full lg:translate-x-0"}
+            : "ltr:-translate-x-full rtl:translate-x-full lg:!translate-x-0"}
         `}
       >
         {/* Mobile close button */}
