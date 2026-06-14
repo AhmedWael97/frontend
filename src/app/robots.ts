@@ -1,14 +1,22 @@
 import { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
+  // Private/app areas should never be indexed; public marketing pages should.
+  const privatePaths = ["dashboard", "admin", "settings", "auth"].flatMap((p) => [
+    `/en/${p}`,
+    `/ar/${p}`,
+  ]);
+
   return {
     rules: [
       {
         userAgent: "*",
         allow: ["/"],
-        disallow: ["/en/dashboard", "/ar/dashboard", "/en/admin", "/ar/admin", "/api/"],
+        disallow: [...privatePaths, "/api/"],
       },
     ],
-    sitemap: `${process.env.NEXT_PUBLIC_APP_URL || "https://eye.ai"}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

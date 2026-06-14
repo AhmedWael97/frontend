@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { getTranslations } from "next-intl/server";
+import { JsonLd } from "@/components/JsonLd";
+import { organizationJsonLd, websiteJsonLd, softwareApplicationJsonLd } from "@/lib/seo";
 
 // ─── SEO Metadata ─────────────────────────────────────────────────────────────
 
@@ -47,17 +49,17 @@ export async function generateMetadata(
     openGraph: {
       type: "website",
       locale: isAr ? "ar_SA" : "en_US",
+      url: `/${locale}`,
       title,
       description,
       siteName: "EYE Analytics",
-      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "EYE Analytics" }],
+      // og:image is supplied automatically by app/[locale]/opengraph-image.tsx
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
       creator: "@eye_analytics",
-      images: ["/og-image.png"],
     },
     alternates: {
       canonical: `/${locale}`,
@@ -111,8 +113,13 @@ export default async function HomePage({ params }: { params: { locale: string } 
     { icon: Gauge,       lk: "trust.uptime",     dk: "trust.uptimeDesc",     bg: "bg-amber-100 dark:bg-amber-500/15",    ic: "text-amber-600 dark:text-amber-400"    },
   ] as const;
 
+  const seoDescription = locale === "ar"
+    ? "تحليلات زوار خصوصية أولاً: تتبع مباشر، خرائط حرارية، إعادة الجلسات، القمع، وإسناد إيرادات الحملات."
+    : "Privacy-first visitor analytics: live tracking, heatmaps, session replay, funnels and campaign revenue attribution.";
+
   return (
     <>
+      <JsonLd data={[organizationJsonLd(), websiteJsonLd(locale), softwareApplicationJsonLd(seoDescription)]} />
       <Navbar />
       <main className="overflow-hidden">
 

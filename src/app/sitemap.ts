@@ -1,25 +1,28 @@
 import { MetadataRoute } from "next";
-
-const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://eye.ai";
+import { SITE_URL } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const locales = ["en", "ar"];
 
-  const staticPages = ["", "/pricing"];
+  // Public, indexable marketing pages.
+  const pages: { path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number }[] = [
+    { path: "", changeFrequency: "weekly", priority: 1.0 },
+    { path: "/pricing", changeFrequency: "monthly", priority: 0.9 },
+    { path: "/docs", changeFrequency: "monthly", priority: 0.7 },
+    { path: "/help", changeFrequency: "monthly", priority: 0.7 },
+  ];
 
   const entries: MetadataRoute.Sitemap = [];
 
   for (const locale of locales) {
-    for (const page of staticPages) {
+    for (const page of pages) {
       entries.push({
-        url: `${BASE}/${locale}${page}`,
+        url: `${SITE_URL}/${locale}${page.path}`,
         lastModified: new Date(),
-        changeFrequency: page === "" ? "weekly" : "monthly",
-        priority: page === "" ? 1.0 : 0.8,
+        changeFrequency: page.changeFrequency,
+        priority: page.priority,
         alternates: {
-          languages: Object.fromEntries(
-            locales.map((l) => [l, `${BASE}/${l}${page}`])
-          ),
+          languages: Object.fromEntries(locales.map((l) => [l, `${SITE_URL}/${l}${page.path}`])),
         },
       });
     }

@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Providers from "@/components/Providers";
 import { NavigationProgress } from "@/components/NavigationProgress";
+import { SITE_URL, SITE_NAME, TWITTER_HANDLE, DEFAULT_KEYWORDS } from "@/lib/seo";
 import "@/app/globals.css";
 
 const inter = Inter({
@@ -21,15 +22,37 @@ const readexPro = Readex_Pro({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: { default: "EYE — AI Visitor Intelligence", template: "%s | EYE" },
-  description: "AI-powered visitor tracking and analytics platform. Real-time dashboards, heatmaps, funnel analysis, B2B enrichment, and more.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://eye.ai"),
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
-};
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  const isAr = params.locale === "ar";
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: { default: "EYE — AI Visitor Intelligence", template: "%s | EYE" },
+    description: isAr
+      ? "منصة تحليلات زوار مدعومة بالذكاء الاصطناعي: لوحات لحظية، خرائط حرارية، تحليل القمع، وإثراء بيانات الشركات."
+      : "AI-powered visitor tracking and analytics platform. Real-time dashboards, heatmaps, funnel analysis, B2B enrichment, and more.",
+    keywords: DEFAULT_KEYWORDS,
+    applicationName: SITE_NAME,
+    authors: [{ name: SITE_NAME }],
+    creator: SITE_NAME,
+    publisher: SITE_NAME,
+    icons: { icon: "/favicon.ico", apple: "/apple-touch-icon.png" },
+    openGraph: {
+      type: "website",
+      siteName: SITE_NAME,
+      locale: isAr ? "ar_SA" : "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: TWITTER_HANDLE,
+      creator: TWITTER_HANDLE,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+    },
+  };
+}
 
 // ── EYE self-tracking (dogfooding) ───────────────────────────────────────────
 // We track our own site with our own product. Token/host are env-overridable.
