@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/auth";
 import { Toaster } from "@/components/ui/toaster";
+import { EyeIdentify } from "@/components/EyeIdentify";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -24,6 +25,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={qc}>
       {children}
       <Toaster />
+      <EyeIdentify />
     </QueryClientProvider>
   );
 }
