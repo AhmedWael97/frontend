@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Providers from "@/components/Providers";
 import { NavigationProgress } from "@/components/NavigationProgress";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { SITE_URL, SITE_NAME, TWITTER_HANDLE, DEFAULT_KEYWORDS } from "@/lib/seo";
 import "@/app/globals.css";
 
@@ -106,6 +107,7 @@ export default async function LocaleLayout({
           <Providers>
             <NavigationProgress />
             {children}
+            <WhatsAppButton />
           </Providers>
         </NextIntlClientProvider>
       </body>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -107,6 +107,9 @@ function Content() {
   const router = useRouter();
   const locale = useLocale();
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const trialExpired = searchParams.get("trial") === "expired";
+  const isAr = locale === "ar";
 
   const { data: billing, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["billing"],
@@ -268,6 +271,14 @@ function Content() {
   return (
     <div className="space-y-6">
       <Header />
+
+      {trialExpired && (
+        <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-600 dark:text-amber-400">
+          {isAr
+            ? "انتهت فترة التجربة المجانية (30 يومًا). يرجى الاشتراك في إحدى الباقات أدناه لمتابعة استخدام EYE."
+            : "Your 30-day free trial has ended. Please subscribe to a plan below to continue using EYE."}
+        </div>
+      )}
 
       {/* ── Current plan ───────────────────────────────────────────────── */}
       <Card className="border-primary/20 bg-primary/5 overflow-hidden">
@@ -647,5 +658,10 @@ function EmptyState({ title, hint }: { title: string; hint: string }) {
 }
 
 export default function BillingPage() {
-  return <Content />;
+  // useSearchParams() requires a Suspense boundary in the App Router.
+  return (
+    <Suspense fallback={null}>
+      <Content />
+    </Suspense>
+  );
 }

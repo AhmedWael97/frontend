@@ -77,6 +77,22 @@ client.interceptors.response.use(
     // Unwrap nested body: { statusCode, statusText, data: { message, errors } }
     const body = err.response?.data;
     const payload = body?.data ?? body;
+
+    // Trial expired / no active subscription → send the user to billing to
+    // subscribe (once). Billing/account routes are never gated, so this won't
+    // loop. The billing page reads ?trial=expired to show a notice.
+    if (
+      err.response?.status === 402 &&
+      payload?.code === "subscription_required" &&
+      typeof window !== "undefined"
+    ) {
+      const seg = window.location.pathname.split("/").filter(Boolean)[0];
+      const locale = seg === "ar" ? "ar" : "en";
+      if (!window.location.pathname.includes("/settings/billing")) {
+        window.location.href = `/${locale}/settings/billing?trial=expired`;
+      }
+      return Promise.reject(err);
+    }
     err.message = payload?.message || err.message || "Something went wrong.";
     (err as any).errors = payload?.errors ?? null;
 
