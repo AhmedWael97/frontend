@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Rocket, BarChart3, DollarSign, MousePointerClick, TrendingUp, Bell, LayoutGrid, Plug, Settings,
-  Search, BookOpen, MapPin, Lightbulb, ArrowRight,
+  Search, BookOpen, MapPin, Lightbulb, ArrowRight, Users,
 } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { HELP, HELP_UI, type Localized, type LocalizedList } from "@/content/help";
 
 const ICONS: Record<string, React.ElementType> = {
-  Rocket, BarChart3, DollarSign, MousePointerClick, TrendingUp, Bell, LayoutGrid, Plug, Settings,
+  Rocket, BarChart3, DollarSign, MousePointerClick, TrendingUp, Bell, LayoutGrid, Plug, Settings, Users,
 };
 
 export default function HelpClient({ locale }: { locale: string }) {

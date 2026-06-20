@@ -309,6 +309,50 @@ export const HELP: HelpCategory[] = [
           ],
         },
       },
+      {
+        id: "channel-mix",
+        title: { en: "Channel Mix (all channels at once)", ar: "مزيج القنوات (كل القنوات معاً)" },
+        summary: { en: "Compare every channel's spend, revenue and ROAS, and where to move budget.", ar: "قارن إنفاق وإيراد وعائد كل قناة، وأين تنقل الميزانية." },
+        where: { en: "Analytics → Channel Mix", ar: "التحليلات ← مزيج القنوات" },
+        steps: {
+          en: [
+            "Open Analytics → Channel Mix.",
+            "See each channel (paid, organic, social, email, referral…) with sessions, revenue, spend and ROAS.",
+            "Read the “Budget reallocation” card: cut channels below 1× ROAS, scale ones above 3×.",
+            "Change the date range to compare periods before deciding.",
+          ],
+          ar: [
+            "افتح التحليلات ← مزيج القنوات.",
+            "شاهد كل قناة (مدفوعة، عضوية، سوشيال، بريد، إحالة…) مع الجلسات والإيراد والإنفاق و ROAS.",
+            "اقرأ بطاقة «إعادة توزيع الميزانية»: قلّل القنوات تحت 1× وزِد التي فوق 3×.",
+            "غيّر الفترة الزمنية لمقارنة الفترات قبل القرار.",
+          ],
+        },
+      },
+      {
+        id: "ltv",
+        title: { en: "Lifetime value by source", ar: "القيمة الدائمة حسب المصدر" },
+        summary: { en: "See which channels bring the most valuable customers over time — not just first purchase.", ar: "اعرف أي القنوات تجلب أعلى العملاء قيمةً عبر الوقت — وليس أول عملية شراء فقط." },
+        where: { en: "Analytics → Lifetime Value", ar: "التحليلات ← القيمة الدائمة" },
+        steps: {
+          en: [
+            "Open Analytics → Lifetime Value.",
+            "Each row is a first-touch acquisition source with its average revenue per visitor (LTV).",
+            "Pick the time window (90 / 180 / 365 days).",
+            "Invest more in the sources with the highest LTV, not just the cheapest clicks.",
+          ],
+          ar: [
+            "افتح التحليلات ← القيمة الدائمة.",
+            "كل صف هو مصدر اكتساب (أول لمسة) مع متوسط الإيراد لكل زائر (LTV).",
+            "اختر الفترة الزمنية (90 / 180 / 365 يوماً).",
+            "استثمر أكثر في المصادر ذات أعلى LTV وليس الأرخص نقراً فقط.",
+          ],
+        },
+        tips: {
+          en: ["LTV needs tracked purchases — make sure EYE.purchase() (or a store plugin) is sending sales."],
+          ar: ["تحتاج LTV إلى مشتريات متتبَّعة — تأكد أن EYE.purchase() (أو إضافة المتجر) ترسل المبيعات."],
+        },
+      },
     ],
   },
 
@@ -340,21 +384,21 @@ export const HELP: HelpCategory[] = [
       },
       {
         id: "session-replay",
-        title: { en: "Session replay", ar: "إعادة تشغيل الجلسات" },
-        summary: { en: "Watch real recordings of visitor sessions.", ar: "شاهد تسجيلات حقيقية لجلسات الزوار." },
+        title: { en: "Session replay (only meaningful sessions)", ar: "إعادة تشغيل الجلسات (الجلسات المهمة فقط)" },
+        summary: { en: "Watch real recordings — only ones worth your time, never broken.", ar: "شاهد تسجيلات حقيقية — فقط ما يستحق وقتك، وغير معطوبة أبداً." },
         where: { en: "Intelligence → Replay", ar: "الذكاء ← الإعادة" },
         steps: {
           en: [
             "Enable it by adding data-replay=\"true\" to your tracking script (or toggle it in the WooCommerce plugin).",
-            "Open Intelligence → Replay to see the list of recordings.",
-            "Click Play; use speed and “skip inactivity” to watch faster.",
-            "Use the colored timeline markers to jump straight to rage clicks, dead clicks and errors.",
+            "EYE only keeps a recording when something matters — a rage/dead click, JS error, form abandon, quick-back, purchase, or a genuinely engaged visit. Idle bounces are discarded.",
+            "Open Intelligence → Replay; each recording shows a reason badge (e.g. “Rage click”, “Engaged”) so you know what to look for.",
+            "Click Play; use speed, “skip inactivity”, and the timeline markers to jump to the friction moment. Broken/empty recordings are never shown.",
           ],
           ar: [
             "فعّلها بإضافة data-replay=\"true\" إلى سكربت التتبّع (أو فعّل الخيار في إضافة ووكومرس).",
-            "افتح الذكاء ← الإعادة لرؤية قائمة التسجيلات.",
-            "اضغط تشغيل؛ استخدم السرعة و«تخطّي الخمول» للمشاهدة أسرع.",
-            "استخدم العلامات الملوّنة على الشريط الزمني للقفز مباشرةً إلى نقرات الغضب والنقرات الميتة والأخطاء.",
+            "يحتفظ EYE بالتسجيل فقط عند حدوث أمر مهم — نقرة غضب/ميتة، خطأ، هجر نموذج، رجوع سريع، عملية شراء، أو زيارة متفاعلة فعلاً. تُهمل الجلسات العابرة.",
+            "افتح الذكاء ← الإعادة؛ يعرض كل تسجيل شارة السبب (مثل «نقرة غضب»، «متفاعل») لتعرف ما تبحث عنه.",
+            "اضغط تشغيل؛ استخدم السرعة و«تخطّي الخمول» وعلامات الشريط الزمني للقفز إلى لحظة الاحتكاك. لا تُعرض التسجيلات المعطوبة أبداً.",
           ],
         },
         tips: {
@@ -417,26 +461,58 @@ export const HELP: HelpCategory[] = [
       },
       {
         id: "ab-tests",
-        title: { en: "A/B experiments", ar: "اختبارات A/B" },
-        summary: { en: "Compare two versions by conversions and revenue.", ar: "قارن نسختين حسب التحويلات والإيرادات." },
-        where: { en: "Analytics → A/B Tests", ar: "التحليلات ← اختبارات A/B" },
+        title: { en: "A/B & split-URL experiments", ar: "تجارب A/B وتقسيم الروابط" },
+        summary: { en: "Build no-code A/B and split-URL tests — no developer needed.", ar: "أنشئ اختبارات A/B وتقسيم الروابط بدون كود — دون الحاجة لمطوّر." },
+        where: { en: "Sidebar → Experiments", ar: "الشريط الجانبي ← التجارب" },
         steps: {
           en: [
-            "Open Analytics → A/B Tests and click “New Experiment”.",
-            "Give it a name, a key, and at least two variants (first is the control).",
-            "On your site, use the shown EYE.ab(key, variants) snippet to assign + record the variant.",
-            "Open the experiment to see conversion rate, revenue per variant and significance.",
+            "Click “New Experiment” and pick a type: A/B test (change the same page with CSS/JS) or Split URL (send visitors to different page URLs).",
+            "Enter the page URL — this becomes your “control” (the original, shown as-is).",
+            "Add one or more variations. For A/B, write CSS and/or JavaScript in the code editor (e.g. recolor a button). For Split URL, paste the alternate page URL.",
+            "Set a traffic weight (%) per variation, or click “Even split”. Visitors are distributed automatically (e.g. 25/25/25/25).",
+            "Choose a goal: a purchase, a custom event, or reaching a URL.",
+            "Press “Start” to run it. Open the experiment to see, per variation, visitors seen / total, conversion rate, uplift and significance — the winner gets a trophy.",
           ],
           ar: [
-            "افتح التحليلات ← اختبارات A/B واضغط «تجربة جديدة».",
-            "أعطها اسماً ومفتاحاً ونسختين على الأقل (الأولى هي الأساس).",
-            "في موقعك، استخدم مقتطف EYE.ab(key, variants) المعروض لتعيين النسخة وتسجيلها.",
-            "افتح التجربة لرؤية معدل التحويل والإيراد لكل نسخة والدلالة الإحصائية.",
+            "اضغط «تجربة جديدة» واختر النوع: اختبار A/B (تغيير نفس الصفحة عبر CSS/JS) أو تقسيم الرابط (توجيه الزوّار لصفحات مختلفة).",
+            "أدخل رابط الصفحة — يصبح هذا «الأساس» (الأصل، يُعرض كما هو).",
+            "أضف نسخة أو أكثر. في A/B اكتب CSS و/أو JavaScript في محرّر الكود (مثل تغيير لون زر). في تقسيم الرابط الصق رابط الصفحة البديلة.",
+            "حدّد نسبة المرور (%) لكل نسخة أو اضغط «تقسيم متساوٍ». يُوزَّع الزوّار تلقائياً (مثل 25/25/25/25).",
+            "اختر هدفاً: عملية شراء، حدث مخصص، أو الوصول لرابط.",
+            "اضغط «بدء» للتشغيل. افتح التجربة لرؤية لكل نسخة: الزوّار الذين شاهدوها / الإجمالي، معدل التحويل، التحسّن والدلالة — الفائز يحصل على كأس.",
           ],
         },
         tips: {
-          en: ["For rigorous stats, connect GrowthBook (see Integrations) — EYE overlays your revenue on it."],
-          ar: ["لإحصاءات دقيقة، اربط GrowthBook (راجع التكاملات) — يعرض EYE إيراداتك فوقها."],
+          en: [
+            "The control needs no code — it’s your page exactly as it is today.",
+            "Changes apply automatically on page load via the EYE tracker; no extra snippet to install.",
+            "For a rigorous statistical engine, connect GrowthBook or Convert.com (see Integrations) — EYE overlays your revenue per variant on top.",
+          ],
+          ar: [
+            "الأساس لا يحتاج كوداً — هو صفحتك كما هي اليوم.",
+            "تُطبَّق التغييرات تلقائياً عند تحميل الصفحة عبر متتبّع EYE؛ دون مقتطف إضافي.",
+            "لمحرك إحصائي دقيق، اربط GrowthBook أو Convert.com (راجع التكاملات) — يعرض EYE إيراداتك لكل نسخة فوقها.",
+          ],
+        },
+      },
+      {
+        id: "seo-rank",
+        title: { en: "SEO rank tracking", ar: "تتبّع ترتيب SEO" },
+        summary: { en: "Track keyword positions over time and spot wins/drops.", ar: "تتبّع مواضع الكلمات عبر الوقت وارصد التحسّن/الانخفاض." },
+        where: { en: "Reports & Tools → Rank Tracking", ar: "التقارير والأدوات ← تتبّع الترتيب" },
+        steps: {
+          en: [
+            "Open Reports & Tools → Rank Tracking.",
+            "Type a keyword and click “Track keyword”.",
+            "Import positions from your rank tool with “Import CSV” (header: date,keyword,position,url).",
+            "Each keyword shows its current position, change vs last entry, best rank, and a trend line.",
+          ],
+          ar: [
+            "افتح التقارير والأدوات ← تتبّع الترتيب.",
+            "اكتب كلمة مفتاحية واضغط «تتبّع الكلمة».",
+            "استورد المواضع من أداة الترتيب عبر «استيراد CSV» (الترويسة: date,keyword,position,url).",
+            "يعرض كل كلمة موضعها الحالي والتغيّر عن آخر إدخال وأفضل ترتيب وخط الاتجاه.",
+          ],
         },
       },
     ],
@@ -499,6 +575,10 @@ export const HELP: HelpCategory[] = [
             "اضغط أي مشكلة أو صف للانتقال مباشرةً إلى صفحة ذلك الموقع المعنية.",
             "رتّب الجدول حسب الإيراد أو ROAS لمقارنة المواقع ببعضها.",
           ],
+        },
+        tips: {
+          en: ["The Benchmarks card flags any site far below your portfolio median on conversion, ROAS or bounce — so you spot the weak ones instantly."],
+          ar: ["تُبرز بطاقة المقارنات أي موقع أقل بكثير من وسيط محفظتك في التحويل أو ROAS أو الارتداد — لرصد الضعيف فوراً."],
         },
       },
       {
@@ -585,6 +665,78 @@ export const HELP: HelpCategory[] = [
             "اضبط GROWTHBOOK_API_HOST و GROWTHBOOK_API_KEY في خادم EYE.",
             "أضف SDK الخاص بـ GrowthBook إلى موقعك مع دالة تستدعي EYE.experiment(key, variant).",
           ],
+        },
+      },
+      {
+        id: "convert",
+        title: { en: "Convert.com (A/B Studio)", ar: "Convert.com (استوديو A/B)" },
+        summary: { en: "Run A/B tests in Convert.com with EYE's revenue overlay.", ar: "نفّذ اختبارات A/B في Convert.com مع طبقة إيرادات EYE." },
+        steps: {
+          en: [
+            "In Convert.com → Settings → REST API, copy your Account ID, Application ID and API key.",
+            "Set CONVERT_ACCOUNT_ID, CONVERT_APPLICATION_ID and CONVERT_API_KEY on the EYE backend.",
+            "From Convert's tracking hook, call EYE.experiment(experienceKey, variant) so EYE can attribute revenue.",
+            "Open the A/B Studio → your Convert experiences appear with EYE revenue per variant.",
+          ],
+          ar: [
+            "في Convert.com ← الإعدادات ← REST API، انسخ Account ID و Application ID ومفتاح API.",
+            "اضبط CONVERT_ACCOUNT_ID و CONVERT_APPLICATION_ID و CONVERT_API_KEY في خادم EYE.",
+            "من خطّاف تتبّع Convert، استدعِ EYE.experiment(experienceKey, variant) ليُسند EYE الإيراد.",
+            "افتح استوديو A/B ← تظهر تجارب Convert مع إيراد EYE لكل نسخة.",
+          ],
+        },
+      },
+    ],
+  },
+
+  {
+    id: "leads",
+    icon: "Users",
+    title: { en: "Find new customers (Leads)", ar: "اعثر على عملاء جدد (Leads)" },
+    description: { en: "Turn site visitors into customers — compliant, reviewed outreach.", ar: "حوّل زوار موقعك إلى عملاء — تواصل متوافق ومُراجَع." },
+    articles: [
+      {
+        id: "warm-leads",
+        title: { en: "Warm leads from your visitors", ar: "عملاء محتملون من زوارك" },
+        summary: { en: "See which companies visited your sites and add them as leads.", ar: "اعرف أي الشركات زارت مواقعك وأضفها كعملاء محتملين." },
+        where: { en: "Reports & Tools → Leads", ar: "التقارير والأدوات ← Leads" },
+        steps: {
+          en: [
+            "Open Reports & Tools → Leads.",
+            "Click “Find warm leads” — EYE adds the companies that visited your sites (from B2B enrichment).",
+            "You can also add a lead manually or “Import” a CSV (company,website,contact_name,email).",
+            "Update each lead's status (new → contacted → replied → won/lost) as you work it.",
+          ],
+          ar: [
+            "افتح التقارير والأدوات ← Leads.",
+            "اضغط «إيجاد العملاء الدافئين» — يضيف EYE الشركات التي زارت مواقعك (من إثراء B2B).",
+            "يمكنك أيضاً إضافة عميل يدوياً أو «استيراد» ملف CSV (company,website,contact_name,email).",
+            "حدّث حالة كل عميل (جديد ← تم التواصل ← رد ← فاز/خسر) أثناء عملك عليه.",
+          ],
+        },
+      },
+      {
+        id: "outreach",
+        title: { en: "AI-assisted outreach (compliant)", ar: "تواصل بمساعدة الذكاء (متوافق)" },
+        summary: { en: "Draft a personalised email with AI, review it, then send.", ar: "اكتب بريداً مخصصاً بالذكاء، راجعه، ثم أرسل." },
+        where: { en: "Leads → mail icon on a lead", ar: "Leads ← أيقونة البريد على العميل" },
+        steps: {
+          en: [
+            "Click the mail icon on a lead to open the outreach panel.",
+            "Click “AI draft” — review and edit the generated subject + body (it never sends automatically).",
+            "Click “Send”. An unsubscribe link is added; suppressed/bounced addresses are skipped; a daily cap protects deliverability.",
+            "Unsubscribes and bounces are added to your suppression list automatically and never contacted again.",
+          ],
+          ar: [
+            "اضغط أيقونة البريد على عميل لفتح لوحة التواصل.",
+            "اضغط «مسودة الذكاء» — راجع وعدّل العنوان والنص (لا يُرسل تلقائياً أبداً).",
+            "اضغط «إرسال». يُضاف رابط إلغاء الاشتراك؛ وتُتخطّى العناوين الموقوفة؛ وحدّ يومي يحمي التسليم.",
+            "تُضاف إلغاءات الاشتراك والارتدادات لقائمة الحظر تلقائياً ولا يُعاد التواصل معها.",
+          ],
+        },
+        tips: {
+          en: ["Keep outreach to relevant business contacts and always let recipients opt out — it keeps you compliant and your domain reputation healthy."],
+          ar: ["وجّه التواصل لجهات عمل ذات صلة واسمح دائماً بإلغاء الاشتراك — يحافظ على التوافق وسمعة نطاقك."],
         },
       },
     ],

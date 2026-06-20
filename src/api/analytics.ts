@@ -121,8 +121,12 @@ export const analyticsApi = {
     client.get(ANALYTICS_ROUTES.experiments(domainId)),
 
   /** POST /analytics/{domainId}/experiments */
-  experimentsCreate: (domainId: number, data: { key: string; name: string; variants: string[] }) =>
+  experimentsCreate: (domainId: number, data: Record<string, unknown>) =>
     client.post(ANALYTICS_ROUTES.experiments(domainId), data),
+
+  /** PUT /analytics/{domainId}/experiments/{id} */
+  experimentsUpdate: (domainId: number, id: number, data: Record<string, unknown>) =>
+    client.put(ANALYTICS_ROUTES.experimentUpdate(domainId, id), data),
 
   /** GET /analytics/{domainId}/experiments/{id}/results */
   experimentResults: (domainId: number, id: number) =>

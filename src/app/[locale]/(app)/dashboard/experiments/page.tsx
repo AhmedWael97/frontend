@@ -4,31 +4,23 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { FlaskConical, Plus, Trash2, Trophy, X, Sparkles, ExternalLink, ChevronDown } from "lucide-react";
+import { FlaskConical, Plus, Trash2, Trophy, Sparkles, ExternalLink, ChevronDown, Play, Pause, Pencil, GitBranch } from "lucide-react";
+import { ExperimentBuilder, type ExpFull, type ExpVariation } from "./ExperimentBuilder";
 
-type Experiment = { id: number; key: string; name: string; variants: string[]; is_active: boolean };
-type VariantResult = {
-  variant: string;
-  is_control: boolean;
-  visitors: number;
-  converters: number;
-  orders: number;
-  revenue: number;
-  conversion_rate: number;
-  revenue_per_visitor: number;
-  uplift: number | null;
-  z: number | null;
-  significant: boolean | null;
+type Experiment = {
+  id: number; key: string; name: string; status: string;
+  type: "ab" | "split_url"; target_url: string | null;
+  goal_type: "purchase" | "event" | "url"; goal_value: string | null;
+  variations: ExpVariation[];
 };
-
-function fmtMoney(n: number, currency?: string) {
-  const amount = (Number(n) || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
-  return currency ? `${currency} ${amount}` : amount;
-}
+type ResultRow = {
+  key: string; name: string; weight: number; is_control: boolean;
+  visitors: number; converters: number; conversion_rate: number;
+  uplift: number | null; revenue: number; z: number | null; significant: boolean | null;
+};
 
 function Results({ domainId, experiment }: { domainId: number; experiment: Experiment }) {
   const { data, isLoading } = useQuery({
@@ -36,62 +28,49 @@ function Results({ domainId, experiment }: { domainId: number; experiment: Exper
     queryFn: () => analyticsApi.experimentResults(domainId, experiment.id).then((r) => r.data?.data ?? r.data),
   });
 
-  const results: VariantResult[] = data?.results ?? [];
-  const currency: string = data?.currency ?? "";
-
-  // Winner = significant variant with the best conversion rate.
-  const winner = results
-    .filter((r) => r.significant && !r.is_control)
-    .sort((a, b) => b.conversion_rate - a.conversion_rate)[0];
+  const results: ResultRow[] = data?.results ?? [];
+  const total = results.reduce((s, r) => s + r.visitors, 0);
+  const winner = results.filter((r) => r.significant && !r.is_control).sort((a, b) => b.conversion_rate - a.conversion_rate)[0];
 
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-semibold text-on-surface flex items-center gap-2">
-          {experiment.name}
-          <code className="text-[11px] font-mono text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">{experiment.key}</code>
-        </CardTitle>
+        <CardTitle className="text-sm font-semibold text-on-surface">{experiment.name} — results</CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (
           <div className="h-40 bg-surface-container rounded animate-pulse" />
         ) : results.length === 0 ? (
-          <p className="text-on-surface-variant text-sm py-6 text-center">No exposures recorded yet.</p>
+          <p className="text-on-surface-variant text-sm py-6 text-center">No visitors recorded yet. Start the experiment and wait for traffic.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[680px]">
+            <table className="w-full text-sm min-w-[620px]">
               <thead>
                 <tr className="border-b border-outline-variant/20 text-xs uppercase tracking-widest text-on-surface-variant">
-                  <th className="px-3 py-2 text-left">Variant</th>
-                  <th className="px-3 py-2 text-right">Visitors</th>
-                  <th className="px-3 py-2 text-right">Conv.</th>
+                  <th className="px-3 py-2 text-left">Variation</th>
+                  <th className="px-3 py-2 text-right">Visitors (seen / total)</th>
+                  <th className="px-3 py-2 text-right">Conversions</th>
                   <th className="px-3 py-2 text-right">Conv. rate</th>
-                  <th className="px-3 py-2 text-right">Revenue</th>
-                  <th className="px-3 py-2 text-right">Rev / visitor</th>
                   <th className="px-3 py-2 text-right">Uplift</th>
                   <th className="px-3 py-2 text-right">Significance</th>
                 </tr>
               </thead>
               <tbody>
                 {results.map((r) => (
-                  <tr key={r.variant} className="border-b border-outline-variant/10">
+                  <tr key={r.key} className="border-b border-outline-variant/10">
                     <td className="px-3 py-2 font-medium text-on-surface">
                       <span className="inline-flex items-center gap-1.5">
-                        {winner?.variant === r.variant && <Trophy className="w-3.5 h-3.5 text-amber-400" />}
-                        {r.variant}
+                        {winner?.key === r.key && <Trophy className="w-3.5 h-3.5 text-amber-400" />}
+                        {r.name}
                         {r.is_control && <span className="text-[10px] uppercase tracking-wide text-on-surface-variant">control</span>}
                       </span>
                     </td>
-                    <td className="px-3 py-2 text-right tabular-nums">{r.visitors.toLocaleString()}</td>
+                    <td className="px-3 py-2 text-right tabular-nums">{r.visitors.toLocaleString()} / {total.toLocaleString()}</td>
                     <td className="px-3 py-2 text-right tabular-nums">{r.converters.toLocaleString()}</td>
                     <td className="px-3 py-2 text-right tabular-nums font-semibold">{r.conversion_rate}%</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{r.revenue > 0 ? fmtMoney(r.revenue, currency) : "—"}</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{r.revenue_per_visitor > 0 ? fmtMoney(r.revenue_per_visitor, currency) : "—"}</td>
                     <td className="px-3 py-2 text-right tabular-nums">
                       {r.uplift === null ? "—" : (
-                        <span className={r.uplift >= 0 ? "text-emerald-400" : "text-rose-400"}>
-                          {r.uplift >= 0 ? "+" : ""}{r.uplift}%
-                        </span>
+                        <span className={r.uplift >= 0 ? "text-emerald-400" : "text-rose-400"}>{r.uplift >= 0 ? "+" : ""}{r.uplift}%</span>
                       )}
                     </td>
                     <td className="px-3 py-2 text-right">
@@ -105,8 +84,7 @@ function Results({ domainId, experiment }: { domainId: number; experiment: Exper
               </tbody>
             </table>
             <p className="text-xs text-on-surface-variant mt-3">
-              Significance uses a two-proportion z-test vs control (95% = |z| ≥ 1.96). Revenue is attributed to a variant when an
-              exposed visitor later purchases.
+              Significance = two-proportion z-test vs control (95% = |z| ≥ 1.96). “Visitors” = unique people who saw each variation.
             </p>
           </div>
         )}
@@ -333,13 +311,17 @@ function ConvertPanel({ domainId }: { domainId: number }) {
   );
 }
 
+const STATUS_STYLE: Record<string, string> = {
+  running: "text-emerald-400 bg-emerald-400/10",
+  paused: "text-amber-400 bg-amber-400/10",
+  draft: "text-on-surface-variant bg-surface-container",
+};
+
 function Content() {
   const { selectedDomainId } = useAuthStore();
   const qc = useQueryClient();
-  const [adding, setAdding] = useState(false);
+  const [builder, setBuilder] = useState<{ open: boolean; experiment: ExpFull | null }>({ open: false, experiment: null });
   const [selected, setSelected] = useState<Experiment | null>(null);
-  const [form, setForm] = useState({ name: "", key: "", variants: ["control", "variant_b"] });
-  const [error, setError] = useState("");
 
   const { data: experiments, isLoading } = useQuery({
     queryKey: ["experiments", selectedDomainId],
@@ -347,20 +329,10 @@ function Content() {
     enabled: !!selectedDomainId,
   });
 
-  const createMut = useMutation({
-    mutationFn: () =>
-      analyticsApi.experimentsCreate(selectedDomainId!, {
-        name: form.name.trim(),
-        key: form.key.trim(),
-        variants: form.variants.map((v) => v.trim()).filter(Boolean),
-      }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["experiments", selectedDomainId] });
-      setAdding(false);
-      setError("");
-      setForm({ name: "", key: "", variants: ["control", "variant_b"] });
-    },
-    onError: (e: any) => setError(e?.message || "Could not create experiment."),
+  const statusMut = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) =>
+      analyticsApi.experimentsUpdate(selectedDomainId!, id, { status }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["experiments", selectedDomainId] }),
   });
 
   const delMut = useMutation({
@@ -376,100 +348,74 @@ function Content() {
   }
 
   const list = experiments ?? [];
-  const canCreate = form.name.trim() && /^[A-Za-z0-9_-]+$/.test(form.key.trim()) && form.variants.filter((v) => v.trim()).length >= 2;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-black text-on-surface tracking-tight">A/B Experiments</h1>
-          <p className="text-on-surface-variant text-sm mt-0.5">Compare variants by conversion rate and revenue.</p>
+          <p className="text-on-surface-variant text-sm mt-0.5">Build A/B and split-URL tests, split traffic by weight, and compare conversion rates.</p>
         </div>
-        <Button onClick={() => setAdding(true)}><Plus className="w-4 h-4" /> New Experiment</Button>
+        {!builder.open && <Button onClick={() => setBuilder({ open: true, experiment: null })}><Plus className="w-4 h-4" /> New Experiment</Button>}
       </div>
 
-      {/* GrowthBook-powered experiments (rigorous engine) + EYE revenue overlay */}
-      <GrowthBookPanel domainId={selectedDomainId} />
-      <ConvertPanel domainId={selectedDomainId} />
+      {builder.open ? (
+        <ExperimentBuilder
+          domainId={selectedDomainId}
+          experiment={builder.experiment}
+          onClose={() => setBuilder({ open: false, experiment: null })}
+        />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            {isLoading ? Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-20 bg-surface-container rounded-xl animate-pulse" />)
+              : list.length === 0 ? <p className="text-sm text-on-surface-variant py-6 text-center">No experiments yet. Click “New Experiment” to build one.</p>
+              : list.map((ex) => {
+                const isRunning = ex.status === "running";
+                return (
+                  <div
+                    key={ex.id}
+                    onClick={() => setSelected(ex)}
+                    className={`p-3 rounded-xl cursor-pointer border transition-colors ${selected?.id === ex.id ? "border-primary bg-primary/5" : "border-outline-variant/20 hover:bg-surface-container"}`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {ex.type === "split_url" ? <GitBranch className="w-4 h-4 text-primary shrink-0" /> : <FlaskConical className="w-4 h-4 text-primary shrink-0" />}
+                        <span className="text-sm font-semibold text-on-surface truncate">{ex.name}</span>
+                      </div>
+                      <span className={`text-[10px] uppercase tracking-wide font-bold px-1.5 py-0.5 rounded ${STATUS_STYLE[ex.status] ?? STATUS_STYLE.draft}`}>{ex.status}</span>
+                    </div>
+                    <p className="text-xs text-on-surface-variant mt-1 truncate">
+                      {ex.type === "split_url" ? "Split URL" : "A/B"} · {ex.variations?.length ?? 0} variations · goal: {ex.goal_type}
+                    </p>
+                    <div className="flex items-center gap-1 mt-2" onClick={(e) => e.stopPropagation()}>
+                      <Button size="sm" variant="ghost" className="h-7 text-xs px-2"
+                        disabled={statusMut.isPending}
+                        onClick={() => statusMut.mutate({ id: ex.id, status: isRunning ? "paused" : "running" })}>
+                        {isRunning ? <><Pause className="w-3 h-3 mr-1" /> Pause</> : <><Play className="w-3 h-3 mr-1" /> Start</>}
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-7 text-xs px-2" onClick={() => setBuilder({ open: true, experiment: ex as unknown as ExpFull })}>
+                        <Pencil className="w-3 h-3 mr-1" /> Edit
+                      </Button>
+                      <button onClick={() => { if (confirm("Delete this experiment?")) delMut.mutate(ex.id); }} className="ml-auto text-on-surface-variant hover:text-rose-400">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
 
-      {adding && (
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm uppercase tracking-widest text-on-surface-variant">New Experiment</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
-            {error && <p className="text-sm text-rose-400">{error}</p>}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <label className="text-xs text-on-surface-variant">Name
-                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Homepage CTA test" className="mt-1" />
-              </label>
-              <label className="text-xs text-on-surface-variant">Key (used in code)
-                <Input value={form.key} onChange={(e) => setForm({ ...form, key: e.target.value })} placeholder="homepage_cta" className="mt-1 font-mono" />
-              </label>
-            </div>
-            <div className="space-y-1.5">
-              <p className="text-xs text-on-surface-variant">Variants (first is control)</p>
-              {form.variants.map((v, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <span className="text-xs text-on-surface-variant w-5">{i + 1}</span>
-                  <Input
-                    value={v}
-                    onChange={(e) => setForm({ ...form, variants: form.variants.map((x, j) => (j === i ? e.target.value : x)) })}
-                    className="font-mono h-9"
-                  />
-                  {form.variants.length > 2 && (
-                    <button onClick={() => setForm({ ...form, variants: form.variants.filter((_, j) => j !== i) })} className="text-on-surface-variant hover:text-rose-400">
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              ))}
-              {form.variants.length < 6 && (
-                <Button size="sm" variant="ghost" className="text-xs h-7" onClick={() => setForm({ ...form, variants: [...form.variants, ""] })}>
-                  <Plus className="w-3 h-3 mr-1" /> Add variant
-                </Button>
-              )}
-            </div>
-            <div className="rounded-lg bg-surface-container p-3 text-xs text-on-surface-variant font-mono">
-              {`// On your site, assign + record the variant:`}<br />
-              {`var v = EYE.ab(${JSON.stringify(form.key.trim() || "homepage_cta")}, ${JSON.stringify(form.variants.filter(Boolean))});`}<br />
-              {`// …render UI based on v, then track sales as usual with EYE.purchase()`}
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={() => createMut.mutate()} disabled={!canCreate || createMut.isPending}>Create</Button>
-              <Button variant="ghost" onClick={() => { setAdding(false); setError(""); }}>Cancel</Button>
-            </div>
-          </CardContent>
-        </Card>
+          <div className="lg:col-span-2">
+            {selected ? <Results domainId={selectedDomainId} experiment={selected} />
+              : <Card><CardContent className="flex items-center justify-center h-48 text-on-surface-variant text-sm">Select an experiment to view results</CardContent></Card>}
+          </div>
+        </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="space-y-2">
-          {isLoading ? Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-14 bg-surface-container rounded-xl animate-pulse" />)
-            : list.length === 0 ? <p className="text-sm text-on-surface-variant py-6 text-center">No experiments yet.</p>
-            : list.map((ex) => (
-              <div
-                key={ex.id}
-                onClick={() => setSelected(ex)}
-                className={`p-3 rounded-xl cursor-pointer border transition-colors ${selected?.id === ex.id ? "border-primary bg-primary/5" : "border-outline-variant/20 hover:bg-surface-container"}`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <FlaskConical className="w-4 h-4 text-primary shrink-0" />
-                    <span className="text-sm font-semibold text-on-surface truncate">{ex.name}</span>
-                  </div>
-                  <button onClick={(e) => { e.stopPropagation(); delMut.mutate(ex.id); }} className="text-on-surface-variant hover:text-rose-400 shrink-0">
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">{ex.variants?.length ?? 0} variants · {ex.key}</p>
-              </div>
-            ))}
-        </div>
-
-        <div className="lg:col-span-2">
-          {selected ? <Results domainId={selectedDomainId} experiment={selected} />
-            : <Card><CardContent className="flex items-center justify-center h-48 text-on-surface-variant text-sm">Select an experiment to view results</CardContent></Card>}
-        </div>
-      </div>
+      {/* GrowthBook + Convert.com powered experiments (rigorous engines) + EYE revenue overlay */}
+      <GrowthBookPanel domainId={selectedDomainId} />
+      <ConvertPanel domainId={selectedDomainId} />
     </div>
   );
 }

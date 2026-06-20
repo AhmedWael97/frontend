@@ -199,6 +199,7 @@ export const ANALYTICS_ROUTES = {
   seoRankKeywordDelete: (domainId: number, id: number) => `/analytics/${domainId}/seo-rank/keywords/${id}`,
   experiments: (domainId: number) => `/analytics/${domainId}/experiments`,
   experimentResults: (domainId: number, id: number) => `/analytics/${domainId}/experiments/${id}/results`,
+  experimentUpdate: (domainId: number, id: number) => `/analytics/${domainId}/experiments/${id}`,
   experimentDelete: (domainId: number, id: number) => `/analytics/${domainId}/experiments/${id}`,
   gbStatus: (domainId: number) => `/analytics/${domainId}/experiments/growthbook/status`,
   gbList: (domainId: number) => `/analytics/${domainId}/experiments/growthbook`,
