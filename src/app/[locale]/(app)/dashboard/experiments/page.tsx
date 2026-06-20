@@ -233,6 +233,106 @@ function GrowthBookPanel({ domainId }: { domainId: number }) {
   );
 }
 
+function ConvertResults({ domainId, id }: { domainId: number; id: string }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["convert-results", domainId, id],
+    queryFn: () => analyticsApi.convertResults(domainId, id).then((r) => r.data?.data ?? r.data),
+  });
+  const revenue: Record<string, { converters: number; orders: number; revenue: number }> = data?.revenue ?? {};
+  const entries = Object.entries(revenue);
+  return (
+    <div className="px-3 pb-3">
+      {isLoading ? (
+        <div className="h-16 bg-surface-container rounded animate-pulse" />
+      ) : entries.length === 0 ? (
+        <p className="text-xs text-on-surface-variant">No EYE revenue attributed yet for this experience.</p>
+      ) : (
+        <table className="w-full text-sm">
+          <thead><tr className="text-[11px] uppercase tracking-wide text-on-surface-variant text-left">
+            <th className="py-1">Variant</th><th className="py-1 text-right">Converters</th><th className="py-1 text-right">Orders</th><th className="py-1 text-right">Revenue</th>
+          </tr></thead>
+          <tbody>
+            {entries.map(([variant, m]) => (
+              <tr key={variant} className="border-t border-outline-variant/10">
+                <td className="py-1 font-medium text-on-surface">{variant}</td>
+                <td className="py-1 text-right tabular-nums">{m.converters.toLocaleString()}</td>
+                <td className="py-1 text-right tabular-nums">{m.orders.toLocaleString()}</td>
+                <td className="py-1 text-right tabular-nums font-semibold">{fmtMoneyPlain(m.revenue)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
+function ConvertPanel({ domainId }: { domainId: number }) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const { data: status } = useQuery({
+    queryKey: ["convert-status", domainId],
+    queryFn: () => analyticsApi.convertStatus(domainId).then((r) => r.data?.data ?? r.data),
+  });
+  const connected = !!status?.connected;
+  const { data: list } = useQuery({
+    queryKey: ["convert-list", domainId],
+    queryFn: () => analyticsApi.convertList(domainId).then((r) => r.data?.data ?? r.data),
+    enabled: connected,
+  });
+  const experiments: { id: string; name: string; key: string | null; status: string | null; variations: string[] }[] = list?.experiments ?? [];
+
+  if (status === undefined) return null;
+
+  if (!connected) {
+    return (
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="p-4 text-sm">
+          <p className="font-semibold text-on-surface flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> Connect Convert.com</p>
+          <p className="text-on-surface-variant mt-1">
+            Run A/B tests in Convert.com (visual editor + stats engine) while EYE overlays your revenue per variant.
+          </p>
+          <p className="text-on-surface-variant mt-2 text-xs">
+            Set <code className="bg-surface px-1 rounded">CONVERT_ACCOUNT_ID</code> and <code className="bg-surface px-1 rounded">CONVERT_API_KEY</code> on the backend, and fire <code className="bg-surface px-1 rounded">EYE.experiment(experienceKey, variant)</code> from Convert's tracking hook. See integrations/convert/README.md.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-on-surface flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" /> Convert.com experiments
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        {experiments.length === 0 ? (
+          <p className="text-sm text-on-surface-variant px-4 pb-4">No experiences in Convert.com yet.</p>
+        ) : (
+          <div className="divide-y divide-outline-variant/10">
+            {experiments.map((ex) => (
+              <div key={ex.id}>
+                <button onClick={() => setOpenId(openId === ex.id ? null : ex.id)}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-surface-container/50 transition-colors">
+                  <FlaskConical className="w-4 h-4 text-primary shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-on-surface truncate">{ex.name}</p>
+                    <p className="text-xs text-on-surface-variant">{ex.variations.length} variations · {ex.key}</p>
+                  </div>
+                  {ex.status && <Badge variant="secondary">{ex.status}</Badge>}
+                  <ChevronDown className={`w-4 h-4 text-on-surface-variant transition-transform ${openId === ex.id ? "rotate-180" : ""}`} />
+                </button>
+                {openId === ex.id && <ConvertResults domainId={domainId} id={ex.id} />}
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function Content() {
   const { selectedDomainId } = useAuthStore();
   const qc = useQueryClient();
@@ -290,6 +390,7 @@ function Content() {
 
       {/* GrowthBook-powered experiments (rigorous engine) + EYE revenue overlay */}
       <GrowthBookPanel domainId={selectedDomainId} />
+      <ConvertPanel domainId={selectedDomainId} />
 
       {adding && (
         <Card>

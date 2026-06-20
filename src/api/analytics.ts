@@ -91,6 +91,19 @@ export const analyticsApi = {
   campaigns: (domainId: number, params?: Record<string, unknown>) =>
     client.get(ANALYTICS_ROUTES.campaigns(domainId), { params }),
 
+  /** GET /analytics/{domainId}/ltv — lifetime value by acquisition source */
+  ltv: (domainId: number, params?: { days?: number }) =>
+    client.get(ANALYTICS_ROUTES.ltv(domainId), { params }),
+
+  /** SEO rank tracking */
+  seoRank: (domainId: number) => client.get(ANALYTICS_ROUTES.seoRank(domainId)),
+  seoRankAddKeyword: (domainId: number, keyword: string) =>
+    client.post(ANALYTICS_ROUTES.seoRankKeywords(domainId), { keyword }),
+  seoRankImport: (domainId: number, csv: string) =>
+    client.post(ANALYTICS_ROUTES.seoRankImport(domainId), { csv }),
+  seoRankDeleteKeyword: (domainId: number, id: number) =>
+    client.delete(ANALYTICS_ROUTES.seoRankKeywordDelete(domainId, id)),
+
   /** GET /portfolio/overview — cross-site KPI table */
   portfolioOverview: (params?: { days?: number }) =>
     client.get(ANALYTICS_ROUTES.portfolioOverview(), { params }),
@@ -128,6 +141,12 @@ export const analyticsApi = {
   /** GET /analytics/{domainId}/experiments/growthbook/{id}/results */
   gbResults: (domainId: number, id: string) =>
     client.get(ANALYTICS_ROUTES.gbResults(domainId, id)),
+
+  /** Convert.com experiments */
+  convertStatus: (domainId: number) => client.get(ANALYTICS_ROUTES.convertStatus(domainId)),
+  convertList: (domainId: number) => client.get(ANALYTICS_ROUTES.convertList(domainId)),
+  convertResults: (domainId: number, id: string) =>
+    client.get(ANALYTICS_ROUTES.convertResults(domainId, id)),
 
   /** GET /analytics/{domainId}/ad-spend */
   adSpendList: (domainId: number, params?: { start?: string; end?: string }) =>

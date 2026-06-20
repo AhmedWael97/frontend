@@ -192,18 +192,36 @@ export const ANALYTICS_ROUTES = {
   portfolioTriage: () => `/portfolio/triage`,
   campaigns: (domainId: number) => `/analytics/${domainId}/campaigns`,
   retention: (domainId: number) => `/analytics/${domainId}/retention`,
+  ltv: (domainId: number) => `/analytics/${domainId}/ltv`,
+  seoRank: (domainId: number) => `/analytics/${domainId}/seo-rank`,
+  seoRankKeywords: (domainId: number) => `/analytics/${domainId}/seo-rank/keywords`,
+  seoRankImport: (domainId: number) => `/analytics/${domainId}/seo-rank/import`,
+  seoRankKeywordDelete: (domainId: number, id: number) => `/analytics/${domainId}/seo-rank/keywords/${id}`,
   experiments: (domainId: number) => `/analytics/${domainId}/experiments`,
   experimentResults: (domainId: number, id: number) => `/analytics/${domainId}/experiments/${id}/results`,
   experimentDelete: (domainId: number, id: number) => `/analytics/${domainId}/experiments/${id}`,
   gbStatus: (domainId: number) => `/analytics/${domainId}/experiments/growthbook/status`,
   gbList: (domainId: number) => `/analytics/${domainId}/experiments/growthbook`,
   gbResults: (domainId: number, id: string) => `/analytics/${domainId}/experiments/growthbook/${id}/results`,
+  convertStatus: (domainId: number) => `/analytics/${domainId}/experiments/convert/status`,
+  convertList: (domainId: number) => `/analytics/${domainId}/experiments/convert`,
+  convertResults: (domainId: number, id: string) => `/analytics/${domainId}/experiments/convert/${id}/results`,
   adSpend: (domainId: number) => `/analytics/${domainId}/ad-spend`,
   adSpendImport: (domainId: number) => `/analytics/${domainId}/ad-spend/import`,
   adSpendDelete: (domainId: number, id: number) => `/analytics/${domainId}/ad-spend/${id}`,
   engagedVisitors: (domainId: number) => `/analytics/${domainId}/engaged-visitors`,
   summary: (domainId: number) => `/analytics/${domainId}/summary`,
   botStats: (domainId: number) => `/analytics/${domainId}/bot-stats`,
+} as const;
+
+// ── Growth (leads CRM + outreach) ───────────────────────────────────────────────
+export const GROWTH_ROUTES = {
+  leads: "/leads",
+  leadsImport: "/leads/import",
+  leadsWarm: "/leads/warm",
+  lead: (id: number) => `/leads/${id}`,
+  outreachDraft: "/outreach/draft",
+  outreachSend: "/outreach/send",
 } as const;
 
 // ── UX Intelligence ───────────────────────────────────────────────────────────
@@ -274,6 +292,7 @@ export const ADMIN_ROUTES = {
   // Payment Methods
   paymentMethodsList: "/admin/payment-methods",
   paymentMethodsCreate: "/admin/payment-methods",
+  paymentMethodsPaymobTest: "/admin/payment-methods/paymob/test",
   paymentMethodsUpdate: (id: number) => `/admin/payment-methods/${id}`,
   paymentMethodsDelete: (id: number) => `/admin/payment-methods/${id}`,
   // Subscriptions

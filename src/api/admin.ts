@@ -108,6 +108,9 @@ export const adminApi = {
   updatePaymentMethod: (id: number | string, data: Record<string, unknown>) =>
     client.put(ADMIN_ROUTES.paymentMethodsUpdate(id as number), data),
 
+  /** POST /admin/payment-methods/paymob/test — verify saved active-mode creds */
+  testPaymob: () => client.post(ADMIN_ROUTES.paymentMethodsPaymobTest, {}),
+
   /** DELETE /admin/payment-methods/{id} */
   deletePaymentMethod: (id: number | string) =>
     client.delete(ADMIN_ROUTES.paymentMethodsDelete(id as number)),

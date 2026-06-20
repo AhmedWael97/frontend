@@ -86,6 +86,36 @@ function Content() {
     });
   }, [rows, sortKey, sortDir]);
 
+  // ── Benchmarks vs your own portfolio (median) ───────────────────────────────
+  const benchmarks = useMemo(() => {
+    const median = (nums: number[]) => {
+      const a = nums.filter((n) => Number.isFinite(n)).sort((x, y) => x - y);
+      if (!a.length) return 0;
+      const m = Math.floor(a.length / 2);
+      return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+    };
+    if (rows.length < 3) return null; // need a few sites for a meaningful median
+    const convMed = median(rows.map((r) => r.current.conversion_rate));
+    const roasRows = rows.filter((r) => r.current.roas != null);
+    const roasMed = median(roasRows.map((r) => r.current.roas as number));
+    const bounceMed = median(rows.map((r) => r.current.bounce_rate));
+
+    const flags: { domain: string; domain_id: number; metric: string; detail: string; good: boolean }[] = [];
+    for (const r of rows) {
+      const c = r.current;
+      if (convMed > 0 && c.sessions >= 50 && c.conversion_rate < convMed * 0.5) {
+        flags.push({ domain: r.domain, domain_id: r.domain_id, metric: "Low conversion", detail: `${c.conversion_rate}% vs ${convMed.toFixed(2)}% portfolio median`, good: false });
+      }
+      if (c.roas != null && roasMed > 0 && c.spend >= 10 && c.roas < roasMed * 0.5) {
+        flags.push({ domain: r.domain, domain_id: r.domain_id, metric: "Low ROAS", detail: `${c.roas}× vs ${roasMed.toFixed(2)}× median`, good: false });
+      }
+      if (bounceMed > 0 && c.sessions >= 50 && c.bounce_rate > bounceMed * 1.5) {
+        flags.push({ domain: r.domain, domain_id: r.domain_id, metric: "High bounce", detail: `${c.bounce_rate}% vs ${bounceMed.toFixed(1)}% median`, good: false });
+      }
+    }
+    return { convMed, roasMed, bounceMed, flags: flags.slice(0, 8) };
+  }, [rows]);
+
   function toggleSort(k: SortKey) {
     if (sortKey === k) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     else { setSortKey(k); setSortDir(k === "domain" ? "asc" : "desc"); }
@@ -155,6 +185,33 @@ function Content() {
           )}
         </CardContent>
       </Card>
+
+      {/* Benchmarks vs portfolio median */}
+      {benchmarks && benchmarks.flags.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-on-surface flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-primary" /> Benchmarks
+              <span className="text-xs font-normal text-on-surface-variant">
+                (median: {benchmarks.convMed.toFixed(2)}% conv · {benchmarks.roasMed.toFixed(2)}× ROAS · {benchmarks.bounceMed.toFixed(0)}% bounce)
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {benchmarks.flags.map((f, i) => (
+                <button key={i} onClick={() => go(f.domain_id, "analytics")}
+                  className="w-full text-left flex items-start gap-3 p-3 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:brightness-110 transition">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-on-surface truncate">{f.metric} · <span className="text-on-surface-variant font-normal">{f.domain}</span></p>
+                    <p className="text-xs text-on-surface-variant mt-0.5">{f.detail}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Per-site table */}
       <Card>

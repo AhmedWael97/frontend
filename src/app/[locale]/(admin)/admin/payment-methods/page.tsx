@@ -88,14 +88,27 @@ function PaymobCard({ method }: { method?: PaymentMethod }) {
 
   const buildConfig = () => ({ mode, test, production: prod });
 
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+  // Verifies the SAVED active-mode creds against Paymob and shows the result.
+  const testMutation = useMutation({
+    mutationFn: () => adminApi.testPaymob().then((r) => (r.data?.data ?? r.data) as { ok: boolean; message: string }),
+    onSuccess: (d) => setTestResult({ ok: !!d?.ok, message: d?.message ?? "" }),
+    onError: () => setTestResult({ ok: false, message: "Test request failed — try again." }),
+  });
+
   const saveMutation = useMutation({
+    // Saving always enables Paymob (auto-activate) so checkout works immediately.
     mutationFn: async () =>
       method
-        ? adminApi.updatePaymentMethod(method.id, { config: buildConfig(), name: method.name })
+        ? adminApi.updatePaymentMethod(method.id, { config: buildConfig(), name: method.name, is_active: true })
         : adminApi.createPaymentMethod({ name: "Paymob", type: "paymob", config: buildConfig(), is_active: true }),
     onSuccess: () => {
       toast.success("Paymob settings saved.");
       client.invalidateQueries({ queryKey: ["admin-payment-methods"] });
+      setTestResult(null);
+      // Auto-verify against Paymob right after saving.
+      setTimeout(() => testMutation.mutate(), 400);
     },
     onError: () => toast.error("Could not save Paymob settings."),
   });
@@ -147,7 +160,7 @@ function PaymobCard({ method }: { method?: PaymentMethod }) {
             ))}
           </div>
           <p className="text-xs text-on-surface-variant mt-2">
-            The <strong>{mode}</strong> keys below are what live checkout will use. Save both sets and flip the mode to go live.
+            Editing the <strong>{mode}</strong> keys. The active environment (what live checkout uses) is whatever is selected here when you save — currently <strong>{mode}</strong>. Enter keys under the same environment you intend to go live with.
           </p>
         </div>
 
@@ -158,9 +171,22 @@ function PaymobCard({ method }: { method?: PaymentMethod }) {
           ))}
         </div>
 
-        <Button size="sm" onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending} className="w-full">
-          {saveMutation.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin ltr:mr-2 rtl:ml-2" /> Saving…</> : <>Save Paymob credentials</>}
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending} className="flex-1">
+            {saveMutation.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin ltr:mr-2 rtl:ml-2" /> Saving…</> : <>Save &amp; activate</>}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => testMutation.mutate()} disabled={testMutation.isPending}>
+            {testMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Test connection"}
+          </Button>
+        </div>
+
+        {testResult && (
+          <div className={`flex items-start gap-2 rounded-lg p-3 text-sm ${testResult.ok ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}>
+            {testResult.ok ? <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" /> : <XCircle className="w-4 h-4 mt-0.5 shrink-0" />}
+            <span>{testResult.message}</span>
+          </div>
+        )}
+
         <p className="text-xs text-on-surface-variant text-center">
           Add the webhook URL <code className="font-mono">/api/v1/billing/paymob/webhook</code> in your Paymob dashboard. Keys here override <code className="font-mono">PAYMOB_*</code> env vars.
         </p>

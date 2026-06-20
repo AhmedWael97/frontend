@@ -28,6 +28,7 @@ export {
 } from "./domains";
 export { analyticsApi } from "./analytics";
 export { uxApi } from "./ux";
+export { growthApi } from "./growth";
 export { replayApi } from "./replay";
 export { aiApi } from "./ai";
 export { chatbotApi } from "./chatbot";

@@ -10,7 +10,7 @@ import {
   Globe, CreditCard, User, Shield,
   Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
   ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star,
-  SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid,
+  SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -27,9 +27,11 @@ const HUB_GROUPS = [
       { key: "visitors",       href: "/dashboard/visitors",         icon: Users },
       { key: "analytics",      href: "/dashboard/analytics",        icon: BarChart3 },
       { key: "campaigns",      href: "/dashboard/campaigns",        icon: Megaphone },
+      { key: "channels",       href: "/dashboard/channels",         icon: Layers },
       { key: "engagedVisitors",href: "/dashboard/engaged-visitors", icon: Flame },
       { key: "retention",      href: "/dashboard/retention",        icon: Repeat },
-      { key: "experiments",    href: "/dashboard/experiments",      icon: FlaskConical },
+      { key: "ltv",            href: "/dashboard/ltv",              icon: Gem },
+      { key: "experiments",    href: "/studio/experiments",         icon: FlaskConical },
       { key: "funnels",        href: "/dashboard/funnels",          icon: GitMerge },
       { key: "customEvents",   href: "/dashboard/custom-events",    icon: Code2 },
       { key: "identities",     href: "/dashboard/identities",       icon: UserCheck },
@@ -60,10 +62,12 @@ const HUB_GROUPS = [
     color:    "text-violet-400",
     items: [
       { key: "ai",             href: "/dashboard/ai",               icon: Sparkles },
+      { key: "leads",          href: "/dashboard/leads",            icon: Users },
       { key: "sharedReports",  href: "/dashboard/shared-reports",   icon: Share2 },
       { key: "exports",        href: "/dashboard/exports",          icon: Download },
       { key: "utmBuilder",     href: "/tools/utm-builder",          icon: Link2 },
       { key: "seoChecker",     href: "/tools/seo-checker",          icon: SearchCheck },
+      { key: "seoRank",        href: "/tools/seo-rank",             icon: SearchCheck },
       { key: "sitemapCreator", href: "/tools/sitemap-creator",      icon: Layers },
     ],
   },

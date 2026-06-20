@@ -20,7 +20,20 @@ type ReplaySession = {
   start_url: string | null;
   event_count: number;
   status: "recording" | "complete" | "pruned";
+  reason?: string | null;
   recorded_at: string;
+};
+
+// Why a recording was kept — shown as a badge so users know what to look for.
+const REASON_META: Record<string, { label: string; cls: string }> = {
+  rage_click:   { label: "Rage click",   cls: "bg-rose-500/15 text-rose-400" },
+  dead_click:   { label: "Dead click",   cls: "bg-amber-500/15 text-amber-400" },
+  js_error:     { label: "JS error",     cls: "bg-rose-500/15 text-rose-400" },
+  form_abandon: { label: "Form abandon", cls: "bg-pink-500/15 text-pink-400" },
+  quick_back:   { label: "Quick back",   cls: "bg-sky-500/15 text-sky-400" },
+  broken_link:  { label: "Broken link",  cls: "bg-orange-500/15 text-orange-400" },
+  purchase:     { label: "Purchase",     cls: "bg-emerald-500/15 text-emerald-400" },
+  engaged:      { label: "Engaged",      cls: "bg-indigo-500/15 text-indigo-400" },
 };
 
 type RrwebEvent = {
@@ -464,7 +477,14 @@ function SessionRow({
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-on-surface truncate">{domain}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold text-on-surface truncate">{domain}</p>
+          {session.reason && (
+            <span className={`shrink-0 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${(REASON_META[session.reason] ?? REASON_META.engaged).cls}`}>
+              {(REASON_META[session.reason] ?? { label: session.reason }).label}
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-3 mt-0.5 text-[11px] text-on-surface-variant">
           <span className="flex items-center gap-1">
             <MousePointer className="w-3 h-3" />
