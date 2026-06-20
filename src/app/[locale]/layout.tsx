@@ -64,6 +64,11 @@ const EYE_API = process.env.NEXT_PUBLIC_EYE_API || `${EYE_HOST}/api/collect`;
 // production analytics. Single load each — no data-replay (avoids double-record).
 const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||h==='127.0.0.1'||h.endsWith('.local'))return;window.EYE_TOKEN=${JSON.stringify(EYE_TOKEN)};window.EYE_API=${JSON.stringify(EYE_API)};function L(s){var e=document.createElement('script');e.src=s;e.async=true;document.head.appendChild(e);}L(${JSON.stringify(EYE_HOST + "/tracker/eye.js")});L(${JSON.stringify(EYE_HOST + "/tracker/eye-replay.js")});}catch(e){}})();`;
 
+// ── Google Ads (gtag.js) ─────────────────────────────────────────────────────
+// Global site tag for Google Ads conversion tracking. ID is env-overridable.
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "AW-18257861903";
+const GTAG_INIT = `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', ${JSON.stringify(GOOGLE_ADS_ID)});`;
+
 export default async function LocaleLayout({
   children,
   params,
@@ -92,6 +97,9 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('eye-appearance');if(t==='light')document.documentElement.classList.remove('dark');else if(t==='system'&&!window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.remove('dark');}catch(e){}` }} />
         {/* EYE self-tracking: loads our own tracker + replay (skips localhost) */}
         <script dangerouslySetInnerHTML={{ __html: EYE_LOADER }} />
+        {/* Google Ads (gtag.js) — conversion tracking */}
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} />
+        <script dangerouslySetInnerHTML={{ __html: GTAG_INIT }} />
       </head>
       <body className={`${inter.variable} ${readexPro.variable} ${isArabic ? "font-arabic" : "font-sans"} antialiased`} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
