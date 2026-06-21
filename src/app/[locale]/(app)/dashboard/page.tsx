@@ -98,19 +98,23 @@ function AnalyticsHub() {
 
   if (!selectedDomainId) {
     return (
-      <div className="flex flex-col items-center justify-center h-72 gap-5 text-center px-4">
-        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-          <Globe className="w-8 h-8 text-primary" />
+      <div className="max-w-2xl mx-auto py-8 space-y-6">
+        <div className="flex flex-col items-center gap-4 text-center px-4">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <Globe className="w-8 h-8 text-primary" />
+          </div>
+          <div>
+            <p className="text-2xl font-black text-on-surface">{th("noWebsiteTitle" as never)}</p>
+            <p className="text-sm text-on-surface-variant mt-1.5 max-w-md mx-auto">
+              {th("noWebsiteDesc" as never)}
+            </p>
+          </div>
+          <Link href={`/${locale}/settings/domains?welcome=1`}>
+            <Button size="lg" className="gap-2"><Plus className="w-4 h-4" />{th("addWebsite" as never)}</Button>
+          </Link>
         </div>
-        <div>
-          <p className="text-lg font-bold text-on-surface">{th("noWebsiteTitle" as never)}</p>
-          <p className="text-sm text-on-surface-variant mt-1.5 max-w-xs mx-auto">
-            {th("noWebsiteDesc" as never)}
-          </p>
-        </div>
-        <Link href={`/${locale}/settings/domains`}>
-          <Button className="gap-2"><Plus className="w-4 h-4" />{th("addWebsite" as never)}</Button>
-        </Link>
+        {/* Guided steps — shown even before a domain exists, so new users have a clear path. */}
+        <WelcomeChecklist domainId={null} />
       </div>
     );
   }

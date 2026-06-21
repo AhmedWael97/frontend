@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
@@ -28,6 +28,7 @@ type FormData = z.infer<typeof schema>;
 export default function RegisterPage() {
   const t = useTranslations("auth");
   const locale = useLocale();
+  const isAr = locale === "ar";
   const router = useRouter();
   const { setToken, setUser } = useAuthStore();
   const [showPw, setShowPw] = useState(false);
@@ -73,9 +74,13 @@ export default function RegisterPage() {
       </header>
 
       <div className="glass-panel rounded-xl border border-outline-variant/15 p-8 md:p-10 shadow-2xl space-y-7">
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <h1 className="text-2xl font-bold tracking-tight text-on-surface">Create your account</h1>
           <p className="text-on-surface-variant text-sm">Start tracking your website visitors in minutes.</p>
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            {isAr ? "تجربة مجانية 30 يومًا · بدون بطاقة ائتمان" : "30-day free trial · No credit card required"}
+          </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -117,6 +122,17 @@ export default function RegisterPage() {
             Get Started
           </Button>
         </form>
+
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 pt-1 text-[11px] text-on-surface-variant">
+          {(isAr
+            ? ["بدون بطاقة ائتمان", "متوافق مع GDPR", "إلغاء في أي وقت"]
+            : ["No credit card", "GDPR-compliant", "Cancel anytime"]
+          ).map((item) => (
+            <span key={item} className="inline-flex items-center gap-1">
+              <Check className="w-3 h-3 text-emerald-500" /> {item}
+            </span>
+          ))}
+        </div>
       </div>
 
       <p className="text-center text-sm text-on-surface-variant mt-6">
