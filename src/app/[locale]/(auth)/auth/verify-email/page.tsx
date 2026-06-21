@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Mail, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { useLocale } from "next-intl";
+import { Mail, Loader2, CheckCircle, AlertCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authApi } from "@/lib/api";
 
@@ -10,6 +12,8 @@ export default function VerifyEmailPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
+  const locale = useLocale();
+  const isAr = locale === "ar";
   const hasError = searchParams?.get("error") === "invalid";
 
   const handleResend = async () => {
@@ -66,6 +70,21 @@ export default function VerifyEmailPage() {
         <p className="text-xs text-on-surface-variant/60">
           Didn&apos;t get the email? Check your spam folder or click above to resend.
         </p>
+
+        <div className="pt-2 border-t border-outline-variant/15">
+          <Link
+            href={`/${locale}/dashboard`}
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors"
+          >
+            {isAr ? "التحقق لاحقًا" : "Verify later"}
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+          </Link>
+          <p className="text-xs text-on-surface-variant/60 mt-1">
+            {isAr
+              ? "يمكنك متابعة استخدام لوحة التحكم وتأكيد بريدك لاحقًا."
+              : "You can keep using the dashboard and confirm your email later."}
+          </p>
+        </div>
       </div>
     </div>
   );
