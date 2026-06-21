@@ -5,6 +5,7 @@ import { useLocale } from "next-intl";
 import { Check, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useCurrency } from "@/lib/useCurrency";
 
 import { useTranslations } from "next-intl";
 
@@ -87,6 +88,7 @@ const COMPARISON_ROWS = [
 export default function PricingPage() {
   const locale = useLocale();
   const t = useTranslations();
+  const { format: fmtPrice } = useCurrency();
 
   return (
     <div className="min-h-screen bg-background text-on-surface">
@@ -151,10 +153,10 @@ export default function PricingPage() {
                   <div className="text-4xl font-black text-on-surface">{t("pricing.free")}</div>
                 ) : (
                   <div>
-                    <span className="text-4xl font-black text-on-surface">${plan.price_monthly}</span>
+                    <span className="text-4xl font-black text-on-surface">{fmtPrice(plan.price_monthly)}</span>
                     <span className="text-on-surface-variant text-sm"> {t("pricing.perMonth")}</span>
                     <p className="text-xs text-on-surface-variant mt-1">
-                      ${plan.price_yearly}/{t("pricing.perYear")} — {t("pricing.save2mo")}
+                      {fmtPrice(plan.price_yearly)}/{t("pricing.perYear")} — {t("pricing.save2mo")}
                     </p>
                   </div>
                 )}

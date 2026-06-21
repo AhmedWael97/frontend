@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -232,5 +232,10 @@ function Content() {
 }
 
 export default function DomainsPage() {
-  return <Content />;
+  // useSearchParams() must be inside a Suspense boundary in the App Router.
+  return (
+    <Suspense fallback={null}>
+      <Content />
+    </Suspense>
+  );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLocale } from "next-intl";
@@ -8,7 +8,7 @@ import { Mail, Loader2, CheckCircle, AlertCircle, ArrowRight } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { authApi } from "@/lib/api";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
@@ -87,5 +87,14 @@ export default function VerifyEmailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  // useSearchParams() must be inside a Suspense boundary in the App Router.
+  return (
+    <Suspense fallback={null}>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

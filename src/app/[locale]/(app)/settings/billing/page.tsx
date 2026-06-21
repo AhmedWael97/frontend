@@ -26,6 +26,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { useCurrency } from "@/lib/useCurrency";
 import { billingApi } from "@/lib/api";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -110,6 +111,7 @@ function Content() {
   const searchParams = useSearchParams();
   const trialExpired = searchParams.get("trial") === "expired";
   const isAr = locale === "ar";
+  const { format: fmtPrice, currency } = useCurrency();
 
   const { data: billing, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["billing"],
@@ -304,7 +306,7 @@ function Content() {
             </div>
             <div className="text-right shrink-0">
               <div className="text-2xl font-black text-on-surface tabular-nums">
-                ${Number(activePlan?.price_monthly ?? 0).toFixed(2)}
+                {fmtPrice(Number(activePlan?.price_monthly ?? 0))}
                 <span className="text-sm font-normal text-on-surface-variant">/mo</span>
               </div>
               <div className="flex flex-wrap items-center justify-end gap-2 mt-2">
@@ -393,7 +395,7 @@ function Content() {
                     </div>
                     <p className="text-xs text-on-surface-variant min-h-[2.5em]">{p.description || "Includes core analytics."}</p>
                     <p className="text-2xl font-black mt-3 text-on-surface tabular-nums">
-                      ${Number(p.price_monthly || 0).toFixed(2)}
+                      {fmtPrice(Number(p.price_monthly || 0))}
                       <span className="text-xs text-on-surface-variant font-normal"> / month</span>
                     </p>
                   </button>
@@ -461,12 +463,13 @@ function Content() {
                     <p className="text-xs text-on-surface-variant">
                       You&#39;ll be redirected to Paymob&#39;s secure checkout in a new tab. We accept Visa,
                       Mastercard, Meeza, Fawry, Vodafone Cash, and instalments.
+                      {currency === "USD" && " Charges are processed in EGP; your bank converts to your local currency."}
                     </p>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
                       <p className="text-xs text-on-surface-variant">
                         {isChangingPlan
-                          ? <>Upgrading to <strong className="text-on-surface">{selectedPlan.name}</strong> at <strong className="text-on-surface">${Number(selectedPlan.price_monthly).toFixed(2)}/mo</strong>.</>
-                          : <>Renewing <strong className="text-on-surface">{selectedPlan.name}</strong> at <strong className="text-on-surface">${Number(selectedPlan.price_monthly).toFixed(2)}/mo</strong>.</>}
+                          ? <>Upgrading to <strong className="text-on-surface">{selectedPlan.name}</strong> at <strong className="text-on-surface">{fmtPrice(Number(selectedPlan.price_monthly))}/mo</strong>.</>
+                          : <>Renewing <strong className="text-on-surface">{selectedPlan.name}</strong> at <strong className="text-on-surface">{fmtPrice(Number(selectedPlan.price_monthly))}/mo</strong>.</>}
                       </p>
                       <Button onClick={onPaymob} disabled={paymobLoading} className="gap-2">
                         {paymobLoading
