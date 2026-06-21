@@ -6,6 +6,7 @@ import { useLocale } from "next-intl";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AppHeader } from "@/components/AppHeader";
 import { ImpersonationBanner } from "@/components/ImpersonationBanner";
+import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
 import { AiChatBubble } from "@/components/AiChatBubble";
 import { useAuthStore } from "@/store/auth";
 
@@ -32,10 +33,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       router.replace(`/${locale}/auth/login`);
       return;
     }
-    if (user && !user.email_verified_at) {
-      router.replace(`/${locale}/auth/verify-email`);
-      return;
-    }
+    // Email verification is NON-blocking: unverified users can still use the
+    // dashboard. They're nudged via <VerifyEmailBanner /> instead of being
+    // redirected to the verify-email page.
     // New users who haven't added a domain yet → send them to domains setup
     // Only redirect when navigating away from settings pages so they can add a domain
     const isOnDomainsPage = pathname?.includes("/settings/domains");
@@ -54,6 +54,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="md:ltr:pl-64 md:rtl:pr-64 print:!pl-0 print:!pr-0 flex flex-col min-h-screen">
         <div className="print:hidden">
           <ImpersonationBanner />
+          <VerifyEmailBanner />
           <AppHeader />
         </div>
         <main className="flex-1 p-6 print:p-0">{children}</main>
