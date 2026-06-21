@@ -27,6 +27,23 @@ export function formatRelativeTime(date: string | Date): string {
   return `${days}d ago`;
 }
 
+/**
+ * Resolve a country to its full, locale-aware name (e.g. "EG" → "Egypt",
+ * "السعودية" in Arabic). Only ISO 3166-1 alpha-2 codes resolve; anything else
+ * (already-full names, unknown values) is passed through unchanged.
+ */
+export function countryName(code?: string | null, locale = "en"): string {
+  if (!code) return "—";
+  const c = code.trim();
+  if (!/^[A-Za-z]{2}$/.test(c)) return c;
+  try {
+    const dn = new Intl.DisplayNames([locale], { type: "region" });
+    return dn.of(c.toUpperCase()) || c;
+  } catch {
+    return c;
+  }
+}
+
 export function truncate(str: string, maxLength: number): string {
   if (str.length <= maxLength) return str;
   return str.slice(0, maxLength) + "…";

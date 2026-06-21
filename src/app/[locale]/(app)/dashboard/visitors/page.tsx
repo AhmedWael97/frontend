@@ -6,15 +6,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { formatDate } from "@/lib/utils";
+import { formatDate, countryName } from "@/lib/utils";
 import { Monitor, Smartphone, Tablet, Globe, ShieldOff } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
   const [page, setPage] = useState(1);
   const [, setSelected] = useState<string | null>(null);
   const t = useTranslations("visitors");
+  const locale = useLocale();
 
   const { data, isLoading } = useQuery({
     queryKey: ["visitors", selectedDomainId, page],
@@ -95,7 +96,7 @@ function Content() {
                     onClick={() => setSelected(v)}
                   >
                     <td className="px-4 py-3 font-mono text-xs text-primary">{v.visitor_id?.slice(0, 12)}…</td>
-                    <td className="px-4 py-3 text-on-surface flex items-center gap-1.5"><Globe className="w-3.5 h-3.5 text-on-surface-variant" />{v.country || "—"}</td>
+                    <td className="px-4 py-3 text-on-surface flex items-center gap-1.5"><Globe className="w-3.5 h-3.5 text-on-surface-variant" />{countryName(v.country, locale)}</td>
                     <td className="px-4 py-3">
                       <span className="flex items-center gap-1 text-on-surface-variant">{deviceIcon(v.device_type)}{v.device_type || "—"}</span>
                     </td>

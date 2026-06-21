@@ -1,16 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocale } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
+import { countryName } from "@/lib/utils";
 import {
   ArrowUpRight, ArrowDownRight, GitCompare,
   Globe, MousePointerClick, Monitor, Smartphone, Tablet,
-  TrendingUp, BarChart3, Layers, Zap,
+  TrendingUp, BarChart3, Layers, Zap, MapPin, Clock,
 } from "lucide-react";
+
+/** ISO alpha-2 → flag emoji (e.g. "EG" → 🇪🇬). Returns null for non-codes. */
+function flagEmoji(code: string): string | null {
+  if (!/^[A-Za-z]{2}$/.test(code)) return null;
+  const cc = code.toUpperCase();
+  return String.fromCodePoint(127397 + cc.charCodeAt(0), 127397 + cc.charCodeAt(1));
+}
+
+const pad2 = (n: number) => String(n).padStart(2, "0");
 
 /** Compute % change */
 function pctDelta(current: number, prev: number | undefined): { label: string; up: boolean } | null {
@@ -127,6 +138,20 @@ function StatCard({ label, value, icon: Icon, color = "text-primary" }: {
 function Content() {
   const { selectedDomainId } = useAuthStore();
   const [comparing, setComparing] = useState(false);
+  const locale = useLocale();
+
+  const { data: geo } = useQuery({
+    queryKey: ["geo", selectedDomainId],
+    queryFn: () => analyticsApi.geo(selectedDomainId!).then((r) => r.data),
+    enabled: !!selectedDomainId,
+  });
+
+  // Hourly pageviews → busiest hour of the day (the "rush hour").
+  const { data: hourly } = useQuery({
+    queryKey: ["hourly", selectedDomainId],
+    queryFn: () => analyticsApi.stats(selectedDomainId!, { granularity: "hour" }).then((r) => r.data),
+    enabled: !!selectedDomainId,
+  });
 
   const { data: referrers } = useQuery({
     queryKey: ["referrers", selectedDomainId, comparing],
@@ -172,6 +197,28 @@ function Content() {
   const osTotal   = (devData?.os ?? []).reduce((s: number, d: any) => s + Number(d.visits ?? 0), 0);
   const evtTotal  = Array.isArray(events) ? events.reduce((s: number, e: any) => s + Number(e.occurrences ?? 0), 0) : 0;
 
+  // Top countries
+  const countryRows: any[] = (geo?.countries ?? []).filter((c: any) => c.country && c.country !== "Unknown");
+  const countryTotal = countryRows.reduce((s: number, c: any) => s + Number(c.pageviews ?? 0), 0);
+
+  // Rush hour — aggregate hourly pageviews into 24 local-time buckets and pick
+  // the busiest. Period strings are stored UTC ("YYYY-MM-DD HH:MM:SS"); we parse
+  // them as UTC then read the viewer's local hour so the range is local.
+  const rush = useMemo(() => {
+    const ts: any[] = hourly?.timeseries ?? [];
+    if (!ts.length) return null;
+    const buckets = new Array(24).fill(0);
+    for (const p of ts) {
+      const d = new Date(String(p.period).replace(" ", "T") + "Z");
+      if (isNaN(d.getTime())) continue;
+      buckets[d.getHours()] += Number(p.pageviews ?? 0);
+    }
+    const max = Math.max(...buckets);
+    if (max <= 0) return null;
+    const hour = buckets.indexOf(max);
+    return { hour, label: `${pad2(hour)}:00 – ${pad2((hour + 1) % 24)}:00`, pageviews: max };
+  }, [hourly]);
+
   if (!selectedDomainId) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -205,16 +252,18 @@ function Content() {
       </div>
 
       {/* Quick-stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <StatCard label="Total visits (referrers)"    value={refTotal.toLocaleString()}    icon={Globe}             color="text-sky-400"    />
         <StatCard label="Total page views"            value={pageTotal.toLocaleString()}   icon={MousePointerClick} color="text-primary"    />
         <StatCard label="Unique sources"              value={refRows.length}               icon={Layers}            color="text-violet-400" />
         <StatCard label="Custom event types"          value={Array.isArray(events) ? events.length : 0} icon={Zap} color="text-amber-400" />
+        <StatCard label={rush ? "Rush hour (local time)" : "Rush hour"} value={rush ? rush.label : "—"} icon={Clock} color="text-emerald-400" />
       </div>
 
       <Tabs defaultValue="referrers">
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="referrers">Referrers</TabsTrigger>
+          <TabsTrigger value="countries">Countries</TabsTrigger>
           <TabsTrigger value="pages">Top Pages</TabsTrigger>
           <TabsTrigger value="devices">Devices & Browsers</TabsTrigger>
           <TabsTrigger value="events">Custom Events</TabsTrigger>
@@ -261,6 +310,47 @@ function Content() {
                         value={visits}
                         pct={pct}
                         prev={comparing ? prevVisits(refPrev, "referrer", r.referrer) : undefined}
+                      />
+                    );
+                  })}
+                </div>
+              ) : <NoData />}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ── Countries ──────────────────────────────────────────────────── */}
+        <TabsContent value="countries" className="mt-4">
+          <Card>
+            <CardHeader className="border-b border-outline-variant/20 pb-3">
+              <CardTitle className="text-sm font-semibold text-on-surface-variant flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-emerald-400" />
+                Top Countries
+                {countryRows.length > 0 && (
+                  <span className="ml-auto text-xs font-normal text-on-surface-variant/60">
+                    {countryRows.length} countries · {countryTotal.toLocaleString()} views
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              {countryRows.length ? (
+                <div className="divide-y divide-outline-variant/10">
+                  {countryRows.map((c: any, i: number) => {
+                    const views = Number(c.pageviews ?? 0);
+                    const pct = countryTotal > 0 ? (views / countryTotal) * 100 : 0;
+                    const flag = flagEmoji(c.country);
+                    return (
+                      <DataRow
+                        key={i}
+                        rank={i + 1}
+                        icon={flag
+                          ? <span className="text-base leading-none">{flag}</span>
+                          : <Globe className="w-3.5 h-3.5 text-on-surface-variant/50" />}
+                        label={countryName(c.country, locale)}
+                        sublabel={c.unique_visitors ? `${Number(c.unique_visitors).toLocaleString()} visitors` : undefined}
+                        value={views}
+                        pct={pct}
                       />
                     );
                   })}
