@@ -77,6 +77,29 @@ export const BILLING_ROUTES = {
   cancel: "/billing/cancel",
 } as const;
 
+// ── Organization (agency/team) ───────────────────────────────────────────────
+export const ORGANIZATION_ROUTES = {
+  show: "/organization",
+  create: "/organization",
+  invite: "/organization/invitations",
+  acceptInvite: (token: string) => `/organization/invitations/${token}/accept`,
+  cancelInvite: (id: number) => `/organization/invitations/${id}`,
+  assignDomains: (userId: number) => `/organization/members/${userId}/domains`,
+  removeMember: (userId: number) => `/organization/members/${userId}`,
+} as const;
+
+// ── Plan-upgrade tickets ─────────────────────────────────────────────────────
+export const UPGRADE_TICKET_ROUTES = {
+  index: "/upgrade-tickets",
+  store: "/upgrade-tickets",
+  show: (id: number) => `/upgrade-tickets/${id}`,
+  reply: (id: number) => `/upgrade-tickets/${id}/messages`,
+  adminIndex: "/admin/upgrade-tickets",
+  adminShow: (id: number) => `/admin/upgrade-tickets/${id}`,
+  adminReply: (id: number) => `/admin/upgrade-tickets/${id}/messages`,
+  adminResolve: (id: number) => `/admin/upgrade-tickets/${id}/resolve`,
+} as const;
+
 // ── GDPR ─────────────────────────────────────────────────────────────────────
 export const GDPR_ROUTES = {
   deleteVisitor: "/gdpr/visitor",

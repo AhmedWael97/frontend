@@ -282,6 +282,17 @@ function Content() {
         </div>
       )}
 
+      <div className="rounded-xl border border-outline-variant/20 bg-surface-container/40 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <p className="text-sm text-on-surface-variant">
+          {isAr
+            ? "تواجه مشكلة في الدفع أو تفضّل ترتيبًا يدويًا؟ اطلب ترقية وسيتولّى فريقنا إعدادها لك."
+            : "Trouble paying, or prefer to arrange it manually? Request an upgrade and our team will set it up for you."}
+        </p>
+        <Button variant="outline" className="gap-2 shrink-0" onClick={() => router.push(`/${locale}/settings/upgrade`)}>
+          <Sparkles className="w-4 h-4" /> {isAr ? "اطلب ترقية" : "Request an upgrade"}
+        </Button>
+      </div>
+
       {/* ── Current plan ───────────────────────────────────────────────── */}
       <Card className="border-primary/20 bg-primary/5 overflow-hidden">
         <CardContent className="p-5 sm:p-6">

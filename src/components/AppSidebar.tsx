@@ -78,6 +78,7 @@ const HUB_GROUPS = [
     color:    "text-on-surface-variant",
     items: [
       { key: "domains",        href: "/settings/domains",           icon: Globe },
+      { key: "team",           href: "/settings/team",              icon: Users },
       { key: "billing",        href: "/settings/billing",           icon: CreditCard },
       { key: "profile",        href: "/settings/profile",           icon: User },
       { key: "security",       href: "/settings/security",          icon: Shield },
