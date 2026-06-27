@@ -9,19 +9,72 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { domainsApi, billingApi } from "@/lib/api";
-import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X } from "lucide-react";
+import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X, Loader2, Mail, CheckCircle2 } from "lucide-react";
 
-function ScriptSnippet({ token }: { token: string }) {
-  const [copied, setCopied] = useState(false);
+const INSTALL_PLATFORMS = [
+  { key: "html", label: "HTML", hint: "Paste this right before the closing </head> tag, on every page of your site." },
+  { key: "wordpress", label: "WordPress", hint: "Easiest: install the free “WPCode” plugin → Header & Footer → paste into the Header box → Save. (Or add it to your theme’s header.php before </head>.)" },
+  { key: "shopify", label: "Shopify", hint: "Online Store → Themes → ⋯ → Edit code → layout/theme.liquid → paste just before </head> → Save." },
+  { key: "gtm", label: "Tag Manager", hint: "New Tag → Custom HTML → paste the snippet → Trigger: All Pages → Submit & publish." },
+];
+
+function InstallGuide({ token, domainId, domainName }: { token: string; domainId: number; domainName: string }) {
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://yourdomain.com").replace(/\/$/, "");
   // data-api points to the frontend proxy — absolute URL so the tracker resolves against the frontend origin, not the script source
   const snippet = `<script src="${appUrl}/tracker/eye.js" data-token="${token}" data-api="${appUrl}/api/collect" async></script>`;
+  const [tab, setTab] = useState("html");
+  const [copied, setCopied] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [verified, setVerified] = useState<null | boolean>(null);
+
+  const platform = INSTALL_PLATFORMS.find((p) => p.key === tab) ?? INSTALL_PLATFORMS[0];
+
+  const verify = async () => {
+    setVerifying(true);
+    setVerified(null);
+    try {
+      const r = await domainsApi.verify(domainId);
+      setVerified(!!(r.data?.verified ?? r.data?.data?.verified));
+    } catch {
+      setVerified(false);
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const mailto = `mailto:?subject=${encodeURIComponent(`Please install EYE tracking on ${domainName}`)}&body=${encodeURIComponent(
+    `Hi,\n\nPlease add this tracking snippet to ${domainName}, just before the closing </head> tag on every page:\n\n${snippet}\n\nThanks!`
+  )}`;
+
   return (
-    <div className="relative">
-      <pre className="bg-surface-container-lowest rounded-lg p-3 text-xs text-on-surface-variant overflow-x-auto border border-outline-variant/20 font-mono">{snippet}</pre>
-      <button onClick={() => { navigator.clipboard.writeText(snippet); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="absolute top-2 right-2 p-1.5 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
-        {copied ? <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-      </button>
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-1.5">
+        {INSTALL_PLATFORMS.map((p) => (
+          <button key={p.key} onClick={() => setTab(p.key)}
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
+              tab === p.key ? "border-primary bg-primary/10 text-primary" : "border-outline-variant/40 text-on-surface-variant hover:bg-surface-container"
+            }`}>
+            {p.label}
+          </button>
+        ))}
+      </div>
+      <p className="text-xs text-on-surface-variant">{platform.hint}</p>
+      <div className="relative">
+        <pre className="bg-surface-container-lowest rounded-lg p-3 text-xs text-on-surface-variant overflow-x-auto border border-outline-variant/20 font-mono">{snippet}</pre>
+        <button onClick={() => { navigator.clipboard.writeText(snippet); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="absolute top-2 right-2 p-1.5 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
+          {copied ? <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+        </button>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button size="sm" variant="outline" onClick={verify} disabled={verifying} className="gap-1.5">
+          {verifying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />} Verify installation
+        </Button>
+        <a href={mailto} className="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-primary px-2 py-1.5 rounded-lg hover:bg-surface-container">
+          <Mail className="w-3.5 h-3.5" /> Email to my developer
+        </a>
+        {verified === true && <span className="text-xs font-semibold text-emerald-500">✓ Script detected — you’re live!</span>}
+        {verified === false && <span className="text-xs text-amber-500">Not detected yet. Publish the change, open your site, then retry.</span>}
+      </div>
     </div>
   );
 }
@@ -190,8 +243,8 @@ function Content() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-2">Tracking Script</p>
-              <ScriptSnippet token={d.script_token} />
+              <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-2">Install Tracking</p>
+              <InstallGuide token={d.script_token} domainId={d.id} domainName={d.domain} />
             </div>
             <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
               <div>

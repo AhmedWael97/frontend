@@ -9,7 +9,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import {
   Users, Activity, Clock, TrendingDown, TrendingUp, Flame, Globe,
   Plus, AlertTriangle, Share2, BarChart3, Radio, GitMerge, Code2,
-  UserCheck, Building2, Star, Megaphone,
+  UserCheck, Building2, Star, Megaphone, Sparkles,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -109,9 +109,14 @@ function AnalyticsHub() {
               {th("noWebsiteDesc" as never)}
             </p>
           </div>
-          <Link href={`/${locale}/settings/domains?welcome=1`}>
-            <Button size="lg" className="gap-2"><Plus className="w-4 h-4" />{th("addWebsite" as never)}</Button>
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Link href={`/${locale}/settings/domains?welcome=1`}>
+              <Button size="lg" className="gap-2"><Plus className="w-4 h-4" />{th("addWebsite" as never)}</Button>
+            </Link>
+            <Link href={`/${locale}/dashboard/demo`}>
+              <Button size="lg" variant="outline" className="gap-2"><Sparkles className="w-4 h-4" /> Explore a live demo</Button>
+            </Link>
+          </div>
         </div>
         {/* Guided steps — shown even before a domain exists, so new users have a clear path. */}
         <WelcomeChecklist domainId={null} />
