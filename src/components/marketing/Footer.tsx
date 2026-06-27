@@ -8,6 +8,10 @@ interface FooterProps {
   locale: string;
 }
 
+// Computed once at module load (same value on server + client) so the year is
+// never produced during render — avoids a hydration mismatch (#418).
+const CURRENT_YEAR = new Date().getFullYear();
+
 export default function Footer({ locale }: FooterProps) {
   const t = useTranslations("landing.footer");
 
@@ -90,7 +94,7 @@ export default function Footer({ locale }: FooterProps) {
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-outline-variant/20 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-on-surface-variant">
-            © {new Date().getFullYear()} {t("copyright")}
+            © {CURRENT_YEAR} {t("copyright")}
           </p>
           <p className="text-xs text-on-surface-variant">
             {t("privacyFirst")}
