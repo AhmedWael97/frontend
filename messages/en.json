@@ -208,7 +208,8 @@
     "recentEvents": "Recent Events",
     "activeVisitors": "Active Visitors Right Now",
     "noData": "No data available for this period",
-    "selectDomain": "Select a domain"
+    "selectDomain": "Select a domain",
+    "loading": "Loading…"
   },
   "onboarding": {
     "title": "Get Started with EYE",
@@ -362,7 +363,7 @@
       "trustFree": "30-day free trial",
       "trustCookies": "No cookies",
       "trustGdpr": "GDPR ready",
-      "mockUrl": "app.eye.ai/dashboard",
+      "mockUrl": "app.eye-analsyis.live/dashboard",
       "stat0Label": "Visitors today",    "stat0Value": "12,847", "stat0Change": "up 18% vs yesterday",
       "stat1Label": "Avg. session",      "stat1Value": "3m 42s", "stat1Change": "up 6% this week",
       "stat2Label": "Conversion rate",   "stat2Value": "4.2%",   "stat2Change": "up 1.1pp this month",

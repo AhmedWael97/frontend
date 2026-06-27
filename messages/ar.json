@@ -208,7 +208,8 @@
     "recentEvents": "الأحداث الأخيرة",
     "activeVisitors": "الزوار النشطون الآن",
     "noData": "لا توجد بيانات للفترة المحددة",
-    "selectDomain": "اختر نطاقاً"
+    "selectDomain": "اختر نطاقاً",
+    "loading": "جارٍ التحميل…"
   },
   "onboarding": {
     "title": "ابدأ مع EYE",
@@ -362,7 +363,7 @@
       "trustFree": "تجربة مجانية 30 يوماً",
       "trustCookies": "بدون كوكيز",
       "trustGdpr": "متوافق مع GDPR",
-      "mockUrl": "app.eye.ai/dashboard",
+      "mockUrl": "app.eye-analsyis.live/dashboard",
       "stat0Label": "الزوار اليوم",        "stat0Value": "12,847", "stat0Change": "أعلى بـ 18% من أمس",
       "stat1Label": "متوسط الجلسة",        "stat1Value": "3د 42ث", "stat1Change": "أعلى بـ 6% هذا الأسبوع",
       "stat2Label": "معدل التحويل",        "stat2Value": "4.2%",   "stat2Change": "أعلى بـ 1.1% هذا الشهر",

@@ -316,7 +316,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                   <code>
                     <span className="text-pink-500 dark:text-pink-400">{"<script"}</span>
                     {"\n  "}<span className="text-indigo-600 dark:text-indigo-400">src</span>
-                    {"="}<span className="text-emerald-600 dark:text-emerald-400">{'"https://cdn.eye.ai/tracker.js"'}</span>
+                    {"="}<span className="text-emerald-600 dark:text-emerald-400">{'"https://eye-analsyis.live/tracker/eye.js"'}</span>
                     {"\n  "}<span className="text-indigo-600 dark:text-indigo-400">data-site-id</span>
                     {"="}<span className="text-emerald-600 dark:text-emerald-400">{'"YOUR_SITE_ID"'}</span>
                     {"\n  "}<span className="text-pink-500 dark:text-pink-400">{"defer></script>"}</span>
