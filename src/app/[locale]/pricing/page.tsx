@@ -1,11 +1,13 @@
 ﻿"use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { Check, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCurrency } from "@/lib/useCurrency";
+import { trackViewPlans } from "@/lib/track";
 
 import { useTranslations } from "next-intl";
 
@@ -89,6 +91,8 @@ export default function PricingPage() {
   const locale = useLocale();
   const t = useTranslations();
   const { format: fmtPrice } = useCurrency();
+
+  useEffect(() => { trackViewPlans(); }, []); // TikTok ViewContent
 
   return (
     <div className="min-h-screen bg-background text-on-surface">

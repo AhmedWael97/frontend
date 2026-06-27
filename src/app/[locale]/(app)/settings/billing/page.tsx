@@ -26,6 +26,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { trackInitiateCheckout } from "@/lib/track";
 import { useCurrency } from "@/lib/useCurrency";
 import { billingApi } from "@/lib/api";
 
@@ -206,6 +207,7 @@ function Content() {
 
   const onPaymob = async () => {
     if (!selectedPlanId) { toast.error("Please choose a plan first."); return; }
+    trackInitiateCheckout(selectedPlan?.name); // TikTok InitiateCheckout
     setPaymobLoading(true);
     try {
       const token = typeof window !== "undefined" ? localStorage.getItem("eye_token") : null;
@@ -288,7 +290,7 @@ function Content() {
             ? "تواجه مشكلة في الدفع أو تفضّل ترتيبًا يدويًا؟ اطلب ترقية وسيتولّى فريقنا إعدادها لك."
             : "Trouble paying, or prefer to arrange it manually? Request an upgrade and our team will set it up for you."}
         </p>
-        <Button variant="outline" className="gap-2 shrink-0" onClick={() => router.push(`/${locale}/settings/upgrade`)}>
+        <Button variant="outline" className="gap-2 shrink-0" onClick={() => { trackInitiateCheckout(); router.push(`/${locale}/settings/upgrade`); }}>
           <Sparkles className="w-4 h-4" /> {isAr ? "اطلب ترقية" : "Request an upgrade"}
         </Button>
       </div>
