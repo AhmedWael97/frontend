@@ -9,6 +9,7 @@ import { useAuthStore } from "@/store/auth";
 import { formatDate, countryName } from "@/lib/utils";
 import { Monitor, Smartphone, Tablet, Globe, ShieldOff } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import { UsageUpgradeBanner, ListLockFooter } from "@/components/UsageUpgradeBanner";
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
@@ -50,6 +51,8 @@ function Content() {
         <h1 className="text-2xl font-black text-on-surface tracking-tight">{t("title")}</h1>
         <p className="text-on-surface-variant text-sm mt-0.5">{t("subtitle")}</p>
       </div>
+
+      <UsageUpgradeBanner domainId={selectedDomainId} />
 
       {/* Bot stats card */}
       {botStats && (
@@ -121,6 +124,7 @@ function Content() {
               </div>
             </div>
           )}
+          <ListLockFooter domainId={selectedDomainId} />
         </CardContent>
       </Card>
     </div>

@@ -190,4 +190,8 @@ export const analyticsApi = {
   /** GET /analytics/{domainId}/bot-stats */
   botStats: (domainId: number) =>
     client.get(ANALYTICS_ROUTES.botStats(domainId)),
+
+  /** GET /analytics/{domainId}/usage — monthly events vs plan limit (upsell) */
+  usage: (domainId: number) =>
+    client.get(ANALYTICS_ROUTES.usage(domainId)),
 };

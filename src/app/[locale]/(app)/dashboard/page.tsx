@@ -18,6 +18,7 @@ import { useAuthStore } from "@/store/auth";
 import { formatNumber } from "@/lib/utils";
 import { toast } from "@/lib/use-toast";
 import WelcomeChecklist from "@/components/WelcomeChecklist";
+import { UsageUpgradeBanner } from "@/components/UsageUpgradeBanner";
 
 // ── Feature card ──────────────────────────────────────────────────────────────
 function FeatureCard({
@@ -196,6 +197,9 @@ function AnalyticsHub() {
           ))}
         </div>
       </div>
+
+      {/* Plan usage upsell — events are stored; lower plans only see their allowance */}
+      <UsageUpgradeBanner domainId={selectedDomainId} />
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">

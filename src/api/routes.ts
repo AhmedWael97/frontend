@@ -236,6 +236,7 @@ export const ANALYTICS_ROUTES = {
   engagedVisitors: (domainId: number) => `/analytics/${domainId}/engaged-visitors`,
   summary: (domainId: number) => `/analytics/${domainId}/summary`,
   botStats: (domainId: number) => `/analytics/${domainId}/bot-stats`,
+  usage: (domainId: number) => `/analytics/${domainId}/usage`,
 } as const;
 
 // ── Growth (leads CRM + outreach) ───────────────────────────────────────────────

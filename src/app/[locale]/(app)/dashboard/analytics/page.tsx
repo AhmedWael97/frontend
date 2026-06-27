@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { countryName } from "@/lib/utils";
+import { UsageUpgradeBanner } from "@/components/UsageUpgradeBanner";
 import {
   ArrowUpRight, ArrowDownRight, GitCompare,
   Globe, MousePointerClick, Monitor, Smartphone, Tablet,
@@ -250,6 +251,8 @@ function Content() {
           {comparing ? "Comparing to prev period" : "Compare to prev period"}
         </button>
       </div>
+
+      <UsageUpgradeBanner domainId={selectedDomainId} />
 
       {/* Quick-stats row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
