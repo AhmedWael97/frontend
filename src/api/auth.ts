@@ -12,7 +12,6 @@ export const authApi = {
     name: string;
     email: string;
     password: string;
-    password_confirmation: string;
     locale?: string;
     timezone?: string;
   }) => client.post(AUTH_ROUTES.register, data),

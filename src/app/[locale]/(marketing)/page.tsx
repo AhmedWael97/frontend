@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Radio, Map, GitMerge, Building2, FileText, ShieldCheck,
-  ArrowRight, Check, Star, Eye, Layers, Lock, Gauge,
+  ArrowRight, Check, Eye, Layers, Lock, Gauge,
   BarChart2, ChevronRight, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/marketing/Navbar";
+import MobileCtaBar from "@/components/marketing/MobileCtaBar";
 import Footer from "@/components/marketing/Footer";
 import { getTranslations } from "next-intl/server";
 import { JsonLd } from "@/components/JsonLd";
@@ -90,15 +91,6 @@ export default async function HomePage({ params }: { params: { locale: string } 
     { icon: Eye,       idx: 2, color: "text-violet-600 dark:text-violet-400",   num: "bg-violet-500"  },
   ];
 
-  const STATS = [
-    { value: "1B+",   key: "events"   },
-    { value: "50K+",  key: "websites" },
-    { value: "99.9%", key: "uptime"   },
-    { value: "2KB",   key: "impact"   },
-  ];
-
-  const LOGOS = [0, 1, 2, 3, 4];
-
   const MOCK_STATS = [
     { labelKey: "stat0Label", valueKey: "stat0Value", changeKey: "stat0Change", color: "text-indigo-500 dark:text-indigo-400"   },
     { labelKey: "stat1Label", valueKey: "stat1Value", changeKey: "stat1Change", color: "text-violet-500 dark:text-violet-400"   },
@@ -136,7 +128,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
               {t("hero.badge")}
             </Badge>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-on-surface leading-[1.05] mb-6">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-on-surface leading-[1.08] sm:leading-[1.05] mb-6">
               {t("hero.headline1")}
               <br />
               <span className="bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 dark:from-indigo-400 dark:via-violet-400 dark:to-pink-400 bg-clip-text text-transparent">
@@ -205,38 +197,6 @@ export default async function HomePage({ params }: { params: { locale: string } 
                 </div>
               </div>
               <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-3/5 h-16 bg-indigo-500/15 dark:bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
-            </div>
-          </div>
-        </section>
-
-        {/* ── Logos / Social Proof Bar ──────────────────────────────────────── */}
-        <section className="py-12 border-y border-outline-variant/15 bg-surface-container/15">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-xs font-semibold tracking-widest uppercase text-on-surface-variant/40 mb-7">
-              {t("logos.label")}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
-              {LOGOS.map((i) => (
-                <span key={i} className="text-sm font-bold text-on-surface-variant/30 hover:text-on-surface-variant/60 transition-colors tracking-wide select-none cursor-default">
-                  {t(`logos.${i}` as any)}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Stats ─────────────────────────────────────────────────────────── */}
-        <section className="py-20 bg-surface">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-              {STATS.map((stat) => (
-                <div key={stat.key}>
-                  <p className="text-4xl font-black bg-gradient-to-br from-indigo-500 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent mb-1">
-                    {stat.value}
-                  </p>
-                  <p className="text-sm text-on-surface-variant">{t(`stats.${stat.key}` as any)}</p>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -370,42 +330,6 @@ export default async function HomePage({ params }: { params: { locale: string } 
           </div>
         </section>
 
-        {/* ── Testimonials ──────────────────────────────────────────────────── */}
-        <section className="py-24 bg-surface-container/20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-14">
-              <h2 className="text-4xl font-black text-on-surface tracking-tight mb-3">
-                {t("testimonials.headline")}
-              </h2>
-              <p className="text-on-surface-variant">{t("testimonials.description")}</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[0, 1, 2].map((idx) => (
-                <div key={idx} className="rounded-2xl bg-surface border border-outline-variant/20 p-6 flex flex-col hover:border-outline-variant/40 hover:shadow-sm dark:hover:shadow-black/20 transition-all">
-                  <div className="flex gap-0.5 mb-4">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    ))}
-                  </div>
-                  <p className="text-sm text-on-surface leading-relaxed mb-6 flex-1">
-                    &ldquo;{t(`testimonials.${idx}quote` as any)}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-3 pt-4 border-t border-outline-variant/15">
-                    <div className="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface font-bold text-sm shrink-0">
-                      {t(`testimonials.${idx}author` as any).charAt(0)}
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-on-surface">{t(`testimonials.${idx}author` as any)}</p>
-                      <p className="text-xs text-on-surface-variant">{t(`testimonials.${idx}role` as any)}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ── Trust / Privacy Bar ───────────────────────────────────────────── */}
         <section className="py-16 border-y border-outline-variant/15 bg-surface">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -484,6 +408,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
 
       </main>
       <Footer locale={locale} />
+      <MobileCtaBar />
     </>
   );
 }

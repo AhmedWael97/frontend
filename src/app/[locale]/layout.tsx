@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Readex_Pro } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -17,10 +17,16 @@ const inter = Inter({
 
 const readexPro = Readex_Pro({
   subsets: ["arabic", "latin"],
-  weight: ["200", "300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"], // trimmed from 6 weights — lighter mobile font payload
   variable: "--font-arabic",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const isAr = params.locale === "ar";
@@ -62,7 +68,9 @@ const EYE_API = process.env.NEXT_PUBLIC_EYE_API || `${EYE_HOST}/api/collect`;
 // Sets the token/api as globals (eye.js reads window.EYE_TOKEN/EYE_API), then
 // injects the tracker + replay recorder. Skips localhost so dev never pollutes
 // production analytics. Single load each — no data-replay (avoids double-record).
-const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||h==='127.0.0.1'||h.endsWith('.local'))return;window.EYE_TOKEN=${JSON.stringify(EYE_TOKEN)};window.EYE_API=${JSON.stringify(EYE_API)};function L(s){var e=document.createElement('script');e.src=s;e.async=true;document.head.appendChild(e);}L(${JSON.stringify(EYE_HOST + "/tracker/eye.js")});L(${JSON.stringify(EYE_HOST + "/tracker/eye-replay.js")});}catch(e){}})();`;
+// Loads only eye.js (no session-replay/rrweb on our own marketing site — saves
+// ~100 KB on mobile), and defers to idle/load so it never blocks first paint.
+const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||h==='127.0.0.1'||h.endsWith('.local'))return;window.EYE_TOKEN=${JSON.stringify(EYE_TOKEN)};window.EYE_API=${JSON.stringify(EYE_API)};function go(){var e=document.createElement('script');e.src=${JSON.stringify(EYE_HOST + "/tracker/eye.js")};e.async=true;document.head.appendChild(e);}if('requestIdleCallback' in window){requestIdleCallback(go,{timeout:3000});}else{window.addEventListener('load',go);}}catch(e){}})();`;
 
 // ── Google Ads (gtag.js) ─────────────────────────────────────────────────────
 // Global site tag for Google Ads conversion tracking. ID is env-overridable.

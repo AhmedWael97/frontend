@@ -8,7 +8,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
     <input
       type={type}
       className={cn(
-        "flex h-10 w-full rounded-lg bg-surface-container-lowest px-4 py-2 text-sm text-on-surface",
+        // 16px on mobile prevents iOS Safari from auto-zooming on focus; 14px on sm+.
+        "flex h-10 w-full rounded-lg bg-surface-container-lowest px-4 py-2 text-base sm:text-sm text-on-surface",
         "border-none outline-none ring-0",
         "placeholder:text-outline/50",
         "focus:ring-2 focus:ring-primary/40 transition-all",

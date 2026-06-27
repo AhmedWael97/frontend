@@ -74,10 +74,17 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile hamburger */}
-        <button className="md:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
-          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+        {/* Mobile: always-visible CTA + hamburger */}
+        <div className="md:hidden flex items-center gap-1.5">
+          <Link href={`/${locale}/auth/register`}>
+            <Button size="sm" className="bg-indigo-500 hover:bg-indigo-400 text-white h-9 px-3 text-sm font-semibold">
+              {t("startFree")}
+            </Button>
+          </Link>
+          <button className="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
+            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}

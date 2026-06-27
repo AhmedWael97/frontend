@@ -353,13 +353,13 @@
       "startFree": "Start free"
     },
     "hero": {
-      "badge": "Trusted by 50,000+ websites",
+      "badge": "Privacy-first website analytics",
       "headline1": "Your website has a story.",
       "headline2": "Start reading it.",
       "description": "EYE shows you who visits your site, what they do, and where they leave — without slowing your site down or touching a single cookie.",
       "cta": "Get started free",
       "ctaSecondary": "See how it works",
-      "trustFree": "Free forever plan",
+      "trustFree": "30-day free trial",
       "trustCookies": "No cookies",
       "trustGdpr": "GDPR ready",
       "mockUrl": "app.eye.ai/dashboard",
