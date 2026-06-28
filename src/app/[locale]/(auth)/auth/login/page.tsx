@@ -7,12 +7,13 @@ import { useLocale, useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
+import { AuthShowcase, MobileFeatureStrip } from "@/components/auth/AuthShowcase";
 
 const schema = z.object({
   email: z.string().email(),
@@ -61,61 +62,71 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-md">
-      {/* Brand */}
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary-container mb-4 shadow-lg">
-          <span className="material-symbols-outlined text-3xl text-on-primary-fixed" style={{ fontVariationSettings: "'FILL' 1" }}>visibility</span>
-        </div>
-        <h1 className="text-3xl font-extrabold tracking-tighter text-primary uppercase">EYE</h1>
-        <p className="text-on-surface-variant text-sm mt-1.5 font-medium tracking-wide">Intelligent Visitor Tracking</p>
-      </div>
+    <div className="w-full max-w-5xl">
+      <div className="grid lg:grid-cols-2 rounded-2xl overflow-hidden border border-outline-variant/15 shadow-2xl glass-panel">
+        <AuthShowcase />
 
-      {/* Card */}
-      <div className="glass-card rounded-xl p-8 shadow-2xl border border-outline-variant/15">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {error && (
-            <div className="rounded-lg bg-error-container/30 border border-error/20 px-4 py-3 text-sm text-error">
-              {error}
-            </div>
-          )}
+        {/* Form column */}
+        <div className="p-6 sm:p-9 lg:p-11 flex flex-col bg-surface/60">
+          <header className="flex items-center justify-between mb-7">
+            <div className="lg:hidden text-xl font-black text-primary uppercase tracking-tighter">EYE</div>
+            <div className="hidden lg:block" />
+            <Link href={`/${locale}/auth/register`} className="text-sm text-on-surface-variant hover:text-on-surface transition-colors">
+              {t("signUp")}
+            </Link>
+          </header>
 
-          <div className="space-y-1.5">
-            <label className="block text-[0.6875rem] font-bold tracking-[0.05em] uppercase text-on-surface-variant ml-1">
-              {t("email")}
-            </label>
-            <Input type="email" placeholder="name@company.com" {...register("email")} autoComplete="email" />
-            {errors.email && <p className="text-xs text-error ml-1">{errors.email.message}</p>}
+          <div className="space-y-2 mb-6">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-on-surface">{t("loginTitle")}</h1>
+            <p className="text-on-surface-variant text-sm">{t("loginSubtitle")}</p>
           </div>
 
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-center px-1">
-              <label className="text-[0.6875rem] font-bold tracking-[0.05em] uppercase text-on-surface-variant">
-                {t("password")}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && (
+              <div className="rounded-lg bg-error-container/30 border border-error/20 px-4 py-3 text-sm text-error">
+                {error}
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
+                {t("email")}
               </label>
-              <Link href={`/${locale}/auth/forgot-password`} className="text-xs font-semibold text-primary hover:text-secondary transition-colors">
-                {t("forgotPassword")}
-              </Link>
+              <Input type="email" placeholder="name@company.com" {...register("email")} autoComplete="email" />
+              {errors.email && <p className="text-xs text-error ml-1">{errors.email.message}</p>}
             </div>
-            <div className="relative">
-              <Input type={showPw ? "text" : "password"} placeholder="••••••••" {...register("password")} autoComplete="current-password" className="pr-10" />
-              <button type="button" onClick={() => setShowPw(!showPw)} className="absolute inset-y-0 right-3 flex items-center text-on-surface-variant hover:text-on-surface">
-                {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            {errors.password && <p className="text-xs text-error ml-1">{errors.password.message}</p>}
-          </div>
 
-          <Button type="submit" disabled={loading} className="w-full py-3 h-auto">
-            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {t("login")} to EYE
-          </Button>
-        </form>
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center px-1">
+                <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                  {t("password")}
+                </label>
+                <Link href={`/${locale}/auth/forgot-password`} className="text-xs font-semibold text-primary hover:text-secondary transition-colors">
+                  {t("forgotPassword")}
+                </Link>
+              </div>
+              <div className="relative">
+                <Input type={showPw ? "text" : "password"} placeholder="••••••••" {...register("password")} autoComplete="current-password" className="pr-11" />
+                <button type="button" onClick={() => setShowPw(!showPw)} aria-label={showPw ? "Hide password" : "Show password"} className="absolute inset-y-0 right-2 rtl:right-auto rtl:left-2 flex items-center justify-center w-8 text-on-surface-variant hover:text-on-surface">
+                  {showPw ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+              {errors.password && <p className="text-xs text-error ml-1">{errors.password.message}</p>}
+            </div>
+
+            <Button type="submit" disabled={loading} className="w-full h-12 mt-2 gap-2">
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4 rtl:rotate-180" />}
+              {t("loginCta")}
+            </Button>
+          </form>
+
+          <MobileFeatureStrip />
+        </div>
       </div>
 
       <p className="text-center text-sm text-on-surface-variant mt-6">
         {t("noAccount")}{" "}
-        <Link href={`/${locale}/auth/register`} className="text-primary font-bold hover:text-secondary transition-colors ml-1">
+        <Link href={`/${locale}/auth/register`} className="text-primary font-bold hover:text-secondary transition-colors ml-1 rtl:ml-0 rtl:mr-1">
           {t("signUp")}
         </Link>
       </p>
