@@ -25,7 +25,7 @@ export function AuthShowcase() {
   const features = useFeatures();
 
   return (
-    <div className="hidden lg:flex flex-col justify-between relative overflow-hidden p-10 xl:p-12 text-white bg-gradient-to-br from-primary via-primary to-secondary">
+    <div className="hidden lg:flex flex-col justify-between relative overflow-hidden p-10 xl:p-12 text-white bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 -left-20 w-80 h-80 rounded-full bg-black/10 blur-3xl" />
