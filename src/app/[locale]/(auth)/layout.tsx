@@ -1,4 +1,12 @@
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { locale: string };
+}) {
+  const isAr = params?.locale === "ar";
+  const base = `/${params?.locale || "en"}`;
   return (
     <div className="min-h-screen bg-surface flex flex-col">
       {/* Ambient background glows */}
@@ -12,11 +20,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <footer className="py-6 px-8 flex flex-col sm:flex-row justify-between items-center gap-3 border-t border-outline-variant/10">
         <div className="text-sm font-bold text-primary uppercase tracking-tighter">EYE</div>
         <div className="flex gap-5 text-xs text-on-surface-variant">
-          <a href="#" className="hover:text-secondary transition-colors">Privacy Policy</a>
-          <a href="#" className="hover:text-secondary transition-colors">Terms of Service</a>
-          <a href="#" className="hover:text-secondary transition-colors">Security</a>
+          <a href={`${base}/privacy`} className="hover:text-secondary transition-colors">{isAr ? "سياسة الخصوصية" : "Privacy Policy"}</a>
+          <a href={`${base}/terms`} className="hover:text-secondary transition-colors">{isAr ? "شروط الاستخدام" : "Terms of Use"}</a>
         </div>
-        <p className="text-xs text-on-surface-variant">© {new Date().getFullYear()} EYE Analytics. All rights reserved.</p>
+        <p className="text-xs text-on-surface-variant">© {new Date().getFullYear()} EYE Analytics. {isAr ? "جميع الحقوق محفوظة." : "All rights reserved."}</p>
       </footer>
     </div>
   );

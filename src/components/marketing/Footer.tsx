@@ -29,10 +29,10 @@ export default function Footer({ locale }: FooterProps) {
       { label: t("contact"),  href: "#" },
     ],
     [t("legal")]: [
-      { label: t("privacyPolicy"), href: "#" },
-      { label: t("terms"),         href: "#" },
-      { label: t("cookiePolicy"),  href: "#" },
-      { label: t("gdpr"),          href: "#" },
+      { label: t("privacyPolicy"), href: "/privacy" },
+      { label: t("terms"),         href: "/terms" },
+      { label: t("cookiePolicy"),  href: "/privacy" },
+      { label: t("gdpr"),          href: "/privacy" },
     ],
     [t("developers")]: [
       { label: t("apiDocs"),       href: "/docs" },

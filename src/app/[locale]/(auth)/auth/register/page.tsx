@@ -117,6 +117,14 @@ export default function RegisterPage() {
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4 rtl:rotate-180" />}
               {t("getStarted")}
             </Button>
+
+            <p className="text-[11px] text-center text-on-surface-variant/80 leading-relaxed pt-1">
+              {locale === "ar" ? "بإنشائك حسابًا فأنت توافق على " : "By creating an account you agree to our "}
+              <Link href={`/${locale}/terms`} className="text-primary hover:underline">{locale === "ar" ? "شروط الاستخدام" : "Terms of Use"}</Link>
+              {locale === "ar" ? " و" : " and "}
+              <Link href={`/${locale}/privacy`} className="text-primary hover:underline">{locale === "ar" ? "سياسة الخصوصية" : "Privacy Policy"}</Link>
+              .
+            </p>
           </form>
 
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 pt-5 text-[11px] text-on-surface-variant">
