@@ -8,9 +8,16 @@
 import axios from "axios";
 import { toast } from "@/lib/use-toast";
 
-const baseURL = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost"}/api/${
-  process.env.NEXT_PUBLIC_API_VERSION || "v1"
-}`;
+// On the client, call the API on the SAME origin the app was opened from, so the
+// app is self-contained on every domain it's served from (e.g. eye-analysis.online
+// hits eye-analysis.online/api — no cross-origin, no CORS dependency). On the
+// server (SSR) fall back to the configured absolute URL.
+const apiOrigin =
+  typeof window !== "undefined"
+    ? window.location.origin
+    : process.env.NEXT_PUBLIC_API_URL || "http://localhost";
+
+const baseURL = `${apiOrigin}/api/${process.env.NEXT_PUBLIC_API_VERSION || "v1"}`;
 
 const client = axios.create({
   baseURL,

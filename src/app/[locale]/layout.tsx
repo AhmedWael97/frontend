@@ -62,15 +62,14 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 
 // ── EYE self-tracking (dogfooding) ───────────────────────────────────────────
 // We track our own site with our own product. Token/host are env-overridable.
-const EYE_HOST = process.env.NEXT_PUBLIC_EYE_HOST || "https://eye-analsyis.live";
 const EYE_TOKEN = process.env.NEXT_PUBLIC_EYE_TOKEN || "9d9c35ffcf7fa952ead4341171a76df088bda921239e20f1892673b314ce348d";
-const EYE_API = process.env.NEXT_PUBLIC_EYE_API || `${EYE_HOST}/api/collect`;
 // Sets the token/api as globals (eye.js reads window.EYE_TOKEN/EYE_API), then
-// injects the tracker + replay recorder. Skips localhost so dev never pollutes
-// production analytics. Single load each — no data-replay (avoids double-record).
-// Loads only eye.js (no session-replay/rrweb on our own marketing site — saves
-// ~100 KB on mobile), and defers to idle/load so it never blocks first paint.
-const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||h==='127.0.0.1'||h.endsWith('.local'))return;window.EYE_TOKEN=${JSON.stringify(EYE_TOKEN)};window.EYE_API=${JSON.stringify(EYE_API)};function go(){var e=document.createElement('script');e.src=${JSON.stringify(EYE_HOST + "/tracker/eye.js")};e.async=true;document.head.appendChild(e);}if('requestIdleCallback' in window){requestIdleCallback(go,{timeout:3000});}else{window.addEventListener('load',go);}}catch(e){}})();`;
+// injects the tracker. Loads from the CURRENT origin (location.origin) so the
+// app is self-contained on whatever domain it's opened from — e.g. on
+// eye-analysis.online it loads /tracker/eye.js and posts to /api/collect on
+// eye-analysis.online, not the other domain. Skips localhost so dev never
+// pollutes production analytics. Defers to idle/load so it never blocks paint.
+const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||h==='127.0.0.1'||h.endsWith('.local'))return;var o=location.origin;window.EYE_TOKEN=${JSON.stringify(EYE_TOKEN)};window.EYE_API=o+'/api/collect';function go(){var e=document.createElement('script');e.src=o+'/tracker/eye.js';e.async=true;document.head.appendChild(e);}if('requestIdleCallback' in window){requestIdleCallback(go,{timeout:3000});}else{window.addEventListener('load',go);}}catch(e){}})();`;
 
 // ── Google Ads (gtag.js) ─────────────────────────────────────────────────────
 // Global site tag for Google Ads conversion tracking. ID is env-overridable.
