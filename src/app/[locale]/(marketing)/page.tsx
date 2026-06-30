@@ -13,6 +13,18 @@ import Footer from "@/components/marketing/Footer";
 import { getTranslations } from "next-intl/server";
 import { JsonLd } from "@/components/JsonLd";
 import { organizationJsonLd, websiteJsonLd, softwareApplicationJsonLd } from "@/lib/seo";
+import { headers } from "next/headers";
+
+// Resolve the base URL from the actual request host, so every absolute URL on the
+// page (canonical, OG, JSON-LD, the install snippet) matches the domain it's
+// opened on — e.g. on eye-analysis.online they stay eye-analysis.online instead
+// of the baked SITE_URL. Falls back to the configured domain if no host header.
+function siteBase(): string {
+  const h = headers();
+  const host = h.get("host");
+  const proto = h.get("x-forwarded-proto") || "https";
+  return host ? `${proto}://${host}` : "https://eye-analsyis.live";
+}
 
 // ─── SEO Metadata ─────────────────────────────────────────────────────────────
 
@@ -31,6 +43,7 @@ export async function generateMetadata(
     : "Live visitor tracking, click heatmaps, conversion funnels, and daily summaries — no cookies, GDPR ready.";
 
   return {
+    metadataBase: new URL(siteBase()),
     title,
     description,
     keywords: [
@@ -110,9 +123,11 @@ export default async function HomePage({ params }: { params: { locale: string } 
     ? "تحليلات زوار خصوصية أولاً: تتبع مباشر، خرائط حرارية، إعادة الجلسات، القمع، وإسناد إيرادات الحملات."
     : "Privacy-first visitor analytics: live tracking, heatmaps, session replay, funnels and campaign revenue attribution.";
 
+  const base = siteBase();
+
   return (
     <>
-      <JsonLd data={[organizationJsonLd(), websiteJsonLd(locale), softwareApplicationJsonLd(seoDescription)]} />
+      <JsonLd data={[organizationJsonLd(base), websiteJsonLd(locale, base), softwareApplicationJsonLd(seoDescription, base)]} />
       {/* CSS-only ambient float for hero accents (no JS, hydration-safe) */}
       <style dangerouslySetInnerHTML={{ __html: "@keyframes eyeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}" }} />
       <Navbar />
@@ -225,7 +240,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                   </div>
                   <div className="flex-1 mx-4 h-6 rounded-md bg-surface-container-high flex items-center px-3 gap-2">
                     <Lock className="w-3 h-3 text-on-surface-variant/40" />
-                    <span className="text-[11px] text-on-surface-variant/50 font-mono truncate">{t("hero.mockUrl")}</span>
+                    <span className="text-[11px] text-on-surface-variant/50 font-mono truncate">{base.replace(/^https?:\/\//, "")}/dashboard</span>
                   </div>
                   <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live
@@ -372,7 +387,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                   <code>
                     <span className="text-pink-500 dark:text-pink-400">{"<script"}</span>
                     {"\n  "}<span className="text-indigo-600 dark:text-indigo-400">src</span>
-                    {"="}<span className="text-emerald-600 dark:text-emerald-400">{'"https://eye-analsyis.live/tracker/eye.js"'}</span>
+                    {"="}<span className="text-emerald-600 dark:text-emerald-400">{`"${base}/tracker/eye.js"`}</span>
                     {"\n  "}<span className="text-indigo-600 dark:text-indigo-400">data-site-id</span>
                     {"="}<span className="text-emerald-600 dark:text-emerald-400">{'"YOUR_SITE_ID"'}</span>
                     {"\n  "}<span className="text-pink-500 dark:text-pink-400">{"defer></script>"}</span>

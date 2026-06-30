@@ -17,37 +17,37 @@ export const DEFAULT_KEYWORDS = [
 ];
 
 /** Organization — helps Google build a knowledge panel / brand entity. */
-export function organizationJsonLd() {
+export function organizationJsonLd(base: string = SITE_URL) {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: SITE_NAME,
-    url: SITE_URL,
+    url: base,
     description:
       "Privacy-first, AI-powered visitor analytics: live tracking, heatmaps, session replay, funnels, campaign revenue attribution and ROAS.",
   };
 }
 
 /** WebSite entity for the brand. */
-export function websiteJsonLd(locale: string) {
+export function websiteJsonLd(locale: string, base: string = SITE_URL) {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: SITE_NAME,
-    url: SITE_URL,
+    url: base,
     inLanguage: locale === "ar" ? "ar" : "en",
   };
 }
 
 /** SoftwareApplication — eligible for the software product rich result. */
-export function softwareApplicationJsonLd(description: string) {
+export function softwareApplicationJsonLd(description: string, base: string = SITE_URL) {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: SITE_NAME,
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
-    url: SITE_URL,
+    url: base,
     description,
     offers: {
       "@type": "Offer",
