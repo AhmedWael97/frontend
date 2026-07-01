@@ -6,10 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { User, Mail, Globe } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, countryName } from "@/lib/utils";
+import { useLocale } from "next-intl";
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
+  const locale = useLocale();
 
   const { data, isLoading } = useQuery({
     queryKey: ["identities", selectedDomainId],
@@ -45,7 +47,7 @@ function Content() {
                     </tr>
                   ))
                 ) : (data?.data || []).map((v: any) => (
-                  <tr key={v.id} className="border-b border-outline-variant/10 hover:bg-surface-container/50 transition-colors">
+                  <tr key={v.external_id} className="border-b border-outline-variant/10 hover:bg-surface-container/50 transition-colors">
                     <td className="px-4 py-3">
                       <span className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
@@ -59,7 +61,7 @@ function Content() {
                     </td>
                     <td className="px-4 py-3 font-mono text-xs text-on-surface-variant">{v.external_id || "—"}</td>
                     <td className="px-4 py-3">
-                      <span className="flex items-center gap-1.5 text-on-surface-variant"><Globe className="w-3 h-3" />{v.country || "—"}</span>
+                      <span className="flex items-center gap-1.5 text-on-surface-variant"><Globe className="w-3 h-3" />{v.country ? countryName(v.country, locale) : "—"}</span>
                     </td>
                     <td className="px-4 py-3"><Badge variant="secondary">{v.sessions_count || 0}</Badge></td>
                     <td className="px-4 py-3 text-on-surface-variant text-xs">{v.last_seen ? formatDate(v.last_seen) : "—"}</td>
