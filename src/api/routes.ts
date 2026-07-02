@@ -207,7 +207,7 @@ export const ANALYTICS_ROUTES = {
     `/analytics/${domainId}/visitors/${visitorId}`,
   identitiesList: (domainId: number) => `/analytics/${domainId}/identities`,
   identitiesShow: (domainId: number, externalId: string) =>
-    `/analytics/${domainId}/identities/${externalId}`,
+    `/analytics/${domainId}/identities/${encodeURIComponent(externalId)}`,
   companiesList: (domainId: number) => `/analytics/${domainId}/companies`,
   companiesShow: (domainId: number, companyDomain: string) =>
     `/analytics/${domainId}/companies/${companyDomain}`,
