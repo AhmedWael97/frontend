@@ -23,16 +23,7 @@ function Content() {
         <p className="text-on-surface-variant text-sm mt-0.5">IP-to-company intelligence — identify which businesses visit your site</p>
       </div>
 
-      {data?.plan_required && (
-        <div className="rounded-xl border border-primary/20 bg-primary/5 p-6 text-center">
-          <Building2 className="w-8 h-8 text-primary mx-auto mb-2" />
-          <p className="font-semibold text-on-surface mb-1">Pro Feature</p>
-          <p className="text-sm text-on-surface-variant">Upgrade to Pro to unlock company identification via IP lookup.</p>
-        </div>
-      )}
-
-      {!data?.plan_required && (
-        <Card>
+      <Card>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -77,7 +68,6 @@ function Content() {
             </div>
           </CardContent>
         </Card>
-      )}
     </div>
   );
 }
