@@ -33,7 +33,9 @@ function JourneyDrawer({ domainId, externalId, onClose }: { domainId: number; ex
   const locale = useLocale();
   const { data, isLoading } = useQuery({
     queryKey: ["identity-journey", domainId, externalId],
-    queryFn: () => analyticsApi.identitiesShow(domainId, externalId).then((r) => r.data?.data),
+    // The client interceptor already unwraps non-paginated envelopes, so the
+    // payload ({identity, stats, sessions}) is at r.data (not r.data.data).
+    queryFn: () => analyticsApi.identitiesShow(domainId, externalId).then((r) => r.data),
     enabled: !!externalId,
   });
 
