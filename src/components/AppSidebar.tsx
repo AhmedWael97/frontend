@@ -156,9 +156,11 @@ export function AppSidebar() {
 
       <aside
         className={cn(
-          "h-full w-64 fixed inset-y-0 ltr:left-0 rtl:right-0 flex flex-col bg-surface-container-low border-r border-outline-variant/20 z-50 transition-transform duration-300",
-          "md:translate-x-0",
-          open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          "h-full w-64 fixed inset-y-0 ltr:left-0 rtl:right-0 flex flex-col bg-surface-container-low border-e border-outline-variant/20 z-50 transition-transform duration-300",
+          // Closed (mobile): slide off the correct edge per direction — left in LTR,
+          // right in RTL. Open: slide in. Desktop (md+): always visible.
+          open ? "translate-x-0" : "ltr:-translate-x-full rtl:translate-x-full",
+          "md:!translate-x-0"
         )}
         style={{ maxWidth: 256 }}
       >
@@ -193,7 +195,7 @@ export function AppSidebar() {
                     href={full(group.hubHref)}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "flex items-center gap-2.5 flex-1 px-3 py-2.5 text-sm font-bold rounded-l-xl transition-all",
+                      "flex items-center gap-2.5 flex-1 px-3 py-2.5 text-sm font-bold rounded-s-xl transition-all",
                       hubExact
                         ? "text-primary"
                         : active
@@ -206,7 +208,7 @@ export function AppSidebar() {
                   </Link>
                   <button
                     onClick={() => toggleGroup(group.groupKey, expanded)}
-                    className="p-2 rounded-r-xl text-on-surface-variant hover:text-on-surface transition-colors"
+                    className="p-2 rounded-e-xl text-on-surface-variant hover:text-on-surface transition-colors"
                     aria-label={expanded ? "Collapse" : "Expand"}
                   >
                     {expanded
