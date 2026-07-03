@@ -158,16 +158,14 @@ export default function WelcomeChecklist({ domainId, onDismiss }: Props) {
         >
           {collapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
         </button>
-        {/* Allow dismiss only after at least 3 steps done */}
-        {doneCount >= 3 && (
-          <button
-            onClick={handleDismiss}
-            className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded"
-            aria-label="Dismiss checklist"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
+        {/* Always allow dismissing the checklist */}
+        <button
+          onClick={handleDismiss}
+          className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded"
+          aria-label="Dismiss checklist"
+        >
+          <X className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Step list */}
