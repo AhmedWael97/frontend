@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Gem } from "lucide-react";
+import { HelpDialog } from "@/components/HelpDialog";
 
 type LtvRow = {
   source: string; visitors: number; paying_visitors: number; orders: number;
@@ -39,6 +40,36 @@ function Content() {
           <p className="text-on-surface-variant text-sm mt-0.5">Which channels bring the most valuable customers — total revenue per visitor, not just first purchase.</p>
         </div>
         <div className="flex items-center gap-2">
+          <HelpDialog title="Lifetime Value by Source">
+            <p>
+              This report answers: <strong>which traffic channel brings the customers worth the most over time</strong> — not just on their first order.
+            </p>
+            <div>
+              <p className="font-semibold text-on-surface mb-1">How it works</p>
+              <ol className="list-decimal ms-5 space-y-1">
+                <li><strong>First-touch attribution</strong> — each visitor is credited to the <strong>first channel</strong> they arrived from (TikTok, Google, direct, referral…), even if they return later from elsewhere.</li>
+                <li><strong>All-time revenue</strong> — EYE sums <strong>every purchase that visitor ever made</strong> across all their later visits, then groups it by that first source.</li>
+              </ol>
+            </div>
+            <div>
+              <p className="font-semibold text-on-surface mb-1">The columns</p>
+              <ul className="list-disc ms-5 space-y-1">
+                <li><strong>Visitors / Paying</strong> — how many that channel brought, and how many bought.</li>
+                <li><strong>Revenue</strong> — total lifetime money from those customers.</li>
+                <li><strong>Avg LTV / visitor</strong> — revenue ÷ visitors = the average value of a customer from that channel. This is the number to compare channels by.</li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-semibold text-on-surface mb-1">Why it beats first-purchase reports</p>
+              <p>Two channels can look equal on the first sale, but one brings repeat buyers. High Avg LTV = your best channels to scale ad spend on; low Avg LTV = only worth a small acquisition cost.</p>
+            </div>
+            <div>
+              <p className="font-semibold text-on-surface mb-1">Make it work (needs purchase data)</p>
+              <p>The revenue columns only fill once your store sends purchases. On your <strong>order-confirmation page</strong>, fire:</p>
+              <p><code>EYE.purchase(199.00, 'EGP', 'ORDER-1234')</code></p>
+              <p>(value, currency, order id). Shopify snippets are in <code>integrations/shopify/</code>. To roll up repeat purchases across devices, also identify customers with <code>EYE.identify('customer@email.com')</code>.</p>
+            </div>
+          </HelpDialog>
           {PERIODS.map((p) => <button key={p.value} onClick={() => setDays(p.value)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${days === p.value ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:text-on-surface"}`}>{p.label}</button>)}
         </div>
       </div>
