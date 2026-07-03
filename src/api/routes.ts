@@ -205,6 +205,7 @@ export const ANALYTICS_ROUTES = {
   visitorsList: (domainId: number) => `/analytics/${domainId}/visitors`,
   visitorsShow: (domainId: number, visitorId: string) =>
     `/analytics/${domainId}/visitors/${visitorId}`,
+  compare: (domainId: number) => `/analytics/${domainId}/compare`,
   identitiesList: (domainId: number) => `/analytics/${domainId}/identities`,
   identitiesShow: (domainId: number, externalId: string) =>
     `/analytics/${domainId}/identities/${encodeURIComponent(externalId)}`,

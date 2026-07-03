@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
-import { trackSignup } from "@/lib/track";
+import { trackSignup, eyeTrack } from "@/lib/track";
 import { AuthShowcase, MobileFeatureStrip } from "@/components/auth/AuthShowcase";
 
 const schema = z.object({
@@ -44,6 +44,8 @@ export default function RegisterPage() {
       setToken(res.data.token);
       setUser(res.data.user);
       trackSignup(); // TikTok CompleteRegistration + Google Ads sign_up
+      // Dogfooding: measure our own activation funnel via EYE's tracker.
+      eyeTrack("register_complete", { email: data.email });
       if (res.data.user?.email_verified_at) {
         toast.success("Account created! Let's set up your first website.");
         router.push(`/${locale}/settings/domains?welcome=1`);

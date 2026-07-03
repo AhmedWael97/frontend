@@ -10,7 +10,7 @@ import {
   Globe, CreditCard, User, Shield,
   Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
   ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star,
-  SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem,
+  SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem, Scale,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -26,6 +26,7 @@ const HUB_GROUPS = [
       { key: "realtime",       href: "/dashboard/realtime",         icon: Radio },
       { key: "visitors",       href: "/dashboard/visitors",         icon: Users },
       { key: "analytics",      href: "/dashboard/analytics",        icon: BarChart3 },
+      { key: "compare",        href: "/dashboard/compare",          icon: Scale },
       { key: "campaigns",      href: "/dashboard/campaigns",        icon: Megaphone },
       { key: "channels",       href: "/dashboard/channels",         icon: Layers },
       { key: "engagedVisitors",href: "/dashboard/engaged-visitors", icon: Flame },

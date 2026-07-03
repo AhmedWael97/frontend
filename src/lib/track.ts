@@ -11,6 +11,24 @@ declare global {
   interface Window {
     ttq?: { track: (event: string, props?: Props) => void; page?: () => void };
     gtag?: (...args: unknown[]) => void;
+    EYE?: {
+      track?: (event: string, props?: Props) => void;
+      identify?: (id: string, traits?: Props) => void;
+      purchase?: (value: number, currency?: string, orderId?: string) => void;
+    };
+  }
+}
+
+/**
+ * Fire a custom event into EYE's OWN tracker (dogfooding). No-ops if the tracker
+ * hasn't loaded. Used to measure our own activation funnel.
+ */
+export function eyeTrack(event: string, props: Props = {}): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.EYE?.track?.(event, props);
+  } catch {
+    /* tracker not loaded — ignore */
   }
 }
 

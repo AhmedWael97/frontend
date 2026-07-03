@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { onboardingApi } from "@/lib/api";
+import { eyeTrack } from "@/lib/track";
 
 // Backend step → frontend step id mapping
 const BACKEND_TO_FRONTEND: Record<string, string> = {
@@ -103,6 +104,17 @@ export default function WelcomeChecklist({ domainId, onDismiss }: Props) {
   useEffect(() => {
     if (domainId) markDone("domain");
   }, [domainId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Dogfooding: fire our own activation event once when the account's first
+  // tracking record lands.
+  useEffect(() => {
+    if (!backendStatus?.first_event_received) return;
+    try {
+      if (localStorage.getItem("eye_first_event_tracked")) return;
+      localStorage.setItem("eye_first_event_tracked", "1");
+    } catch {}
+    eyeTrack("get_first_event", {});
+  }, [backendStatus]);
 
   const markDone = (id: string) => {
     setDone((prev) => {
