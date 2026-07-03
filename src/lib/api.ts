@@ -10,6 +10,7 @@ export {
   authApi,
   profileApi,
   onboardingApi,
+  feedbackApi,
   domainsApi,
   exclusionsApi,
   webhooksApi,

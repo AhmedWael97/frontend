@@ -18,6 +18,7 @@ export * from "./routes";
 export { authApi } from "./auth";
 export { profileApi } from "./profile";
 export { onboardingApi } from "./onboarding";
+export { feedbackApi } from "./feedback";
 export {
   domainsApi,
   exclusionsApi,

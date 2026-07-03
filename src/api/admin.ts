@@ -12,6 +12,9 @@ export const adminApi = {
   /** GET /admin/stats */
   stats: () => client.get(ADMIN_ROUTES.stats),
 
+  /** GET /admin/feedback */
+  feedback: () => client.get("/admin/feedback"),
+
   // ── Users ───────────────────────────────────────────────────────────────────
   /** GET /admin/users */
   listUsers: (params?: { search?: string; status?: string; plan?: string; page?: number }) =>
