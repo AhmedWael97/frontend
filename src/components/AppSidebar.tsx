@@ -10,7 +10,7 @@ import {
   Globe, CreditCard, User, Shield,
   Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
   ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star,
-  SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem, Scale, Menu,
+  SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem, Scale, Menu, ClipboardList,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -48,6 +48,7 @@ const HUB_GROUPS = [
     items: [
       { key: "ux",             href: "/dashboard/ux",               icon: Zap },
       { key: "heatmaps",       href: "/dashboard/heatmaps",         icon: Flame },
+      { key: "forms",          href: "/dashboard/forms",            icon: ClipboardList },
       { key: "replay",         href: "/dashboard/replay",           icon: PlaySquare },
       { key: "performance",    href: "/dashboard/performance",      icon: Gauge },
       { key: "scrollDepth",    href: "/dashboard/scroll-depth",     icon: ArrowDownToLine },

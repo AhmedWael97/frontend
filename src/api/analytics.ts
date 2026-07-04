@@ -75,6 +75,10 @@ export const analyticsApi = {
   compare: (domainId: number, params?: Record<string, unknown>) =>
     client.get(ANALYTICS_ROUTES.compare(domainId), { params }),
 
+  /** GET /analytics/{domainId}/forms */
+  forms: (domainId: number, params?: Record<string, unknown>) =>
+    client.get(ANALYTICS_ROUTES.forms(domainId), { params }),
+
   /** GET /analytics/{domainId}/identities */
   identitiesList: (domainId: number, params?: Record<string, unknown>) =>
     client.get(ANALYTICS_ROUTES.identitiesList(domainId), { params }),
