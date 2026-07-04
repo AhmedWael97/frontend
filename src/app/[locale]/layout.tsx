@@ -74,7 +74,14 @@ const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||
 // ── Google Ads (gtag.js) ─────────────────────────────────────────────────────
 // Global site tag for Google Ads conversion tracking. ID is env-overridable.
 const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "AW-18257861903";
-const GTAG_INIT = `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', ${JSON.stringify(GOOGLE_ADS_ID)});`;
+// Define gtag() stub immediately (so gaEvent() queues), but DEFER loading the heavy
+// gtag.js + firing config until the browser is idle / after load — keeps pixels off
+// the hydration critical path (was competing on the main thread → late interactivity).
+const GTAG_INIT = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());function __eyeGtag(){var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}';document.head.appendChild(s);gtag('config',${JSON.stringify(GOOGLE_ADS_ID)});}if('requestIdleCallback'in window){requestIdleCallback(__eyeGtag,{timeout:4000});}else{addEventListener('load',function(){setTimeout(__eyeGtag,1500);});}`;
+
+// Idle-defer wrapper for a script body (runs post-interactive).
+const deferIdle = (code: string) =>
+  `(function(){function go(){${code}}if('requestIdleCallback'in window){requestIdleCallback(go,{timeout:4000});}else{addEventListener('load',function(){setTimeout(go,1500);});}})();`;
 
 // ── TikTok Pixel ─────────────────────────────────────────────────────────────
 // Pixel ID is env-overridable (NEXT_PUBLIC_TIKTOK_PIXEL_ID).
@@ -109,11 +116,10 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('eye-appearance');if(t==='light')document.documentElement.classList.remove('dark');else if(t==='system'&&!window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.remove('dark');}catch(e){}` }} />
         {/* EYE self-tracking: loads our own tracker + replay (skips localhost) */}
         <script dangerouslySetInnerHTML={{ __html: EYE_LOADER }} />
-        {/* Google Ads (gtag.js) — conversion tracking */}
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} />
+        {/* Google Ads (gtag.js) — stub now, heavy script deferred to idle */}
         <script dangerouslySetInnerHTML={{ __html: GTAG_INIT }} />
-        {/* TikTok Pixel */}
-        <script dangerouslySetInnerHTML={{ __html: TIKTOK_PIXEL }} />
+        {/* TikTok Pixel — deferred to idle so it doesn't block hydration */}
+        <script dangerouslySetInnerHTML={{ __html: deferIdle(TIKTOK_PIXEL) }} />
       </head>
       <body className={`${inter.variable} ${readexPro.variable} ${isArabic ? "font-arabic" : "font-sans"} antialiased`} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
