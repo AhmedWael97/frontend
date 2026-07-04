@@ -56,3 +56,4 @@ export type { UpgradeTicket, TicketMessage } from "./upgradeTickets";
 export { gdprApi } from "./gdpr";
 export { adminApi } from "./admin";
 export { themeApi } from "./theme";
+export { blogApi } from "./blog";

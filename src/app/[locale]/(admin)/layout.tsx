@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth";
 import {
   LayoutDashboard, Users, CreditCard, Repeat2, DollarSign,
-  Globe, ScrollText, Palette, Activity, Settings, ArrowLeft, Menu, X, MessageSquare, Star,
+  Globe, ScrollText, Palette, Activity, Settings, ArrowLeft, Menu, X, MessageSquare, Star, Newspaper,
 } from "lucide-react";
 
 const navItems = [
@@ -16,6 +16,7 @@ const navItems = [
   { href: "admin/subscriptions", label: "Subscriptions", icon: Repeat2 },
   { href: "admin/upgrade-tickets", label: "Upgrade Requests", icon: MessageSquare },
   { href: "admin/feedback", label: "Feedback", icon: Star },
+  { href: "admin/blog", label: "Blog", icon: Newspaper },
   { href: "admin/payments", label: "Payments", icon: DollarSign },
   { href: "admin/payment-methods", label: "Payment Methods", icon: Settings },
   { href: "admin/domains", label: "Domains", icon: Globe },

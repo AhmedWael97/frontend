@@ -33,7 +33,7 @@ export function MarketingDoc({
           </Link>
         </div>
       </main>
-      <Footer />
+      <Footer locale={locale} />
     </div>
   );
 }
