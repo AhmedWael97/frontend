@@ -19,26 +19,26 @@ export default function Footer({ locale }: FooterProps) {
     [t("product")]: [
       { label: t("features"),  href: "#features" },
       { label: t("pricing"),   href: "/pricing" },
-      { label: t("changelog"), href: "#" },
-      { label: t("roadmap"),   href: "#" },
+      { label: t("changelog"), href: "/changelog" },
+      { label: t("roadmap"),   href: "/roadmap" },
     ],
     [t("company")]: [
-      { label: t("about"),    href: "#" },
-      { label: t("blog"),     href: "#" },
-      { label: t("careers"),  href: "#" },
-      { label: t("contact"),  href: "#" },
+      { label: t("about"),    href: "/about" },
+      { label: t("blog"),     href: "/blog" },
+      { label: t("careers"),  href: "/careers" },
+      { label: t("contact"),  href: "/contact" },
     ],
     [t("legal")]: [
       { label: t("privacyPolicy"), href: "/privacy" },
       { label: t("terms"),         href: "/terms" },
-      { label: t("cookiePolicy"),  href: "/privacy" },
-      { label: t("gdpr"),          href: "/privacy" },
+      { label: t("cookiePolicy"),  href: "/cookie-policy" },
+      { label: t("gdpr"),          href: "/gdpr" },
     ],
     [t("developers")]: [
       { label: t("apiDocs"),       href: "/docs" },
-      { label: t("trackerScript"), href: "#" },
-      { label: t("webhooks"),      href: "#" },
-      { label: t("status"),        href: "#" },
+      { label: t("trackerScript"), href: "/docs" },
+      { label: t("webhooks"),      href: "/docs" },
+      { label: t("status"),        href: "/status" },
     ],
   };
 
