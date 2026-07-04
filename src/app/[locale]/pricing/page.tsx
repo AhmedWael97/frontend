@@ -1,6 +1,8 @@
 ﻿"use client";
 
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import client from "@/api/client";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { Check, X, Zap } from "lucide-react";
@@ -35,8 +37,8 @@ const PLANS = [
   {
     name: "pro",
     slug: "pro",
-    price_monthly: 29,
-    price_yearly: 290,
+    price_monthly: 5,
+    price_yearly: 50,
     description: "pricing.proDesc",
     popular: true,
     features: {
@@ -93,6 +95,19 @@ export default function PricingPage() {
   const { format: fmtPrice } = useCurrency();
 
   useEffect(() => { trackViewPlans(); }, []); // TikTok ViewContent
+
+  // Live plan prices from DB (public endpoint) — keeps pricing in sync with admin.
+  const { data: dbPlans } = useQuery({
+    queryKey: ["public-plans"],
+    queryFn: () => client.get("/plans").then((r) => r.data as Array<{ slug: string; price_monthly: number; price_yearly: number }>),
+  });
+  const priceOf = (plan: (typeof PLANS)[number]) => {
+    const m = dbPlans?.find((p) => p.slug === plan.slug);
+    return {
+      monthly: m ? m.price_monthly : plan.price_monthly,
+      yearly: m ? m.price_yearly : plan.price_yearly,
+    };
+  };
 
   return (
     <div className="min-h-screen bg-background text-on-surface">
@@ -153,14 +168,14 @@ export default function PricingPage() {
               </div>
 
               <div className="mb-8">
-                {plan.price_monthly === 0 ? (
+                {priceOf(plan).monthly === 0 ? (
                   <div className="text-4xl font-black text-on-surface">{t("pricing.free")}</div>
                 ) : (
                   <div>
-                    <span className="text-4xl font-black text-on-surface">{fmtPrice(plan.price_monthly)}</span>
+                    <span className="text-4xl font-black text-on-surface">{fmtPrice(priceOf(plan).monthly)}</span>
                     <span className="text-on-surface-variant text-sm"> {t("pricing.perMonth")}</span>
                     <p className="text-xs text-on-surface-variant mt-1">
-                      {fmtPrice(plan.price_yearly)}/{t("pricing.perYear")} — {t("pricing.save2mo")}
+                      {fmtPrice(priceOf(plan).yearly)}/{t("pricing.perYear")} — {t("pricing.save2mo")}
                     </p>
                   </div>
                 )}
@@ -214,7 +229,7 @@ export default function PricingPage() {
                   className="w-full"
                   variant={plan.popular ? "default" : "outline"}
                 >
-                  {plan.price_monthly === 0 ? t("pricing.getStarted") : t("pricing.startPlan", { plan: t(`pricing.${plan.name}`) })}
+                  {priceOf(plan).monthly === 0 ? t("pricing.getStarted") : t("pricing.startPlan", { plan: t(`pricing.${plan.name}`) })}
                 </Button>
               </Link>
             </div>
