@@ -56,10 +56,10 @@ export function gaEvent(event: string, params: Props = {}): void {
 export function trackSignup(): void {
   ttTrack("CompleteRegistration");
   gaEvent("sign_up");
-  // Optional Google Ads conversion: set the label once you create the
-  // conversion action in Google Ads (e.g. "AW-18257861903/abc123").
-  const label = process.env.NEXT_PUBLIC_GOOGLE_ADS_SIGNUP_LABEL;
-  if (label) gaEvent("conversion", { send_to: label });
+  // Google Ads "Add domain / signup" conversion.
+  const label = process.env.NEXT_PUBLIC_GOOGLE_ADS_SIGNUP_LABEL
+    || "AW-18257861903/W4tKCIvSycocEI-6g4JE";
+  gaEvent("conversion", { send_to: label, value: 1.0, currency: "EGP" });
 }
 
 /** Viewed a plan / pricing — top of funnel. */
