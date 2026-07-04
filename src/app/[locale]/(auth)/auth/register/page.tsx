@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -21,17 +21,27 @@ export default function RegisterPage() {
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const focused = useRef<Record<string, boolean>>({});
+
+  // Instrument the register funnel — see the exact quit point.
+  useEffect(() => { eyeTrack("register_view", {}); }, []);
+  const onFieldFocus = (field: string) => {
+    if (focused.current[field]) return;
+    focused.current[field] = true;
+    eyeTrack("register_focus", { field });
+  };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const data = {
-      name: String(fd.get("name") || "").trim(),
       email: String(fd.get("email") || "").trim(),
       password: String(fd.get("password") || ""),
     };
-    if (data.name.length < 2 || !/^\S+@\S+\.\S+$/.test(data.email) || data.password.length < 8) {
-      setError("Enter a name, valid email, and 8+ character password.");
+    eyeTrack("register_submit", {});
+    if (!/^\S+@\S+\.\S+$/.test(data.email) || data.password.length < 8) {
+      setError("Enter a valid email and an 8+ character password.");
+      eyeTrack("register_error", { reason: "validation" });
       return;
     }
     setError("");
@@ -55,6 +65,7 @@ export default function RegisterPage() {
       setError(
         fieldErrors ? Object.values(fieldErrors).flat().join(" ") : (e.message || "Registration failed.")
       );
+      eyeTrack("register_error", { reason: fieldErrors ? "validation_server" : "server" });
     } finally {
       setLoading(false);
     }
@@ -90,19 +101,14 @@ export default function RegisterPage() {
             )}
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">{t("name")}</label>
-              <Input name="name" placeholder="Alex Rivera" autoComplete="name" required minLength={2} />
-            </div>
-
-            <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">{t("email")}</label>
-              <Input name="email" type="email" placeholder="alex@company.com" autoComplete="email" required />
+              <Input name="email" type="email" placeholder="alex@company.com" autoComplete="email" required onFocus={() => onFieldFocus("email")} />
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">{t("password")}</label>
               <div className="relative">
-                <Input name="password" type={showPw ? "text" : "password"} placeholder="••••••••" autoComplete="new-password" required minLength={8} className="pr-11" />
+                <Input name="password" type={showPw ? "text" : "password"} placeholder="••••••••" autoComplete="new-password" required minLength={8} className="pr-11" onFocus={() => onFieldFocus("password")} />
                 <button type="button" onClick={() => setShowPw(!showPw)} aria-label={showPw ? "Hide password" : "Show password"} className="absolute inset-y-0 right-2 rtl:right-auto rtl:left-2 flex items-center justify-center w-8 text-on-surface-variant hover:text-on-surface">
                   {showPw ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>

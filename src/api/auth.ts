@@ -9,7 +9,7 @@ import { AUTH_ROUTES } from "./routes";
 export const authApi = {
   /** POST /auth/register */
   register: (data: {
-    name: string;
+    name?: string;
     email: string;
     password: string;
     locale?: string;
