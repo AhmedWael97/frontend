@@ -4,9 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Eye, EyeOff, Loader2, ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,13 +12,6 @@ import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
 import { trackSignup, eyeTrack } from "@/lib/track";
 import { AuthShowcase, MobileFeatureStrip } from "@/components/auth/AuthShowcase";
-
-const schema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(8),
-});
-type FormData = z.infer<typeof schema>;
 
 export default function RegisterPage() {
   const t = useTranslations("auth");
@@ -32,11 +22,18 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
-
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const data = {
+      name: String(fd.get("name") || "").trim(),
+      email: String(fd.get("email") || "").trim(),
+      password: String(fd.get("password") || ""),
+    };
+    if (data.name.length < 2 || !/^\S+@\S+\.\S+$/.test(data.email) || data.password.length < 8) {
+      setError("Enter a name, valid email, and 8+ character password.");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
@@ -87,32 +84,29 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             {error && (
               <div className="rounded-lg bg-error-container/30 border border-error/20 px-4 py-3 text-sm text-error">{error}</div>
             )}
 
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">{t("name")}</label>
-              <Input placeholder="Alex Rivera" {...register("name")} autoComplete="name" />
-              {errors.name && <p className="text-xs text-error ml-1">{errors.name.message}</p>}
+              <Input name="name" placeholder="Alex Rivera" autoComplete="name" required minLength={2} />
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">{t("email")}</label>
-              <Input type="email" placeholder="alex@company.com" {...register("email")} autoComplete="email" />
-              {errors.email && <p className="text-xs text-error ml-1">{errors.email.message}</p>}
+              <Input name="email" type="email" placeholder="alex@company.com" autoComplete="email" required />
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">{t("password")}</label>
               <div className="relative">
-                <Input type={showPw ? "text" : "password"} placeholder="••••••••" autoComplete="new-password" {...register("password")} className="pr-11" />
+                <Input name="password" type={showPw ? "text" : "password"} placeholder="••••••••" autoComplete="new-password" required minLength={8} className="pr-11" />
                 <button type="button" onClick={() => setShowPw(!showPw)} aria-label={showPw ? "Hide password" : "Show password"} className="absolute inset-y-0 right-2 rtl:right-auto rtl:left-2 flex items-center justify-center w-8 text-on-surface-variant hover:text-on-surface">
                   {showPw ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-              {errors.password && <p className="text-xs text-error ml-1">{errors.password.message}</p>}
             </div>
 
             <Button type="submit" disabled={loading} className="w-full h-12 mt-2 gap-2">

@@ -10,7 +10,7 @@ import {
   Globe, CreditCard, User, Shield,
   Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
   ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star,
-  SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem, Scale,
+  SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem, Scale, Menu,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -148,7 +148,7 @@ export function AppSidebar() {
         onClick={() => setOpen((v) => !v)}
         aria-label="Toggle sidebar"
       >
-        <span className="material-symbols-outlined">menu</span>
+        <Menu className="w-5 h-5" />
       </button>
 
       {open && (

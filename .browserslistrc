@@ -1,0 +1,9 @@
+# Modern browsers only — drop legacy polyfills/transforms (Array.prototype.at,
+# Object.fromEntries, etc.) that bloated the mobile bundle. Covers ~all real
+# mobile traffic (Chrome/Safari/Samsung Internet 2021+).
+chrome >= 91
+safari >= 15
+firefox >= 90
+edge >= 91
+ios_saf >= 15
+samsung >= 15
