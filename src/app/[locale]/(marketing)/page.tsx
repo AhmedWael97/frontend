@@ -240,7 +240,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                   </div>
                   <div className="flex-1 mx-4 h-6 rounded-md bg-surface-container-high flex items-center px-3 gap-2">
                     <Lock className="w-3 h-3 text-on-surface-variant/40" />
-                    <span className="text-[11px] text-on-surface-variant/50 font-mono truncate">{base.replace(/^https?:\/\//, "")}/dashboard</span>
+                    <span className="text-[11px] text-on-surface-variant/80 font-mono truncate">{base.replace(/^https?:\/\//, "")}/dashboard</span>
                   </div>
                   <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live
@@ -379,7 +379,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/60" />
                       <div className="w-2.5 h-2.5 rounded-full bg-green-400/60" />
                     </div>
-                    <span className="text-xs text-on-surface-variant/60 ltr:ml-2 rtl:mr-2 font-mono">index.html</span>
+                    <span className="text-xs text-on-surface-variant/80 ltr:ml-2 rtl:mr-2 font-mono">index.html</span>
                   </div>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">HTML</span>
                 </div>
@@ -394,7 +394,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                   </code>
                 </pre>
               </div>
-              <p className="text-center text-xs text-on-surface-variant/50 mt-3 font-medium">
+              <p className="text-center text-xs text-on-surface-variant/80 mt-3 font-medium">
                 {t("howItWorks.codeNote")}
               </p>
             </div>
@@ -473,7 +473,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                 </Button>
               </Link>
             </div>
-            <p className="mt-5 text-sm text-on-surface-variant/50">{t("cta.note")}</p>
+            <p className="mt-5 text-sm text-on-surface-variant/80">{t("cta.note")}</p>
           </div>
         </section>
 
