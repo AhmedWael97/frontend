@@ -5,18 +5,21 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { ClipboardList, AlertTriangle } from "lucide-react";
+import { ClipboardList, AlertTriangle, Sparkles, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HelpDialog } from "@/components/HelpDialog";
 
 type Form = {
   form: string;
+  page_title?: string;
+  page_url?: string;
   starts: number;
   submits: number;
   abandons: number;
   completion_rate: number;
   fields: { field: string; reached: number }[];
   drop_points: { field: string; drops: number }[];
+  diagnosis?: { level: string; text: string };
 };
 
 const PERIODS = [{ l: "7d", v: "7" }, { l: "30d", v: "30" }, { l: "90d", v: "90" }];
@@ -25,16 +28,38 @@ function shortForm(sel: string) {
   return sel.length > 40 ? "…" + sel.slice(-38) : sel || "(form)";
 }
 
-function FormCard({ f }: { f: Form }) {
+const DIAG_STYLE: Record<string, string> = {
+  good: "bg-emerald-500/5 border-emerald-500/15 text-emerald-300",
+  warn: "bg-amber-500/5 border-amber-500/15 text-amber-200",
+  bad: "bg-red-500/5 border-red-500/15 text-red-200",
+  info: "bg-surface-container border-outline-variant/15 text-on-surface-variant",
+};
+
+function FormCard({ f, domainId }: { f: Form; domainId: number }) {
   const maxReach = Math.max(1, ...f.fields.map((x) => x.reached));
   const worstDrop = f.drop_points[0];
   const rateColor = f.completion_rate >= 50 ? "text-emerald-400" : f.completion_rate >= 20 ? "text-amber-400" : "text-red-400";
+  const [ai, setAi] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const title = f.page_title || shortForm(f.form);
+
+  const analyze = async () => {
+    setAiLoading(true);
+    try {
+      const r = await analyticsApi.formsAnalyze(domainId, f as any);
+      setAi(r.data?.advice || r.data?.fallback || "No advice available.");
+    } catch {
+      setAi(f.diagnosis?.text || "Couldn't analyze right now.");
+    } finally { setAiLoading(false); }
+  };
+
   return (
     <Card>
       <CardContent className="p-5 space-y-4">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div className="min-w-0">
-            <p className="font-mono text-xs text-on-surface-variant truncate">{shortForm(f.form)}</p>
+            <p className="font-semibold text-on-surface truncate">{title}</p>
+            <p className="font-mono text-[11px] text-on-surface-variant truncate">{shortForm(f.form)}</p>
             <div className="flex items-center gap-3 mt-1 text-sm">
               <span className="text-on-surface-variant">{f.starts} started</span>
               <span className="text-emerald-400">{f.submits} submitted</span>
@@ -46,6 +71,13 @@ function FormCard({ f }: { f: Form }) {
             <p className="text-[11px] text-on-surface-variant">completion</p>
           </div>
         </div>
+
+        {/* Plain-language diagnosis */}
+        {f.diagnosis && (
+          <div className={cn("rounded-lg border px-3 py-2 text-xs", DIAG_STYLE[f.diagnosis.level] || DIAG_STYLE.info)}>
+            {f.diagnosis.text}
+          </div>
+        )}
 
         {/* Field reach funnel */}
         {f.fields.length > 0 && (
@@ -72,6 +104,17 @@ function FormCard({ f }: { f: Form }) {
             </p>
           </div>
         )}
+
+        {/* AI recommendation */}
+        <div>
+          <button onClick={analyze} disabled={aiLoading} className="inline-flex items-center gap-2 text-xs font-semibold text-primary hover:underline disabled:opacity-60">
+            {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+            {ai ? "Re-analyze with AI" : "Analyze with AI"}
+          </button>
+          {ai && (
+            <div className="mt-2 rounded-lg bg-primary/5 border border-primary/15 px-3 py-2 text-xs text-on-surface whitespace-pre-wrap leading-relaxed">{ai}</div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
@@ -121,7 +164,7 @@ function Content() {
         <Card><CardContent className="p-10 text-center text-on-surface-variant">No form activity yet. Once visitors interact with a form on your site, it appears here automatically.</CardContent></Card>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {forms.map((f) => <FormCard key={f.form} f={f} />)}
+          {forms.map((f) => <FormCard key={f.form} f={f} domainId={selectedDomainId!} />)}
         </div>
       )}
     </div>

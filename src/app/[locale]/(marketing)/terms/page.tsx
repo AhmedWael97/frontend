@@ -55,7 +55,7 @@ const CONTENT = {
         "We may update these Terms from time to time. Continued use after changes take effect constitutes acceptance of the updated Terms.",
       ]},
       { h: "14. Contact Us", p: [
-        "Questions about these Terms? Email support@eye-analsyis.live.",
+        "Questions about these Terms? Email info@eye-analysis.online.",
       ]},
     ],
   },
@@ -110,7 +110,7 @@ const CONTENT = {
         "قد نحدّث هذه الشروط من وقت لآخر. ويُعدّ استمرار استخدامك بعد سريان التغييرات قبولًا للشروط المحدّثة.",
       ]},
       { h: "14. تواصل معنا", p: [
-        "أسئلة حول هذه الشروط؟ راسلنا على support@eye-analsyis.live.",
+        "أسئلة حول هذه الشروط؟ راسلنا على info@eye-analysis.online.",
       ]},
     ],
   },

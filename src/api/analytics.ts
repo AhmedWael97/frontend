@@ -79,6 +79,10 @@ export const analyticsApi = {
   forms: (domainId: number, params?: Record<string, unknown>) =>
     client.get(ANALYTICS_ROUTES.forms(domainId), { params }),
 
+  /** POST /analytics/{domainId}/forms/analyze */
+  formsAnalyze: (domainId: number, form: Record<string, unknown>) =>
+    client.post(`${ANALYTICS_ROUTES.forms(domainId)}/analyze`, form),
+
   /** GET /analytics/{domainId}/identities */
   identitiesList: (domainId: number, params?: Record<string, unknown>) =>
     client.get(ANALYTICS_ROUTES.identitiesList(domainId), { params }),

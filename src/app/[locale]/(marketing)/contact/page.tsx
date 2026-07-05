@@ -14,17 +14,17 @@ export default function ContactPage({ params }: { params: { locale: string } }) 
       {ar ? (
         <>
           <h2>الدعم</h2>
-          <p>بريد: <a href="mailto:support@eye-analsyis.live">support@eye-analsyis.live</a></p>
+          <p>بريد: <a href="mailto:info@eye-analysis.online">info@eye-analysis.online</a></p>
           <h2>المبيعات</h2>
-          <p>للخطط والاتفاقيات: <a href="mailto:sales@eye-analsyis.live">sales@eye-analsyis.live</a></p>
+          <p>للخطط والاتفاقيات: <a href="mailto:info@eye-analysis.online">info@eye-analysis.online</a></p>
           <p>عادةً نردّ خلال يوم عمل واحد.</p>
         </>
       ) : (
         <>
           <h2>Support</h2>
-          <p>Email: <a href="mailto:support@eye-analsyis.live">support@eye-analsyis.live</a></p>
+          <p>Email: <a href="mailto:info@eye-analysis.online">info@eye-analysis.online</a></p>
           <h2>Sales</h2>
-          <p>Plans & partnerships: <a href="mailto:sales@eye-analsyis.live">sales@eye-analsyis.live</a></p>
+          <p>Plans & partnerships: <a href="mailto:info@eye-analysis.online">info@eye-analysis.online</a></p>
           <p>We usually reply within one business day.</p>
         </>
       )}

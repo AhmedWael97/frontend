@@ -17,7 +17,7 @@ export default function AboutPage({ params }: { params: { locale: string } }) {
           <h2>مهمتنا</h2>
           <p>نجعل تحليلات المواقع بسيطة وقابلة للتنفيذ ومحترمة للخصوصية، حتى يتخذ الفريق قرارات مبنية على بيانات حقيقية لا على التخمين.</p>
           <h2>تواصل</h2>
-          <p>لأي سؤال: <a href="mailto:support@eye-analsyis.live">support@eye-analsyis.live</a></p>
+          <p>لأي سؤال: <a href="mailto:info@eye-analysis.online">info@eye-analysis.online</a></p>
         </>
       ) : (
         <>
@@ -25,7 +25,7 @@ export default function AboutPage({ params }: { params: { locale: string } }) {
           <h2>Our mission</h2>
           <p>Make analytics simple, actionable, and privacy-respecting — so teams decide on real data, not guesswork.</p>
           <h2>Contact</h2>
-          <p>Questions? <a href="mailto:support@eye-analsyis.live">support@eye-analsyis.live</a></p>
+          <p>Questions? <a href="mailto:info@eye-analysis.online">info@eye-analysis.online</a></p>
         </>
       )}
     </MarketingDoc>

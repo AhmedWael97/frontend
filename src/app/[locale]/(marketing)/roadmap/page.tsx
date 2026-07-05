@@ -18,7 +18,7 @@ export default function RoadmapPage({ params }: { params: { locale: string } }) 
           </li>
         ))}
       </ul>
-      <p className="text-sm">{ar ? "اقترح ميزة:" : "Suggest a feature:"} <a href="mailto:support@eye-analsyis.live">support@eye-analsyis.live</a></p>
+      <p className="text-sm">{ar ? "اقترح ميزة:" : "Suggest a feature:"} <a href="mailto:info@eye-analysis.online">info@eye-analysis.online</a></p>
     </MarketingDoc>
   );
 }

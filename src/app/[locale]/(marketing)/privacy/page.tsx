@@ -12,7 +12,7 @@ const CONTENT = {
     sections: [
       { h: "1. Who We Are", p: [
         "EYE Analytics provides a website analytics service that helps website owners understand visitor behavior — live visitors, heatmaps, funnels, and AI summaries — without cookies or invasive tracking.",
-        "For any privacy question or request, contact us at support@eye-analsyis.live.",
+        "For any privacy question or request, contact us at info@eye-analysis.online.",
       ]},
       { h: "2. Information We Collect", p: [
         "Account data: when you create an account we collect your name, email address, and password (stored encrypted). If you subscribe to a paid plan, our payment provider processes your payment details — we do not store full card numbers.",
@@ -36,7 +36,7 @@ const CONTENT = {
       ]},
       { h: "7. Your Rights", p: [
         "Depending on your jurisdiction (including GDPR), you may have the right to access, correct, export, or delete your personal data, and to object to or restrict certain processing.",
-        "To exercise any right, email support@eye-analsyis.live and we will respond within a reasonable time.",
+        "To exercise any right, email info@eye-analysis.online and we will respond within a reasonable time.",
       ]},
       { h: "8. Data Security", p: [
         "We use industry-standard measures — encryption in transit, hashed passwords, and access controls — to protect your data. No method of transmission is 100% secure, but we work continuously to safeguard your information.",
@@ -51,7 +51,7 @@ const CONTENT = {
         "We may update this policy from time to time. The “Last updated” date above reflects the latest version, and material changes will be communicated where appropriate.",
       ]},
       { h: "12. Contact Us", p: [
-        "Questions about this Privacy Policy? Email support@eye-analsyis.live.",
+        "Questions about this Privacy Policy? Email info@eye-analysis.online.",
       ]},
     ],
   },
@@ -63,7 +63,7 @@ const CONTENT = {
     sections: [
       { h: "1. من نحن", p: [
         "تقدّم EYE Analytics خدمة تحليلات للمواقع تساعد أصحاب المواقع على فهم سلوك الزوار — الزوار المباشرون، الخرائط الحرارية، القمع، والملخصات بالذكاء الاصطناعي — بدون كوكيز أو تتبع متطفّل.",
-        "لأي سؤال أو طلب يخص الخصوصية، تواصل معنا على support@eye-analsyis.live.",
+        "لأي سؤال أو طلب يخص الخصوصية، تواصل معنا على info@eye-analysis.online.",
       ]},
       { h: "2. المعلومات التي نجمعها", p: [
         "بيانات الحساب: عند إنشاء حساب نجمع اسمك وبريدك الإلكتروني وكلمة المرور (مخزّنة مشفّرة). عند الاشتراك في باقة مدفوعة، يعالج مزوّد الدفع تفاصيل دفعك — ونحن لا نخزّن أرقام البطاقات كاملة.",
@@ -87,7 +87,7 @@ const CONTENT = {
       ]},
       { h: "7. حقوقك", p: [
         "بحسب ولايتك القضائية (بما في ذلك GDPR)، قد يكون لك الحق في الوصول إلى بياناتك الشخصية أو تصحيحها أو تصديرها أو حذفها، والاعتراض على معالجة معيّنة أو تقييدها.",
-        "لممارسة أي حق، راسلنا على support@eye-analsyis.live وسنرد خلال وقت معقول.",
+        "لممارسة أي حق، راسلنا على info@eye-analysis.online وسنرد خلال وقت معقول.",
       ]},
       { h: "8. أمن البيانات", p: [
         "نستخدم تدابير وفق معايير الصناعة — التشفير أثناء النقل، وتجزئة كلمات المرور، وضوابط الوصول — لحماية بياناتك. لا توجد طريقة نقل آمنة 100%، لكننا نعمل باستمرار على حماية معلوماتك.",
@@ -102,7 +102,7 @@ const CONTENT = {
         "قد نحدّث هذه السياسة من وقت لآخر. ويعكس تاريخ “آخر تحديث” أعلاه أحدث نسخة، وسيتم إبلاغ التغييرات الجوهرية عند الاقتضاء.",
       ]},
       { h: "12. تواصل معنا", p: [
-        "أسئلة حول سياسة الخصوصية؟ راسلنا على support@eye-analsyis.live.",
+        "أسئلة حول سياسة الخصوصية؟ راسلنا على info@eye-analysis.online.",
       ]},
     ],
   },

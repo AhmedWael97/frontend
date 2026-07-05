@@ -14,12 +14,12 @@ export default function CareersPage({ params }: { params: { locale: string } }) 
       {ar ? (
         <>
           <p>لا توجد وظائف مفتوحة حاليًا، لكننا نحب التعرّف على موهوبين.</p>
-          <p>إن كنت مهندس برمجيات أو مصمم أو مسوّق نمو وتؤمن بتحليلات تحترم الخصوصية، راسلنا مع أعمالك على <a href="mailto:careers@eye-analsyis.live">careers@eye-analsyis.live</a>.</p>
+          <p>إن كنت مهندس برمجيات أو مصمم أو مسوّق نمو وتؤمن بتحليلات تحترم الخصوصية، راسلنا مع أعمالك على <a href="mailto:info@eye-analysis.online">info@eye-analysis.online</a>.</p>
         </>
       ) : (
         <>
           <p>No open roles right now — but we always like meeting great people.</p>
-          <p>If you're an engineer, designer, or growth marketer who believes in privacy-respecting analytics, send your work to <a href="mailto:careers@eye-analsyis.live">careers@eye-analsyis.live</a>.</p>
+          <p>If you're an engineer, designer, or growth marketer who believes in privacy-respecting analytics, send your work to <a href="mailto:info@eye-analysis.online">info@eye-analysis.online</a>.</p>
         </>
       )}
     </MarketingDoc>
