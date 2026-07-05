@@ -15,6 +15,12 @@ export const adminApi = {
   /** GET /admin/feedback */
   feedback: () => client.get("/admin/feedback"),
 
+  /** GET /admin/email/audiences */
+  emailAudiences: () => client.get("/admin/email/audiences"),
+  /** POST /admin/email/send */
+  emailSend: (payload: { subject: string; html: string; audience: string; test_email?: string }) =>
+    client.post("/admin/email/send", payload),
+
   // ── Users ───────────────────────────────────────────────────────────────────
   /** GET /admin/users */
   listUsers: (params?: { search?: string; status?: string; plan?: string; page?: number }) =>
