@@ -42,9 +42,25 @@ export default async function BlogPostPage({ params }: { params: { locale: strin
 
   const title = ar ? (post.title_ar || post.title_en) : post.title_en;
   const body = ar ? (post.body_ar || post.body_en) : post.body_en;
+  const desc = ar ? (post.excerpt_ar || post.excerpt_en) : post.excerpt_en;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description: desc || undefined,
+    image: post.cover_image_url || undefined,
+    datePublished: post.published_at,
+    dateModified: post.published_at,
+    inLanguage: ar ? "ar" : "en",
+    author: { "@type": "Organization", name: "EYE Analytics" },
+    publisher: { "@type": "Organization", name: "EYE Analytics", url: SITE_URL },
+    mainEntityOfPage: `${SITE_URL}/${params.locale}/blog/${post.slug}`,
+  };
 
   return (
     <div className="min-h-screen bg-background text-on-surface">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
       <article className="max-w-3xl mx-auto px-4 py-16 sm:py-20" dir={ar ? "rtl" : "ltr"}>
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight mb-6">{title}</h1>

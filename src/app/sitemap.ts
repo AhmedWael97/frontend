@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { headers } from "next/headers";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Host-aware base: the app is served on multiple domains (e.g. eye-analsyis.live
   // and eye-analysis.online). A sitemap may only list URLs on the SAME host it's
   // served from, so we derive the base from the incoming request rather than a
@@ -20,9 +20,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/pricing", changeFrequency: "monthly", priority: 0.9 },
     { path: "/docs", changeFrequency: "monthly", priority: 0.7 },
     { path: "/help", changeFrequency: "monthly", priority: 0.7 },
+    { path: "/blog", changeFrequency: "weekly", priority: 0.8 },
+    { path: "/about", changeFrequency: "yearly", priority: 0.5 },
+    { path: "/contact", changeFrequency: "yearly", priority: 0.5 },
+    { path: "/changelog", changeFrequency: "weekly", priority: 0.5 },
+    { path: "/roadmap", changeFrequency: "monthly", priority: 0.4 },
     { path: "/privacy", changeFrequency: "yearly", priority: 0.4 },
     { path: "/terms", changeFrequency: "yearly", priority: 0.4 },
+    { path: "/cookie-policy", changeFrequency: "yearly", priority: 0.3 },
+    { path: "/gdpr", changeFrequency: "yearly", priority: 0.3 },
   ];
+
+  // Published blog posts (dynamic) — high-value for organic SEO.
+  let blogSlugs: string[] = [];
+  try {
+    const res = await fetch(`${base}/api/v1/blog`, { next: { revalidate: 600 } });
+    if (res.ok) {
+      const json = await res.json();
+      blogSlugs = ((json.data ?? json) as { slug: string }[]).map((p) => p.slug).filter(Boolean);
+    }
+  } catch {}
+  for (const slug of blogSlugs) {
+    pages.push({ path: `/blog/${slug}`, changeFrequency: "monthly", priority: 0.7 });
+  }
 
   const entries: MetadataRoute.Sitemap = [];
 
