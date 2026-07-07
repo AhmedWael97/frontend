@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
+import { useLocale } from "next-intl";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { domainsApi, billingApi } from "@/lib/api";
 import { eyeTrack } from "@/lib/track";
-import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X, Loader2, Mail, CheckCircle2 } from "lucide-react";
+import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X, Loader2, Mail, CheckCircle2, PartyPopper, MessageCircle, ArrowRight } from "lucide-react";
 
 const INSTALL_PLATFORMS = [
   { key: "html", label: "HTML", hint: "Paste this right before the closing </head> tag, on every page of your site." },
@@ -23,6 +24,7 @@ function InstallGuide({ token, domainId, domainName }: { token: string; domainId
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://yourdomain.com").replace(/\/$/, "");
   // data-api points to the frontend proxy — absolute URL so the tracker resolves against the frontend origin, not the script source
   const snippet = `<script src="${appUrl}/tracker/eye.js" data-token="${token}" data-api="${appUrl}/api/collect" async></script>`;
+  const locale = useLocale();
   const [tab, setTab] = useState("html");
   const [copied, setCopied] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -30,18 +32,62 @@ function InstallGuide({ token, domainId, domainName }: { token: string; domainId
 
   const platform = INSTALL_PLATFORMS.find((p) => p.key === tab) ?? INSTALL_PLATFORMS[0];
 
-  const verify = async () => {
-    setVerifying(true);
-    setVerified(null);
+  const checkVerified = async (): Promise<boolean> => {
     try {
       const r = await domainsApi.verify(domainId);
-      setVerified(!!(r.data?.verified ?? r.data?.data?.verified));
+      return !!(r.data?.verified ?? r.data?.data?.verified);
     } catch {
-      setVerified(false);
-    } finally {
-      setVerifying(false);
+      return false;
     }
   };
+
+  // Auto-detect the first event live — the moment their site fires, celebrate.
+  // Polls quietly in the background (every 4s, up to ~10 min) so the user never
+  // has to click anything; installing the snippet just "lights up".
+  useEffect(() => {
+    if (verified) return;
+    let stop = false;
+    let n = 0;
+    const tick = async () => {
+      if (stop || n++ > 150) return;
+      if (await checkVerified()) {
+        if (!stop) { setVerified(true); eyeTrack("install_verified", { domain: domainName }); }
+        return;
+      }
+      if (!stop) setTimeout(tick, 4000);
+    };
+    const t = setTimeout(tick, 4000);
+    return () => { stop = true; clearTimeout(t); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verified]);
+
+  const verify = async () => {
+    setVerifying(true);
+    const ok = await checkVerified();
+    setVerified(ok ? true : false);
+    if (ok) eyeTrack("install_verified", { domain: domainName });
+    setVerifying(false);
+  };
+
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+    `Please add this tracking snippet to ${domainName}, just before </head> on every page:\n\n${snippet}`
+  )}`;
+
+  // Celebration — first event detected.
+  if (verified === true) {
+    return (
+      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5 text-center">
+        <div className="w-12 h-12 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-3">
+          <PartyPopper className="w-6 h-6 text-emerald-500" />
+        </div>
+        <p className="text-lg font-black text-on-surface">You&apos;re connected! 🎉</p>
+        <p className="text-sm text-on-surface-variant mt-1">EYE is now receiving data from <span className="font-semibold text-on-surface">{domainName}</span>.</p>
+        <a href={`/${locale}/dashboard`} className="inline-flex items-center gap-2 mt-4 rounded-xl bg-primary text-on-primary px-5 py-2.5 text-sm font-bold hover:opacity-90">
+          See my visitors <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+        </a>
+      </div>
+    );
+  }
 
   const mailto = `mailto:?subject=${encodeURIComponent(`Please install EYE tracking on ${domainName}`)}&body=${encodeURIComponent(
     `Hi,\n\nPlease add this tracking snippet to ${domainName}, just before the closing </head> tag on every page:\n\n${snippet}\n\nThanks!`
@@ -71,11 +117,17 @@ function InstallGuide({ token, domainId, domainName }: { token: string; domainId
           {verifying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />} Verify installation
         </Button>
         <a href={mailto} className="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-primary px-2 py-1.5 rounded-lg hover:bg-surface-container">
-          <Mail className="w-3.5 h-3.5" /> Email to my developer
+          <Mail className="w-3.5 h-3.5" /> Email developer
         </a>
-        {verified === true && <span className="text-xs font-semibold text-emerald-500">✓ Script detected — you’re live!</span>}
-        {verified === false && <span className="text-xs text-amber-500">Not detected yet. Publish the change, open your site, then retry.</span>}
+        <a href={whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-emerald-500 px-2 py-1.5 rounded-lg hover:bg-surface-container">
+          <MessageCircle className="w-3.5 h-3.5" /> Send via WhatsApp
+        </a>
+        {verified === false && <span className="text-xs text-amber-500">Not detected yet. Publish the change, then open your site.</span>}
       </div>
+      <p className="flex items-center gap-1.5 text-[11px] text-on-surface-variant/80 mt-1">
+        <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/60" /><span className="relative inline-flex rounded-full h-2 w-2 bg-primary" /></span>
+        Listening for your first visit — this page updates automatically the moment EYE detects your site.
+      </p>
     </div>
   );
 }
