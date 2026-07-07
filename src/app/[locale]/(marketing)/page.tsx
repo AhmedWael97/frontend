@@ -186,12 +186,12 @@ export default async function HomePage({ params }: { params: { locale: string } 
                   <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                 </Button>
               </Link>
-              <a href="#how-it-works" className="w-full sm:w-auto">
+              <Link href={`/${locale}/live-demo`} className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="w-full sm:w-auto h-12 px-8 text-base gap-2">
-                  {t("hero.ctaSecondary")}
+                  {locale === "ar" ? "شاهد عرضًا حيًّا" : "Watch live demo"}
                   <ChevronRight className="w-4 h-4 rtl:rotate-180" />
                 </Button>
-              </a>
+              </Link>
             </div>
 
             <div className="flex items-center justify-center gap-x-5 gap-y-2 flex-wrap text-xs sm:text-sm text-on-surface-variant/70">
@@ -397,6 +397,44 @@ export default async function HomePage({ params }: { params: { locale: string } 
               <p className="text-center text-xs text-on-surface-variant/80 mt-3 font-medium">
                 {t("howItWorks.codeNote")}
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── AI differentiator: tells you what to fix ──────────────────────── */}
+        <section className="py-20 sm:py-28 bg-surface">
+          <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
+            <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-8 sm:p-12">
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary mb-5">
+                <Sparkles className="w-3.5 h-3.5" /> {locale === "ar" ? "مدعوم بالذكاء الاصطناعي" : "AI-powered"}
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black tracking-tight mb-4">
+                {locale === "ar" ? "لا يُريك الأرقام فقط — يخبرك بما يجب إصلاحه." : "Not just charts — it tells you what to fix."}
+              </h2>
+              <p className="text-on-surface-variant text-lg max-w-2xl mb-8">
+                {locale === "ar"
+                  ? "معظم أدوات التحليل تُغرقك بالرسوم البيانية. EYE يقرأ بياناتك ويكتب لك بلغة بسيطة: أين يغادر الزوّار، لماذا، وما الخطوة التالية بالضبط."
+                  : "Most analytics tools drown you in dashboards. EYE reads your data and writes it in plain language: where visitors drop off, why, and exactly what to do next."}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {(locale === "ar"
+                  ? [
+                      ["تشخيص النماذج", "«78% يغادرون عند حقل البريد — فعّل التركيز التلقائي أو أضف تسجيل جوجل.»"],
+                      ["ملخص يومي", "تقرير يومي بلغة بسيطة عن أهم ما حدث وما يحتاج انتباهك."],
+                      ["توصيات قابلة للتنفيذ", "خطوات محددة مرتّبة حسب الأثر مقابل الجهد — لا تخمين."],
+                    ]
+                  : [
+                      ["Form diagnosis", "“78% quit at the email field — autofocus it or add Google sign-in.”"],
+                      ["Daily brief", "A plain-English daily report of what happened and what needs attention."],
+                      ["Actionable fixes", "Specific steps ranked by impact-vs-effort — no guesswork."],
+                    ]
+                ).map(([h, p]) => (
+                  <div key={h} className="rounded-2xl border border-outline-variant/15 bg-surface p-5">
+                    <p className="font-black text-on-surface mb-1">{h}</p>
+                    <p className="text-sm text-on-surface-variant leading-relaxed">{p}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>

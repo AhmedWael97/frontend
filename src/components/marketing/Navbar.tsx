@@ -21,6 +21,7 @@ export default function Navbar() {
   const NAV_LINKS = [
     { label: t("features"),   href: "#features" },
     { label: t("howItWorks"), href: "#how-it-works" },
+    { label: locale === "ar" ? "عرض حيّ" : "Live demo", href: "/live-demo" },
     { label: t("docs"),       href: "/docs" },
     { label: t("guide"),      href: "/help" },
     { label: t("pricing"),    href: "/pricing" },
