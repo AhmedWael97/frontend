@@ -3,7 +3,7 @@ import Link from "next/link";
 import {
   Radio, Map, GitMerge, Building2, FileText, ShieldCheck,
   ArrowRight, Check, Eye, Layers, Lock, Gauge,
-  BarChart2, ChevronRight, X, TrendingUp,
+  BarChart2, ChevronRight, X, TrendingUp, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
