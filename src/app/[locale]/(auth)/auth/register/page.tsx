@@ -25,6 +25,13 @@ export default function RegisterPage() {
 
   // Instrument the register funnel — see the exact quit point.
   useEffect(() => { eyeTrack("register_view", {}); }, []);
+  const [googleHref, setGoogleHref] = useState("");
+
+  useEffect(() => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    setGoogleHref(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/google/redirect?redirect=${encodeURIComponent(`${origin}/${locale}/auth/callback`)}`);
+  }, [locale]);
+
   const onFieldFocus = (field: string) => {
     if (focused.current[field]) return;
     focused.current[field] = true;
@@ -92,6 +99,23 @@ export default function RegisterPage() {
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
               <ShieldCheck className="w-3.5 h-3.5" />
               {t("trialBadge")}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <a
+              href={googleHref}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface py-3 text-sm font-semibold text-on-surface shadow-sm transition hover:bg-surface-container"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.35 11.1H12v2.8h5.35c-.2 1.35-1.4 3.95-5.35 3.95-3.2 0-5.8-2.65-5.8-5.9s2.6-5.9 5.8-5.9c1.85 0 3.1.8 3.8 1.5l2.55-2.45C17.3 3.1 15.05 2 12 2 6.48 2 2 6.48 2 12s4.48 10 10 10c5.8 0 9.7-4.05 9.7-9.75 0-.65-.05-1.15-.35-1.45Z" fill="#4285F4"/>
+              </svg>
+              Continue with Google
+            </a>
+            <div className="flex items-center gap-3 text-sm text-on-surface-variant">
+              <span className="h-px flex-1 bg-outline-variant/50" />
+              OR
+              <span className="h-px flex-1 bg-outline-variant/50" />
             </div>
           </div>
 
