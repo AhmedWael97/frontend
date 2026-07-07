@@ -11,11 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { domainsApi, billingApi } from "@/lib/api";
 import { eyeTrack } from "@/lib/track";
-import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X, Loader2, Mail, CheckCircle2, PartyPopper, MessageCircle, ArrowRight } from "lucide-react";
+import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X, Loader2, Mail, CheckCircle2, PartyPopper, MessageCircle, ArrowRight, Download } from "lucide-react";
 
 const INSTALL_PLATFORMS = [
   { key: "html", label: "HTML", hint: "Paste this right before the closing </head> tag, on every page of your site." },
-  { key: "wordpress", label: "WordPress", hint: "Easiest: install the free “WPCode” plugin → Header & Footer → paste into the Header box → Save. (Or add it to your theme’s header.php before </head>.)" },
+  { key: "wordpress", label: "WordPress", hint: "Easiest: download our 1-click plugin below → WordPress admin → Plugins → Add New → Upload → Activate → paste your token. (No code, no theme editing.)" },
   { key: "shopify", label: "Shopify", hint: "Online Store → Themes → ⋯ → Edit code → layout/theme.liquid → paste just before </head> → Save." },
   { key: "gtm", label: "Tag Manager", hint: "New Tag → Custom HTML → paste the snippet → Trigger: All Pages → Submit & publish." },
 ];
@@ -106,6 +106,11 @@ function InstallGuide({ token, domainId, domainName }: { token: string; domainId
         ))}
       </div>
       <p className="text-xs text-on-surface-variant">{platform.hint}</p>
+      {tab === "wordpress" && (
+        <a href="/downloads/eye-analytics.zip" download className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 text-primary px-3 py-1.5 text-xs font-bold hover:bg-primary/15">
+          <Download className="w-3.5 h-3.5" /> Download WordPress plugin
+        </a>
+      )}
       <div className="relative">
         <pre className="bg-surface-container-lowest rounded-lg p-3 text-xs text-on-surface-variant overflow-x-auto border border-outline-variant/20 font-mono">{snippet}</pre>
         <button onClick={() => { navigator.clipboard.writeText(snippet); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="absolute top-2 right-2 p-1.5 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
