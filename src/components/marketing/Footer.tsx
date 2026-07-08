@@ -1,15 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Eye, Facebook, Twitter, Linkedin } from "lucide-react";
+import { Eye, Instagram } from "lucide-react";
 
-function TikTokIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M16.5 3c.3 2 1.6 3.6 3.5 4v2.4c-1.3.1-2.5-.3-3.6-1v6.1c0 3.3-2.7 6-6 6s-6-2.7-6-6 2.7-6 6-6c.3 0 .6 0 .9.1v2.5c-.3-.1-.6-.1-.9-.1-1.9 0-3.4 1.5-3.4 3.4S8 17.7 9.9 17.7s3.5-1.4 3.5-3.3V3h3.1z" />
-    </svg>
-  );
-}
 import { useTranslations } from "next-intl";
 
 interface FooterProps {
@@ -69,10 +62,7 @@ export default function Footer({ locale }: FooterProps) {
             </p>
             <div className="flex items-center gap-3 mt-6">
               {([
-                { Icon: Twitter, label: "X", href: "https://x.com/eye_analysis" },
-                { Icon: Facebook, label: "Facebook", href: "https://facebook.com/eye_analysis" },
-                { Icon: TikTokIcon, label: "TikTok", href: "https://www.tiktok.com/@eye_analysis" },
-                { Icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/company/eye_analysis" },
+                { Icon: Instagram, label: "Instagram", href: "https://instagram.com/eye_analysis" },
               ] as const).map(({ Icon, label, href }) => (
                 <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={`EYE on ${label}`} title={label} className="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
                   <Icon className="w-4 h-4" aria-hidden="true" />
