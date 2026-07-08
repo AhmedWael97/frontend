@@ -14,6 +14,7 @@ import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
 import { AuthShowcase, MobileFeatureStrip } from "@/components/auth/AuthShowcase";
+import GoogleOneTap from "@/components/auth/GoogleOneTap";
 
 const schema = z.object({
   email: z.string().email(),
@@ -69,6 +70,7 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-5xl">
+      <GoogleOneTap />
       <div className="grid lg:grid-cols-2 rounded-2xl overflow-hidden border border-outline-variant/15 shadow-2xl glass-panel">
         <AuthShowcase />
 

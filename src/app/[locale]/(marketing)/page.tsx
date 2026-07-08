@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/marketing/Navbar";
 import MobileCtaBar from "@/components/marketing/MobileCtaBar";
+import GoogleOneTap from "@/components/auth/GoogleOneTap";
 import Footer from "@/components/marketing/Footer";
 import { getTranslations } from "next-intl/server";
 import { JsonLd } from "@/components/JsonLd";
@@ -518,6 +519,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
       </main>
       <Footer locale={locale} />
       <MobileCtaBar />
+      <GoogleOneTap />
     </>
   );
 }

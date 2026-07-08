@@ -20,6 +20,7 @@ export const PUBLIC_ROUTES = {
 export const AUTH_ROUTES = {
   register: "/auth/register",
   login: "/auth/login",
+  googleOneTap: "/auth/google/one-tap",
   logout: "/auth/logout",
   me: "/auth/me",
   forgotPassword: "/auth/forgot-password",

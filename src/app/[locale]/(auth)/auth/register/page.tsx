@@ -12,6 +12,7 @@ import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
 import { trackSignup, eyeTrack } from "@/lib/track";
 import { AuthShowcase, MobileFeatureStrip } from "@/components/auth/AuthShowcase";
+import GoogleOneTap from "@/components/auth/GoogleOneTap";
 
 export default function RegisterPage() {
   const t = useTranslations("auth");
@@ -21,7 +22,22 @@ export default function RegisterPage() {
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailErr, setEmailErr] = useState("");
+  const [pwErr, setPwErr] = useState("");
+  const [emailTaken, setEmailTaken] = useState(false);
   const focused = useRef<Record<string, boolean>>({});
+
+  const validateEmail = (v: string) => {
+    const ok = /^\S+@\S+\.\S+$/.test(v.trim());
+    setEmailErr(v && !ok ? (locale === "ar" ? "أدخل بريدًا إلكترونيًا صحيحًا" : "Enter a valid email address") : "");
+    setEmailTaken(false);
+    return ok;
+  };
+  const validatePw = (v: string) => {
+    const ok = v.length >= 8;
+    setPwErr(v && !ok ? (locale === "ar" ? "8 أحرف على الأقل" : "At least 8 characters") : "");
+    return ok;
+  };
 
   // Instrument the register funnel — see the exact quit point.
   useEffect(() => { eyeTrack("register_view", {}); }, []);
@@ -69,10 +85,15 @@ export default function RegisterPage() {
       }
     } catch (e: any) {
       const fieldErrors = (e as any).errors;
-      setError(
-        fieldErrors ? Object.values(fieldErrors).flat().join(" ") : (e.message || "Registration failed.")
-      );
-      eyeTrack("register_error", { reason: fieldErrors ? "validation_server" : "server" });
+      const emailMsg = String(fieldErrors?.email?.[0] || "") + " " + String(e.message || "");
+      if (/taken|already|unique|exist/i.test(emailMsg)) {
+        setEmailTaken(true);
+        setError("");
+        eyeTrack("register_error", { reason: "email_taken" });
+      } else {
+        setError(fieldErrors ? Object.values(fieldErrors).flat().join(" ") : (e.message || "Registration failed."));
+        eyeTrack("register_error", { reason: fieldErrors ? "validation_server" : "server" });
+      }
     } finally {
       setLoading(false);
     }
@@ -80,6 +101,7 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full max-w-5xl">
+      <GoogleOneTap />
       <div className="grid lg:grid-cols-2 rounded-2xl overflow-hidden border border-outline-variant/15 shadow-2xl glass-panel">
         <AuthShowcase />
 
@@ -126,19 +148,30 @@ export default function RegisterPage() {
               <div className="rounded-lg bg-error-container/30 border border-error/20 px-4 py-3 text-sm text-error">{error}</div>
             )}
 
+            {emailTaken && (
+              <div className="rounded-lg bg-primary/10 border border-primary/20 px-4 py-3 text-sm text-on-surface">
+                {locale === "ar" ? "هذا البريد لديه حساب بالفعل. " : "This email already has an account. "}
+                <Link href={`/${locale}/auth/login`} className="font-bold text-primary hover:underline">
+                  {locale === "ar" ? "تسجيل الدخول" : "Log in instead"}
+                </Link>
+              </div>
+            )}
+
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">{t("email")}</label>
-              <Input name="email" type="email" placeholder="alex@company.com" autoComplete="email" required onFocus={() => onFieldFocus("email")} />
+              <Input name="email" type="email" placeholder="alex@company.com" autoComplete="email" required onFocus={() => onFieldFocus("email")} onChange={(e) => validateEmail(e.target.value)} onBlur={(e) => validateEmail(e.target.value)} aria-invalid={!!emailErr} />
+              {emailErr && <p className="text-xs text-error ml-1">{emailErr}</p>}
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">{t("password")}</label>
               <div className="relative">
-                <Input name="password" type={showPw ? "text" : "password"} placeholder="••••••••" autoComplete="new-password" required minLength={8} className="pr-11" onFocus={() => onFieldFocus("password")} />
+                <Input name="password" type={showPw ? "text" : "password"} placeholder="••••••••" autoComplete="new-password" required minLength={8} className="pr-11" onFocus={() => onFieldFocus("password")} onChange={(e) => validatePw(e.target.value)} onBlur={(e) => validatePw(e.target.value)} aria-invalid={!!pwErr} />
                 <button type="button" onClick={() => setShowPw(!showPw)} aria-label={showPw ? "Hide password" : "Show password"} className="absolute inset-y-0 right-2 rtl:right-auto rtl:left-2 flex items-center justify-center w-8 text-on-surface-variant hover:text-on-surface">
                   {showPw ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              {pwErr ? <p className="text-xs text-error ml-1">{pwErr}</p> : <p className="text-[11px] text-on-surface-variant/60 ml-1">{locale === "ar" ? "8 أحرف على الأقل" : "8+ characters"}</p>}
             </div>
 
             <Button type="submit" disabled={loading} className="w-full h-12 mt-2 gap-2">

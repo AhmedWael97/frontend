@@ -20,6 +20,10 @@ export const authApi = {
   login: (data: { email: string; password: string }) =>
     client.post(AUTH_ROUTES.login, data),
 
+  /** POST /auth/google/one-tap → { user, token } (Google GSI credential JWT) */
+  googleOneTap: (credential: string) =>
+    client.post(AUTH_ROUTES.googleOneTap, { credential }),
+
   /** POST /auth/logout  (requires Bearer token) */
   logout: () => client.post(AUTH_ROUTES.logout),
 
