@@ -280,6 +280,7 @@ export const AI_ROUTES = {
   reports:          (domainId: number) => `/ai/${domainId}/reports`,
   analyze:          (domainId: number) => `/ai/${domainId}/analyze`,
   quota:            (domainId: number) => `/ai/${domainId}/quota`,
+  pageInsight:      (domainId: number) => `/ai/${domainId}/page-insight`,
   dismissSuggestion:(id: number)       => `/ai/suggestions/${id}/dismiss`,
   tokenPacks:       "/ai/token-packs",
   purchaseTokens:   "/ai/tokens/purchase",

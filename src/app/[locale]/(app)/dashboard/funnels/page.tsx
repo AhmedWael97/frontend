@@ -10,6 +10,7 @@ import { analyticsApi, pipelinesApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Plus, Trash2, GripVertical, ArrowDown, Target, X, Film } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import AiInsightBanner from "@/components/ai/AiInsightBanner";
 
 type Step = { name: string; url_pattern: string; match_type: string };
 
@@ -152,6 +153,8 @@ function Content() {
           <p className="text-on-surface-variant text-sm mt-0.5">Conversion funnel analysis</p>
         </div>
       </div>
+
+      <AiInsightBanner page="funnels" domainId={selectedDomainId} data={funnelMetrics ?? funnels} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: list + create form */}

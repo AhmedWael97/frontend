@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Users } from "lucide-react";
+import AiInsightBanner from "@/components/ai/AiInsightBanner";
 
 type CohortRow = { cohort: string; size: number; retention: number[] };
 type Period = "week" | "month";
@@ -75,6 +76,8 @@ function Content() {
           ))}
         </div>
       </div>
+
+      <AiInsightBanner page="retention" domainId={selectedDomainId} data={{ period, ...(data ?? {}) }} />
 
       <Card>
         <CardHeader className="pb-2">

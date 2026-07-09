@@ -19,6 +19,7 @@ import { formatNumber } from "@/lib/utils";
 import { toast } from "@/lib/use-toast";
 import WelcomeChecklist from "@/components/WelcomeChecklist";
 import { UsageUpgradeBanner } from "@/components/UsageUpgradeBanner";
+import AiInsightBanner from "@/components/ai/AiInsightBanner";
 
 // ── Feature card ──────────────────────────────────────────────────────────────
 function FeatureCard({
@@ -172,6 +173,8 @@ function AnalyticsHub() {
           </Button>
         </Link>
       </div>
+
+      <AiInsightBanner page="overview" domainId={selectedDomainId} data={data} />
 
       {/* Site Health alert */}
       {uxScore !== undefined && uxScore < 70 && (

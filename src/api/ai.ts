@@ -38,6 +38,12 @@ export const aiApi = {
   analyze: (domainId: number) =>
     client.post(AI_ROUTES.analyze(domainId)),
 
+  /** POST /ai/{domainId}/page-insight — plain-language verdict for the page's own metrics */
+  pageInsight: (
+    domainId: number,
+    payload: { page: string; locale?: string; data: unknown; refresh?: boolean }
+  ) => client.post(AI_ROUTES.pageInsight(domainId), payload),
+
   /**
    * GET /ai/{domainId}/quota
    * Normalises token_packs from PHP assoc-array object to JS array.

@@ -7,6 +7,7 @@ import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Gem } from "lucide-react";
 import { HelpDialog } from "@/components/HelpDialog";
+import AiInsightBanner from "@/components/ai/AiInsightBanner";
 
 type LtvRow = {
   source: string; visitors: number; paying_visitors: number; orders: number;
@@ -73,6 +74,12 @@ function Content() {
           {PERIODS.map((p) => <button key={p.value} onClick={() => setDays(p.value)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${days === p.value ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:text-on-surface"}`}>{p.label}</button>)}
         </div>
       </div>
+
+      <AiInsightBanner
+        page="ltv"
+        domainId={selectedDomainId}
+        data={{ period_days: days, currency, sources: rows }}
+      />
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold text-on-surface">LTV by acquisition source (first-touch)</CardTitle></CardHeader>
