@@ -7,7 +7,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { AppHeader } from "@/components/AppHeader";
 import { ImpersonationBanner } from "@/components/ImpersonationBanner";
 import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
-import { AiChatBubble } from "@/components/AiChatBubble";
+import SupportChatBubble from "@/components/SupportChatBubble";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useAuthStore } from "@/store/auth";
 
@@ -60,7 +60,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
         <main className="flex-1 p-6 print:p-0">{children}</main>
       </div>
-      <div className="print:hidden"><AiChatBubble /></div>
+      <div className="print:hidden"><SupportChatBubble /></div>
       <FeedbackModal />
     </div>
   );
