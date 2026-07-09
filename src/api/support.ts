@@ -14,6 +14,8 @@ export interface SupportMessage {
 export interface SupportChat {
   id: number;
   status: "open" | "closed";
+  guest_token?: string;
+  is_guest?: boolean;
   unread_for_user?: number;
   unread_for_admin?: number;
   user_name?: string;
@@ -23,6 +25,18 @@ export interface SupportChat {
 }
 
 export const supportApi = {
+  /** POST /support/guest/chat — start a thread as a logged-out visitor */
+  guestStart: (data: { name: string; email: string; body: string }) =>
+    client.post("/support/guest/chat", data),
+
+  /** GET /support/guest/chat/{token} */
+  guestChat: (token: string, read = false) =>
+    client.get(`/support/guest/chat/${token}`, { params: read ? { read: 1 } : undefined }),
+
+  /** POST /support/guest/chat/{token}/messages */
+  guestSend: (token: string, body: string) =>
+    client.post(`/support/guest/chat/${token}/messages`, { body }),
+
   /** GET /support/chat — pass read=true only when the user actually opens it */
   myChat: (read = false) =>
     client.get("/support/chat", { params: read ? { read: 1 } : undefined }),

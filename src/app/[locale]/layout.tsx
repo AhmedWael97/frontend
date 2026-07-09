@@ -5,6 +5,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Providers from "@/components/Providers";
+import SupportChatBubble from "@/components/SupportChatBubble";
 import { NavigationProgress } from "@/components/NavigationProgress";
 import { SITE_URL, SITE_NAME, TWITTER_HANDLE, DEFAULT_KEYWORDS } from "@/lib/seo";
 import "@/app/globals.css";
@@ -126,6 +127,7 @@ export default async function LocaleLayout({
           <Providers>
             <NavigationProgress />
             {children}
+            <div className="print:hidden"><SupportChatBubble /></div>
           </Providers>
         </NextIntlClientProvider>
       </body>

@@ -99,6 +99,11 @@ export default function AdminSupportChatsPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="truncate text-sm font-bold text-on-surface">{c.user_name || c.user_email}</span>
+                  {c.is_guest && (
+                    <span className="rounded-full bg-surface-container-high px-1.5 py-0.5 text-[10px] font-semibold text-on-surface-variant">
+                      guest
+                    </span>
+                  )}
                   {(c.unread_for_admin ?? 0) > 0 && (
                     <span className="rounded-full bg-error px-1.5 py-0.5 text-[10px] font-bold text-white">
                       {c.unread_for_admin}
