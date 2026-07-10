@@ -10,6 +10,7 @@ import { useAuthStore } from "@/store/auth";
 import {
   Users, DollarSign, TrendingUp, AlertTriangle, ArrowUpRight, ArrowDownRight, Bug, ShoppingCart, FileText,
 } from "lucide-react";
+import InsightPanel from "@/components/ai/InsightPanel";
 
 type Metrics = {
   sessions: number; visitors: number; errors: number; bounce_rate: number;
@@ -149,6 +150,8 @@ function Content() {
           </a>
         </div>
       </div>
+
+      <InsightPanel scope="portfolio" page="portfolio" />
 
       {/* Portfolio totals */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

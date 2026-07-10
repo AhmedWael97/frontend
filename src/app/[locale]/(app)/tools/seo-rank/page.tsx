@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { SearchCheck, Plus, Trash2, Upload, ArrowUp, ArrowDown, Minus } from "lucide-react";
+import InsightPanel from "@/components/ai/InsightPanel";
 
 type Hist = { date: string; position: number | null };
 type KeywordRow = {
@@ -59,6 +60,8 @@ function Content() {
         <h1 className="text-2xl font-black text-on-surface tracking-tight flex items-center gap-2"><SearchCheck className="w-6 h-6 text-primary" /> SEO Rank Tracking</h1>
         <p className="text-on-surface-variant text-sm mt-0.5">Track keyword positions over time. Import from your rank tool (CSV) or enter manually.</p>
       </div>
+
+      <InsightPanel domainId={selectedDomainId} page="seo" />
 
       <Card>
         <CardContent className="p-4 flex flex-col sm:flex-row gap-2 sm:items-center">

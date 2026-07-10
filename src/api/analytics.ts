@@ -128,6 +128,9 @@ export const analyticsApi = {
   portfolioTriage: (params?: { days?: number }) =>
     client.get(ANALYTICS_ROUTES.portfolioTriage(), { params }),
 
+  /** GET /portfolio/insights — cross-site deterministic findings */
+  portfolioInsights: () => client.get("/portfolio/insights"),
+
   /** GET /analytics/{domainId}/retention */
   retention: (domainId: number, params?: { period?: "week" | "month"; cohorts?: number }) =>
     client.get(ANALYTICS_ROUTES.retention(domainId), { params }),

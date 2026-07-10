@@ -6,6 +6,7 @@ import { uxApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Flame, LoaderCircle, ImageOff, ChevronDown, ChevronUp, RefreshCw, X, Maximize2 } from "lucide-react";
+import InsightPanel from "@/components/ai/InsightPanel";
 
 type HeatmapRow = {
   url: string;
@@ -390,6 +391,8 @@ export default function HeatmapsPage() {
           Page-by-page heatmaps with cached screenshots. Open a page card to load its screenshot on demand.
         </p>
       </div>
+
+      <InsightPanel domainId={selectedDomainId} page="heatmaps" />
 
       <Card>
         <CardHeader>

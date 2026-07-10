@@ -9,6 +9,7 @@ import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { FlaskConical, Plus, Trash2, Trophy, Sparkles, ExternalLink, ChevronDown, Play, Pause, Pencil, GitBranch } from "lucide-react";
 import { ExperimentBuilder, type ExpFull, type ExpVariation } from "./ExperimentBuilder";
+import InsightPanel from "@/components/ai/InsightPanel";
 
 type Experiment = {
   id: number; key: string; name: string; status: string;
@@ -358,6 +359,8 @@ function Content() {
         </div>
         {!builder.open && <Button onClick={() => setBuilder({ open: true, experiment: null })}><Plus className="w-4 h-4" /> New Experiment</Button>}
       </div>
+
+      {!builder.open && <InsightPanel domainId={selectedDomainId} page="experiments" />}
 
       {builder.open ? (
         <ExperimentBuilder

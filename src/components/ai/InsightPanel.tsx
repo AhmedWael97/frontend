@@ -14,6 +14,7 @@ interface Finding {
   title: string;
   detail: string;
   action: string;
+  domain?: string;
 }
 
 const SEV: Record<Severity, { dot: string; Icon: typeof Info }> = {
@@ -31,22 +32,28 @@ const SEV: Record<Severity, { dot: string; Icon: typeof Info }> = {
 export default function InsightPanel({
   domainId,
   page = "overview",
+  scope = "domain",
   className,
 }: {
-  domainId: number | null | undefined;
+  domainId?: number | null | undefined;
   page?: string;
+  /** "portfolio" = cross-site findings, no domainId required. */
+  scope?: "domain" | "portfolio";
   className?: string;
 }) {
   const ar = useLocale() === "ar";
+  const isPortfolio = scope === "portfolio";
 
   const { data, isLoading } = useQuery({
-    queryKey: ["insights", domainId, page],
-    queryFn: () => analyticsApi.insights(domainId!, page).then((r) => r.data?.data ?? r.data),
-    enabled: !!domainId,
+    queryKey: isPortfolio ? ["insights", "portfolio"] : ["insights", domainId, page],
+    queryFn: () =>
+      (isPortfolio ? analyticsApi.portfolioInsights() : analyticsApi.insights(domainId!, page))
+        .then((r) => r.data?.data ?? r.data),
+    enabled: isPortfolio || !!domainId,
     staleTime: 10 * 60 * 1000,
   });
 
-  if (!domainId) return null;
+  if (!isPortfolio && !domainId) return null;
 
   const findings: Finding[] = data?.findings ?? [];
 
@@ -89,7 +96,10 @@ export default function InsightPanel({
             <div key={i} className="flex gap-3 p-4">
               <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", s.dot)} />
               <div className="min-w-0">
-                <p className="text-sm font-bold text-on-surface">{f.title}</p>
+                <p className="text-sm font-bold text-on-surface">
+                  {f.title}
+                  {f.domain && <span className="ms-1.5 font-normal text-on-surface-variant">— {f.domain}</span>}
+                </p>
                 <p className="mt-0.5 text-sm text-on-surface-variant">{f.detail}</p>
                 <p className="mt-1.5 flex items-start gap-1 text-sm font-semibold text-primary">
                   <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 rtl:rotate-180" />
