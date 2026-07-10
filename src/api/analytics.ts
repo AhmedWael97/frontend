@@ -67,6 +67,10 @@ export const analyticsApi = {
   insights: (domainId: number, page = "overview") =>
     client.get(`/analytics/${domainId}/insights`, { params: { page } }),
 
+  /** POST /analytics/{domainId}/insights/feedback — was this finding helpful? */
+  insightFeedback: (domainId: number, page: string, kind: string, helpful: boolean) =>
+    client.post(`/analytics/${domainId}/insights/feedback`, { page, kind, helpful }),
+
   /** GET /analytics/{domainId}/visitors */
   visitorsList: (domainId: number, params?: { page?: number; per_page?: number }) =>
     client.get(ANALYTICS_ROUTES.visitorsList(domainId), { params }),

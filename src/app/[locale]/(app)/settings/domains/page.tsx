@@ -82,6 +82,7 @@ function InstallGuide({ token, domainId, domainName }: { token: string; domainId
         </div>
         <p className="text-lg font-black text-on-surface">You&apos;re connected! 🎉</p>
         <p className="text-sm text-on-surface-variant mt-1">EYE is now receiving data from <span className="font-semibold text-on-surface">{domainName}</span>.</p>
+        <p className="text-xs text-on-surface-variant/80 mt-2">As traffic builds up, your dashboard will start telling you exactly what to fix first — no digging through charts.</p>
         <a href={`/${locale}/dashboard`} className="inline-flex items-center gap-2 mt-4 rounded-xl bg-primary text-on-primary px-5 py-2.5 text-sm font-bold hover:opacity-90">
           See my visitors <ArrowRight className="w-4 h-4 rtl:rotate-180" />
         </a>

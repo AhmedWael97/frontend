@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale } from "next-intl";
-import { Lightbulb, AlertTriangle, Flame, TrendingUp, Info, ChevronRight } from "lucide-react";
+import { Lightbulb, AlertTriangle, Flame, TrendingUp, Info, ChevronRight, ThumbsUp, ThumbsDown } from "lucide-react";
 import { analyticsApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -43,6 +44,15 @@ export default function InsightPanel({
 }) {
   const ar = useLocale() === "ar";
   const isPortfolio = scope === "portfolio";
+  const [voted, setVoted] = useState<Record<string, boolean>>({});
+
+  const vote = (kind: string, helpful: boolean) => {
+    if (isPortfolio || !domainId || voted[kind] !== undefined) return;
+    setVoted((v) => ({ ...v, [kind]: helpful }));
+    analyticsApi.insightFeedback(domainId, page, kind, helpful).catch(() => {
+      setVoted((v) => { const n = { ...v }; delete n[kind]; return n; });
+    });
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: isPortfolio ? ["insights", "portfolio"] : ["insights", domainId, page],
@@ -105,6 +115,36 @@ export default function InsightPanel({
                   <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 rtl:rotate-180" />
                   <span>{f.action}</span>
                 </p>
+                {!isPortfolio && domainId && (
+                  <div className="mt-2 flex items-center gap-1">
+                    <span className="text-[11px] text-on-surface-variant/70">
+                      {ar ? "هل هذا مفيد؟" : "Helpful?"}
+                    </span>
+                    <button
+                      onClick={() => vote(f.kind, true)}
+                      disabled={voted[f.kind] !== undefined}
+                      className={cn(
+                        "rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-emerald-500 disabled:opacity-40",
+                        voted[f.kind] === true && "text-emerald-500"
+                      )}
+                    >
+                      <ThumbsUp className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => vote(f.kind, false)}
+                      disabled={voted[f.kind] !== undefined}
+                      className={cn(
+                        "rounded-md p-1 text-on-surface-variant hover:bg-surface-container hover:text-error disabled:opacity-40",
+                        voted[f.kind] === false && "text-error"
+                      )}
+                    >
+                      <ThumbsDown className="h-3.5 w-3.5" />
+                    </button>
+                    {voted[f.kind] !== undefined && (
+                      <span className="text-[11px] text-on-surface-variant/70">{ar ? "شكرًا" : "Thanks"}</span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           );
