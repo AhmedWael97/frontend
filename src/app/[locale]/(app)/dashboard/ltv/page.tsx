@@ -7,7 +7,7 @@ import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Gem } from "lucide-react";
 import { HelpDialog } from "@/components/HelpDialog";
-import AiInsightBanner from "@/components/ai/AiInsightBanner";
+import InsightPanel from "@/components/ai/InsightPanel";
 
 type LtvRow = {
   source: string; visitors: number; paying_visitors: number; orders: number;
@@ -75,11 +75,7 @@ function Content() {
         </div>
       </div>
 
-      <AiInsightBanner
-        page="ltv"
-        domainId={selectedDomainId}
-        data={{ period_days: days, currency, sources: rows }}
-      />
+      <InsightPanel domainId={selectedDomainId} page="ltv" />
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold text-on-surface">LTV by acquisition source (first-touch)</CardTitle></CardHeader>

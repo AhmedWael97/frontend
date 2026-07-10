@@ -10,7 +10,7 @@ import { analyticsApi, pipelinesApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Plus, Trash2, GripVertical, ArrowDown, Target, X, Film } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import AiInsightBanner from "@/components/ai/AiInsightBanner";
+import InsightPanel from "@/components/ai/InsightPanel";
 
 type Step = { name: string; url_pattern: string; match_type: string };
 
@@ -154,7 +154,7 @@ function Content() {
         </div>
       </div>
 
-      <AiInsightBanner page="funnels" domainId={selectedDomainId} data={funnelMetrics ?? funnels} />
+      <InsightPanel domainId={selectedDomainId} page="funnels" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: list + create form */}

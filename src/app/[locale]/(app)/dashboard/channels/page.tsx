@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Layers, DollarSign, TrendingUp, TrendingDown, Lightbulb, Link2 } from "lucide-react";
-import AiInsightBanner from "@/components/ai/AiInsightBanner";
+import InsightPanel from "@/components/ai/InsightPanel";
 
 type CampaignRow = { medium: string; sessions: number; visitors: number; revenue: number; orders: number; spend: number };
 const PERIODS = [{ label: "7 days", value: "7" }, { label: "30 days", value: "30" }, { label: "90 days", value: "90" }];
@@ -95,11 +95,7 @@ function Content() {
         </div>
       </div>
 
-      <AiInsightBanner
-        page="channels"
-        domainId={selectedDomainId}
-        data={{ period_days: days, currency, totals, channels }}
-      />
+      <InsightPanel domainId={selectedDomainId} page="channels" />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Kpi icon={DollarSign} label="Revenue" value={compact(totals.revenue)} />

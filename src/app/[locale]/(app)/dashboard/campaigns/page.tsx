@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { analyticsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { AdSpendDialog } from "./AdSpendDialog";
-import AiInsightBanner from "@/components/ai/AiInsightBanner";
+import InsightPanel from "@/components/ai/InsightPanel";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   LineChart, Line, Legend,
@@ -396,18 +396,7 @@ function Content() {
         </div>
       </div>
 
-      <AiInsightBanner
-        page="campaigns"
-        domainId={selectedDomainId}
-        data={{
-          period_days: days,
-          attribution,
-          currency,
-          totals: { sessions: totalSessions, visitors: totalVisitors, revenue: totalRevenue, orders: totalOrders, spend: totalSpend, roas: overallRoas },
-          campaigns: campaigns.slice(0, 30),
-          top_sources: topSources.slice(0, 15),
-        }}
-      />
+      <InsightPanel domainId={selectedDomainId} page="campaigns" />
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
