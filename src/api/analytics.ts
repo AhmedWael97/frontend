@@ -63,6 +63,10 @@ export const analyticsApi = {
   overview: (domainId: number) =>
     client.get(ANALYTICS_ROUTES.overview(domainId)),
 
+  /** GET /analytics/{domainId}/insights — deterministic stat findings */
+  insights: (domainId: number, page = "overview") =>
+    client.get(`/analytics/${domainId}/insights`, { params: { page } }),
+
   /** GET /analytics/{domainId}/visitors */
   visitorsList: (domainId: number, params?: { page?: number; per_page?: number }) =>
     client.get(ANALYTICS_ROUTES.visitorsList(domainId), { params }),
