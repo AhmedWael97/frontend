@@ -182,6 +182,32 @@ function Content() {
   const domainLimit: number = billing?.limits?.domains ?? 1;
   const planName: string = billing?.subscription?.plan?.name ?? "Free";
 
+  // Mirror of the server rule (StoreDomainRequest): accept a pasted URL, reduce it
+  // to a hostname, and require a real TLD — so bad input never round-trips.
+  const normalizeDomain = (raw: string) =>
+    raw
+      .trim()
+      .toLowerCase()
+      .replace(/^[a-z][a-z0-9+.-]*:\/\//, "")
+      .replace(/^[^/@]*@/, "")
+      .split("/")[0]
+      .split("?")[0]
+      .split("#")[0]
+      .split(":")[0]
+      .replace(/\.+$/, "");
+
+  const HOSTNAME_RE = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
+
+  const submitDomain = () => {
+    const name = normalizeDomain(newDomain);
+    if (!HOSTNAME_RE.test(name) || name.length > 253) {
+      setCreateError("Enter a valid domain like example.com or www.example.com (no http://, no paths).");
+      return;
+    }
+    setCreateError("");
+    createMutation.mutate(name);
+  };
+
   const createMutation = useMutation({
     mutationFn: (name: string) => domainsApi.create({ domain: name }),
     onSuccess: (_data, name) => {
@@ -265,7 +291,7 @@ function Content() {
             <p className="text-xs text-on-surface-variant">Enter your website domain without http:// — e.g. <code className="text-primary">example.com</code></p>
             <div className="flex gap-3">
               <Input value={newDomain} onChange={(e) => { setNewDomain(e.target.value); setCreateError(""); }} placeholder="example.com" className="max-w-sm" autoFocus />
-              <Button onClick={() => createMutation.mutate(newDomain)} disabled={!newDomain || createMutation.isPending}>
+              <Button onClick={() => submitDomain()} disabled={!newDomain || createMutation.isPending}>
                 {createMutation.isPending ? "Adding…" : "Add"}
               </Button>
               <Button variant="ghost" onClick={() => { setAdding(false); setCreateError(""); setShowWelcome(false); }}>Cancel</Button>
