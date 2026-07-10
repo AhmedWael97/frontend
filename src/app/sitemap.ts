@@ -25,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/cookieless-analytics", changeFrequency: "monthly", priority: 0.9 },
     { path: "/heatmaps", changeFrequency: "monthly", priority: 0.9 },
     { path: "/identify-visitors", changeFrequency: "monthly", priority: 0.9 },
+    { path: "/tools/speed-checker", changeFrequency: "monthly", priority: 0.8 },
     { path: "/about", changeFrequency: "yearly", priority: 0.5 },
     { path: "/contact", changeFrequency: "yearly", priority: 0.5 },
     { path: "/changelog", changeFrequency: "weekly", priority: 0.5 },

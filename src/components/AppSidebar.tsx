@@ -10,7 +10,7 @@ import {
   Globe, CreditCard, User, Shield,
   Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
   ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star,
-  SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem, Scale, Menu, ClipboardList,
+  SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem, Scale, Menu, ClipboardList, Gift,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -81,6 +81,7 @@ const HUB_GROUPS = [
     items: [
       { key: "domains",        href: "/settings/domains",           icon: Globe },
       { key: "team",           href: "/settings/team",              icon: Users },
+      { key: "referrals",      href: "/settings/referrals",         icon: Gift },
       { key: "billing",        href: "/settings/billing",           icon: CreditCard },
       { key: "profile",        href: "/settings/profile",           icon: User },
       { key: "security",       href: "/settings/security",          icon: Shield },

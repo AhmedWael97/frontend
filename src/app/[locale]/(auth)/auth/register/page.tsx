@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Eye, EyeOff, Loader2, ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ export default function RegisterPage() {
   const t = useTranslations("auth");
   const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setToken, setUser } = useAuthStore();
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
@@ -43,10 +44,15 @@ export default function RegisterPage() {
   useEffect(() => { eyeTrack("register_view", {}); }, []);
   const [googleHref, setGoogleHref] = useState("");
 
+  const ref = searchParams?.get("ref") || "";
+
   useEffect(() => {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    setGoogleHref(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/google/redirect?redirect=${encodeURIComponent(`${origin}/${locale}/auth/callback`)}`);
-  }, [locale]);
+    // The referral code rides inside the callback URL itself (survives the
+    // OAuth round-trip through Google's `state` param unchanged).
+    const callback = `${origin}/${locale}/auth/callback${ref ? `?ref=${encodeURIComponent(ref)}` : ""}`;
+    setGoogleHref(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/google/redirect?redirect=${encodeURIComponent(callback)}`);
+  }, [locale, ref]);
 
   const onFieldFocus = (field: string) => {
     if (focused.current[field]) return;
@@ -60,6 +66,7 @@ export default function RegisterPage() {
     const data = {
       email: String(fd.get("email") || "").trim(),
       password: String(fd.get("password") || ""),
+      ...(ref ? { referral_code: ref } : {}),
     };
     eyeTrack("register_submit", {});
     if (!/^\S+@\S+\.\S+$/.test(data.email) || data.password.length < 8) {

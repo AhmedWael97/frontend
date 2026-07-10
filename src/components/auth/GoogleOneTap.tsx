@@ -31,7 +31,8 @@ export default function GoogleOneTap() {
       done.current = true;
       eyeTrack("google_one_tap_credential", {});
       try {
-        const r = await authApi.googleOneTap(resp.credential);
+        const ref = new URLSearchParams(window.location.search).get("ref") || undefined;
+        const r = await authApi.googleOneTap(resp.credential, ref);
         setToken(r.data.token);
         setUser(r.data.user);
         toast.success(locale === "ar" ? "تم الدخول عبر Google" : "Signed in with Google");
