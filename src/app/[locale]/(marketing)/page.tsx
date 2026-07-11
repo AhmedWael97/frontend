@@ -68,12 +68,17 @@ export async function generateMetadata(
       title,
       description,
       siteName: "EYE Analytics",
+      // An explicit openGraph object here replaces (not merges with) the root
+      // layout's default, including its images — so it must repeat them, or
+      // the homepage silently ships with no OG image at all.
+      images: [`${siteBase()}/${locale}/opengraph-image`],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
       creator: "@eye_analytics",
+      images: [`${siteBase()}/${locale}/twitter-image`],
     },
     alternates: {
       canonical: `/${locale}`,

@@ -46,7 +46,7 @@ export function generateMetadata({ params }: Props): Metadata {
       canonical: url,
       languages: { en: `${SITE_URL}/en/free-tools/seo-checker`, ar: `${SITE_URL}/ar/free-tools/seo-checker` },
     },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website" },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
   };
 }
 

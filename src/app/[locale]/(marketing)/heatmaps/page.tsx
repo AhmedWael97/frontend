@@ -83,7 +83,7 @@ export function generateMetadata({ params }: Props): Metadata {
     title: t.metaTitle, description: t.metaDesc,
     keywords: ["heatmap tool", "Hotjar alternative", "click heatmap", "scroll depth tracking", "website heatmap free", "خرائط حرارية", "بديل هوتجار"],
     alternates: { canonical: url, languages: { en: `${SITE_URL}/en/heatmaps`, ar: `${SITE_URL}/ar/heatmaps` } },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website" },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
   };
 }
 

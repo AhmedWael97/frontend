@@ -83,7 +83,7 @@ export function generateMetadata({ params }: Props): Metadata {
     title: t.metaTitle, description: t.metaDesc,
     keywords: ["identify website visitors", "Leadfeeder alternative", "B2B visitor identification", "which companies visit my website", "website visitor tracking B2B", "تحديد زوار الموقع", "بديل Leadfeeder"],
     alternates: { canonical: url, languages: { en: `${SITE_URL}/en/identify-visitors`, ar: `${SITE_URL}/ar/identify-visitors` } },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website" },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
   };
 }
 

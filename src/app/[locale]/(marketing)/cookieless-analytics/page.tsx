@@ -89,7 +89,7 @@ export function generateMetadata({ params }: Props): Metadata {
       canonical: url,
       languages: { en: `${SITE_URL}/en/cookieless-analytics`, ar: `${SITE_URL}/ar/cookieless-analytics` },
     },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website" },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
   };
 }
 

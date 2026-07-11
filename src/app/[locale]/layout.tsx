@@ -47,11 +47,17 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       type: "website",
       siteName: SITE_NAME,
       locale: isAr ? "ar_SA" : "en_US",
+      // Next.js only auto-attaches the opengraph-image.tsx convention file when
+      // no explicit `images` is set here — since this object IS set (for
+      // siteName/locale), it silently suppressed the image with no error.
+      // Confirmed missing via our own new SEO checker tool (dogfooding).
+      images: [`${SITE_URL}/${isAr ? "ar" : "en"}/opengraph-image`],
     },
     twitter: {
       card: "summary_large_image",
       site: TWITTER_HANDLE,
       creator: TWITTER_HANDLE,
+      images: [`${SITE_URL}/${isAr ? "ar" : "en"}/twitter-image`],
     },
     robots: {
       index: true,
