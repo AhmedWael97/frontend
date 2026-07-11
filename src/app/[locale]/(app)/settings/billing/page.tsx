@@ -136,6 +136,10 @@ function Content() {
   const [transactionReference, setTransactionReference] = useState("");
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [paymobLoading, setPaymobLoading] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoResult, setPromoResult] = useState<{ code: string; discount_usd: number; final_price_usd: number } | null>(null);
+  const [promoError, setPromoError] = useState("");
 
   // Auto-select a sensible default plan + method once data is loaded.
   // Default plan: current plan if any, else the cheapest paid plan, else the first plan.
@@ -205,22 +209,53 @@ function Content() {
     subscribeMutation.mutate(form);
   };
 
+  const apiHeaders = () => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("eye_token") : null;
+    return {
+      "Content-Type": "application/json",
+      "Authorization": token ? `Bearer ${token}` : "",
+      "X-Public-Key": process.env.NEXT_PUBLIC_APP_PUBLIC_KEY || "",
+      "X-Secret-Key": process.env.NEXT_PUBLIC_APP_SECRET_KEY || "",
+    };
+  };
+  const apiBase = () => `${process.env.NEXT_PUBLIC_API_URL || ""}/api/${process.env.NEXT_PUBLIC_API_VERSION || "v1"}`;
+
+  const onApplyPromo = async () => {
+    if (!promoCode.trim() || !selectedPlanId) return;
+    setPromoLoading(true);
+    setPromoError("");
+    setPromoResult(null);
+    try {
+      const res = await fetch(`${apiBase()}/billing/promo/validate`, {
+        method: "POST",
+        headers: apiHeaders(),
+        body: JSON.stringify({ code: promoCode.trim(), plan_id: selectedPlanId }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setPromoError(json?.data?.message ?? json?.message ?? "Invalid code.");
+        return;
+      }
+      setPromoResult(json?.data ?? json);
+    } catch (e: any) {
+      setPromoError(e?.message ?? "Network error.");
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
   const onPaymob = async () => {
     if (!selectedPlanId) { toast.error("Please choose a plan first."); return; }
     trackInitiateCheckout(selectedPlan?.name); // TikTok InitiateCheckout
     setPaymobLoading(true);
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("eye_token") : null;
-      const apiBase = `${process.env.NEXT_PUBLIC_API_URL || ""}/api/${process.env.NEXT_PUBLIC_API_VERSION || "v1"}`;
-      const res = await fetch(`${apiBase}/billing/paymob/initiate`, {
+      const res = await fetch(`${apiBase()}/billing/paymob/initiate`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": token ? `Bearer ${token}` : "",
-          "X-Public-Key": process.env.NEXT_PUBLIC_APP_PUBLIC_KEY || "",
-          "X-Secret-Key": process.env.NEXT_PUBLIC_APP_SECRET_KEY || "",
-        },
-        body: JSON.stringify({ plan_id: selectedPlanId }),
+        headers: apiHeaders(),
+        body: JSON.stringify({
+          plan_id: selectedPlanId,
+          ...(promoResult ? { promo_code: promoResult.code } : {}),
+        }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -478,6 +513,46 @@ function Content() {
                       Mastercard, Meeza, Fawry, Vodafone Cash, and instalments.
                       {currency === "USD" && " Charges are processed in EGP; your bank converts to your local currency."}
                     </p>
+
+                    {/* Promo code */}
+                    <div className="pt-1">
+                      <label className="text-sm text-on-surface">
+                        <span className="block mb-1 font-medium">Promo code (optional)</span>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={promoCode}
+                            onChange={(e) => {
+                              setPromoCode(e.target.value.toUpperCase());
+                              setPromoResult(null);
+                              setPromoError("");
+                            }}
+                            placeholder="e.g. TIKTOK20"
+                            className="flex-1 rounded-md border border-outline-variant/25 bg-surface px-3 py-2 uppercase"
+                          />
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={onApplyPromo}
+                            disabled={promoLoading || !promoCode.trim()}
+                          >
+                            {promoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+                          </Button>
+                        </div>
+                      </label>
+                      {promoError && (
+                        <p className="text-[11px] text-rose-400 mt-1 inline-flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" /> {promoError}
+                        </p>
+                      )}
+                      {promoResult && (
+                        <p className="text-[11px] text-emerald-400 mt-1 inline-flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" />
+                          {promoResult.code} applied — save ${promoResult.discount_usd.toFixed(2)}, pay ${promoResult.final_price_usd.toFixed(2)}/mo.
+                        </p>
+                      )}
+                    </div>
+
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
                       <p className="text-xs text-on-surface-variant">
                         {isChangingPlan

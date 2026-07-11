@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Providers from "@/components/Providers";
 import SupportChatBubble from "@/components/SupportChatBubble";
+import WhatsAppButton from "@/components/marketing/WhatsAppButton";
 import { NavigationProgress } from "@/components/NavigationProgress";
 import { SITE_URL, SITE_NAME, TWITTER_HANDLE, DEFAULT_KEYWORDS } from "@/lib/seo";
 import "@/app/globals.css";
@@ -140,7 +141,7 @@ export default async function LocaleLayout({
           <Providers>
             <NavigationProgress />
             {children}
-            <div className="print:hidden"><SupportChatBubble /></div>
+            <div className="print:hidden"><SupportChatBubble /><WhatsAppButton /></div>
           </Providers>
         </NextIntlClientProvider>
       </body>

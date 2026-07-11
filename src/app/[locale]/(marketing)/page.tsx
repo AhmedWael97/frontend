@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/marketing/Navbar";
 import MobileCtaBar from "@/components/marketing/MobileCtaBar";
+import LiveStatsStrip from "@/components/marketing/LiveStatsStrip";
 import GoogleOneTap from "@/components/auth/GoogleOneTap";
 import Footer from "@/components/marketing/Footer";
 import { getTranslations } from "next-intl/server";
@@ -90,9 +91,17 @@ export async function generateMetadata(
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function HomePage({ params }: { params: { locale: string } }) {
+export default async function HomePage({
+  params,
+  searchParams,
+}: {
+  params: { locale: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const { locale } = params;
   const t = await getTranslations("landing");
+  // A/B Studio split_url experiment "hero-copy" redirects the variant bucket to ?hero=b.
+  const heroVariantB = searchParams?.hero === "b";
 
   const FEATURES = [
     { icon: Radio,      idx: 0, iconColor: "text-indigo-600 dark:text-indigo-400",  iconBg: "bg-indigo-100 dark:bg-indigo-500/15"  },
@@ -173,10 +182,10 @@ export default async function HomePage({ params }: { params: { locale: string } 
             </div>
 
             <h1 className="text-[2.6rem] leading-[1.05] sm:text-6xl lg:text-7xl font-black tracking-tight text-on-surface mb-5">
-              {t("hero.headline1")}
+              {t(heroVariantB ? "hero.headlineB1" : "hero.headline1")}
               <br />
               <span className="bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 dark:from-indigo-400 dark:via-violet-400 dark:to-pink-400 bg-clip-text text-transparent">
-                {t("hero.headline2")}
+                {t(heroVariantB ? "hero.headlineB2" : "hero.headline2")}
               </span>
             </h1>
 
@@ -277,6 +286,8 @@ export default async function HomePage({ params }: { params: { locale: string } 
             </div>
           </div>
         </section>
+
+        <LiveStatsStrip />
 
         {/* ── Problem ──────────────────────────────────────────────────────── */}
         <section className="py-20 sm:py-24 bg-surface-container/15">

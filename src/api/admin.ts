@@ -12,6 +12,15 @@ export const adminApi = {
   /** GET /admin/stats */
   stats: () => client.get(ADMIN_ROUTES.stats),
 
+  /** GET /admin/marketing */
+  marketing: () => client.get("/admin/marketing"),
+
+  /** Promo codes CRUD */
+  promoCodes: () => client.get("/admin/promo-codes"),
+  createPromoCode: (data: Record<string, unknown>) => client.post("/admin/promo-codes", data),
+  updatePromoCode: (id: number, data: Record<string, unknown>) => client.put(`/admin/promo-codes/${id}`, data),
+  deletePromoCode: (id: number) => client.delete(`/admin/promo-codes/${id}`),
+
   /** GET /admin/feedback */
   feedback: () => client.get("/admin/feedback"),
 
