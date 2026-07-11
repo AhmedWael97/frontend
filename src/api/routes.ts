@@ -87,6 +87,7 @@ export const ORGANIZATION_ROUTES = {
   cancelInvite: (id: number) => `/organization/invitations/${id}`,
   assignDomains: (userId: number) => `/organization/members/${userId}/domains`,
   removeMember: (userId: number) => `/organization/members/${userId}`,
+  promoCode: "/organization/promo-code",
 } as const;
 
 // ── Plan-upgrade tickets ─────────────────────────────────────────────────────

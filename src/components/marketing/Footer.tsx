@@ -18,10 +18,11 @@ export default function Footer({ locale }: FooterProps) {
 
   const FOOTER_LINKS = {
     [t("product")]: [
-      { label: t("features"),  href: "#features" },
-      { label: t("pricing"),   href: "/pricing" },
-      { label: t("changelog"), href: "/changelog" },
-      { label: t("roadmap"),   href: "/roadmap" },
+      { label: t("features"),     href: "#features" },
+      { label: t("pricing"),      href: "/pricing" },
+      { label: t("alternatives"), href: "/alternatives" },
+      { label: t("changelog"),    href: "/changelog" },
+      { label: t("roadmap"),      href: "/roadmap" },
     ],
     [t("company")]: [
       { label: t("about"),    href: "/about" },

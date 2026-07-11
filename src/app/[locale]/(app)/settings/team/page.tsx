@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/lib/use-toast";
-import { organizationApi, type Organization } from "@/api";
-import { Users, UserPlus, Trash2, Loader2, Building2, Globe, Copy, Check } from "lucide-react";
+import { organizationApi, type Organization, type OrgPromoCode } from "@/api";
+import { Users, UserPlus, Trash2, Loader2, Building2, Globe, Copy, Check, Gift } from "lucide-react";
 
 function CreateOrg() {
   const qc = useQueryClient();
@@ -68,6 +68,44 @@ function DomainPicker({ domains, selected, onToggle }: {
         );
       })}
     </div>
+  );
+}
+
+function ReferralCode() {
+  const [copied, setCopied] = useState(false);
+  const { data, isLoading } = useQuery({
+    queryKey: ["organization", "promo-code"],
+    queryFn: () => organizationApi.promoCode().then((r) => (r.data?.data ?? r.data) as OrgPromoCode),
+  });
+
+  if (isLoading || !data) return null;
+
+  const discount = data.discount_type === "percent" ? `${data.discount_value}%` : `$${data.discount_value}`;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Gift className="w-5 h-5 text-primary" /> Client referral code
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-sm text-on-surface-variant">
+          Give this code to your clients — it applies <strong>{discount} off</strong> their first EYE
+          subscription at checkout, and lets you see how many have signed up through you.
+        </p>
+        <div className="flex items-center gap-2 rounded-lg bg-surface-container p-2.5">
+          <code className="flex-1 font-mono font-bold text-on-surface">{data.code}</code>
+          <button
+            onClick={() => { navigator.clipboard.writeText(data.code); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
+            className="text-primary hover:opacity-80"
+          >
+            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+          </button>
+        </div>
+        <p className="text-xs text-on-surface-variant">Used {data.used_count} time{data.used_count === 1 ? "" : "s"} so far.</p>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -218,6 +256,7 @@ function Content() {
 
       {org && org.is_admin && (
         <>
+          <ReferralCode />
           <InviteForm org={org} />
 
           <Card>

@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { headers } from "next/headers";
+import { ALTERNATIVES } from "@/content/alternatives";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Host-aware base: the app is served on multiple domains (e.g. eye-analsyis.live
@@ -29,6 +30,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/free-tools/speed-checker", changeFrequency: "monthly", priority: 0.8 },
     { path: "/free-tools/seo-checker", changeFrequency: "monthly", priority: 0.8 },
     { path: "/free-tools/sitemap-creator", changeFrequency: "monthly", priority: 0.8 },
+    { path: "/alternatives", changeFrequency: "monthly", priority: 0.8 },
+    ...ALTERNATIVES.map((a) => ({ path: `/alternatives/${a.slug}`, changeFrequency: "monthly" as const, priority: 0.8 })),
     { path: "/about", changeFrequency: "yearly", priority: 0.5 },
     { path: "/contact", changeFrequency: "yearly", priority: 0.5 },
     { path: "/changelog", changeFrequency: "weekly", priority: 0.5 },

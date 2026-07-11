@@ -50,7 +50,7 @@ export type {
 } from "./sitemap";
 export { reportsApi } from "./reports";
 export { organizationApi } from "./organization";
-export type { Organization, OrgMember, OrgInvitation, OrgDomain } from "./organization";
+export type { Organization, OrgMember, OrgInvitation, OrgDomain, OrgPromoCode } from "./organization";
 export { upgradeTicketsApi } from "./upgradeTickets";
 export type { UpgradeTicket, TicketMessage } from "./upgradeTickets";
 export { gdprApi } from "./gdpr";

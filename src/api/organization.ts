@@ -54,4 +54,15 @@ export const organizationApi = {
 
   /** DELETE /organization/members/{userId} */
   removeMember: (userId: number) => client.delete(ORGANIZATION_ROUTES.removeMember(userId)),
+
+  /** GET /organization/promo-code — auto-generated agency referral code */
+  promoCode: () => client.get(ORGANIZATION_ROUTES.promoCode),
+};
+
+export type OrgPromoCode = {
+  code: string;
+  discount_type: "percent" | "fixed";
+  discount_value: number;
+  used_count: number;
+  is_active: boolean;
 };
