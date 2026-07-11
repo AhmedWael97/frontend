@@ -19,6 +19,7 @@ export { authApi } from "./auth";
 export { profileApi } from "./profile";
 export { onboardingApi } from "./onboarding";
 export { feedbackApi } from "./feedback";
+export { npsApi } from "./nps";
 export {
   domainsApi,
   exclusionsApi,

@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 import Providers from "@/components/Providers";
 import SupportChatBubble from "@/components/SupportChatBubble";
 import WhatsAppButton from "@/components/marketing/WhatsAppButton";
+import ExitIntentPopup from "@/components/marketing/ExitIntentPopup";
 import { NavigationProgress } from "@/components/NavigationProgress";
 import { SITE_URL, SITE_NAME, TWITTER_HANDLE, DEFAULT_KEYWORDS } from "@/lib/seo";
 import "@/app/globals.css";
@@ -64,6 +65,14 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       index: true,
       follow: true,
       googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+    },
+    // Search Console / Bing Webmaster site-ownership verification — set once
+    // per env var, no code change needed to add/rotate a verification code.
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+      other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+        ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+        : undefined,
     },
   };
 }
@@ -146,7 +155,7 @@ export default async function LocaleLayout({
           <Providers>
             <NavigationProgress />
             {children}
-            <div className="print:hidden"><SupportChatBubble /><WhatsAppButton /></div>
+            <div className="print:hidden"><SupportChatBubble /><WhatsAppButton /><ExitIntentPopup /></div>
           </Providers>
         </NextIntlClientProvider>
       </body>

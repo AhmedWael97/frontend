@@ -11,6 +11,7 @@ export {
   profileApi,
   onboardingApi,
   feedbackApi,
+  npsApi,
   domainsApi,
   exclusionsApi,
   webhooksApi,
