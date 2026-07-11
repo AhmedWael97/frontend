@@ -36,14 +36,14 @@ const C = {
 
 export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
-  const url = `${SITE_URL}/${params.locale}/tools/speed-checker`;
+  const url = `${SITE_URL}/${params.locale}/free-tools/speed-checker`;
   return {
     title: t.metaTitle,
     description: t.metaDesc,
     keywords: ["website speed test", "page speed checker", "free speed test", "TTFB checker", "فحص سرعة الموقع", "اختبار سرعة الصفحة"],
     alternates: {
       canonical: url,
-      languages: { en: `${SITE_URL}/en/tools/speed-checker`, ar: `${SITE_URL}/ar/tools/speed-checker` },
+      languages: { en: `${SITE_URL}/en/free-tools/speed-checker`, ar: `${SITE_URL}/ar/free-tools/speed-checker` },
     },
     openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website" },
   };

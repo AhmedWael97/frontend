@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, CheckCircle2, AlertTriangle, XCircle, Gauge } from "lucide-react";
+import { Loader2, CheckCircle2, AlertTriangle, XCircle, Info, ScanSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toolsApi, type SpeedCheck } from "@/api/tools";
+import { toolsApi, type SeoCheck, type SeoCheckItem } from "@/api/tools";
 import { trackViewPlans, eyeTrack } from "@/lib/track";
 
 const STATUS: Record<string, { Icon: typeof CheckCircle2; cls: string }> = {
@@ -13,12 +13,12 @@ const STATUS: Record<string, { Icon: typeof CheckCircle2; cls: string }> = {
   fail: { Icon: XCircle, cls: "text-error" },
 };
 
-export default function SpeedCheckerTool({ locale }: { locale: string }) {
+export default function SeoCheckerTool({ locale }: { locale: string }) {
   const ar = locale === "ar";
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<SpeedCheck | null>(null);
+  const [result, setResult] = useState<SeoCheck | null>(null);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,10 +28,10 @@ export default function SpeedCheckerTool({ locale }: { locale: string }) {
     setResult(null);
     try {
       const full = /^https?:\/\//i.test(url.trim()) ? url.trim() : `https://${url.trim()}`;
-      const r = await toolsApi.speedCheck(full);
-      const data = (r.data?.data ?? r.data) as SpeedCheck;
+      const r = await toolsApi.seoCheckPublic(full);
+      const data = (r.data?.data ?? r.data) as SeoCheck;
       setResult(data);
-      eyeTrack("tool_used", { tool: "speed_checker", url: full, score: data.score });
+      eyeTrack("tool_used", { tool: "seo_checker", url: full, score: data.score });
     } catch (err: any) {
       setError(err?.message || (ar ? "تعذّر فحص هذا الرابط." : "Could not check that URL."));
     } finally {
@@ -40,6 +40,7 @@ export default function SpeedCheckerTool({ locale }: { locale: string }) {
   };
 
   const scoreColor = (s: number) => (s >= 80 ? "text-emerald-500" : s >= 50 ? "text-amber-500" : "text-error");
+  const items: SeoCheckItem[] = result ? [...result.issues, ...result.passing] : [];
 
   return (
     <div className="not-prose space-y-6">
@@ -51,8 +52,8 @@ export default function SpeedCheckerTool({ locale }: { locale: string }) {
           className="flex-1 h-12 text-base"
         />
         <Button type="submit" disabled={loading} className="h-12 gap-2 sm:px-8">
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Gauge className="h-4 w-4" />}
-          {ar ? "افحص السرعة" : "Check speed"}
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanSearch className="h-4 w-4" />}
+          {ar ? "افحص السيو" : "Check SEO"}
         </Button>
       </form>
 
@@ -65,24 +66,15 @@ export default function SpeedCheckerTool({ locale }: { locale: string }) {
               <p className={`text-4xl font-black ${scoreColor(result.score)}`}>{result.score}</p>
               <p className="text-[11px] uppercase tracking-widest text-on-surface-variant">{ar ? "الدرجة" : "Score"}</p>
             </div>
-            <div className="flex gap-6 text-sm">
-              <div>
-                <p className="font-bold text-on-surface">{result.ttfb_ms}ms</p>
-                <p className="text-xs text-on-surface-variant">TTFB</p>
-              </div>
-              <div>
-                <p className="font-bold text-on-surface">{result.total_ms}ms</p>
-                <p className="text-xs text-on-surface-variant">{ar ? "التحميل الكامل" : "Total load"}</p>
-              </div>
-              <div>
-                <p className="font-bold text-on-surface">{result.size_kb} KB</p>
-                <p className="text-xs text-on-surface-variant">HTML</p>
-              </div>
-            </div>
+            <p className="text-sm text-on-surface-variant">
+              {ar
+                ? `نجح ${result.passed} من ${result.total} فحصاً`
+                : `${result.passed} of ${result.total} checks passed`}
+            </p>
           </div>
 
           <div className="divide-y divide-outline-variant/10">
-            {result.checks.map((c) => {
+            {items.map((c) => {
               const s = STATUS[c.status] ?? STATUS.warn;
               const { Icon } = s;
               return (
@@ -90,7 +82,8 @@ export default function SpeedCheckerTool({ locale }: { locale: string }) {
                   <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${s.cls}`} />
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-on-surface">{c.label}</p>
-                    <p className="text-sm text-on-surface-variant">{c.detail}</p>
+                    <p className="text-sm text-on-surface-variant">{c.message}</p>
+                    {c.suggestion && <p className="mt-1 text-sm text-primary">{c.suggestion}</p>}
                   </div>
                 </div>
               );
@@ -100,8 +93,8 @@ export default function SpeedCheckerTool({ locale }: { locale: string }) {
           <div className="border-t border-outline-variant/15 bg-primary/[0.04] px-5 py-4 text-center">
             <p className="text-sm text-on-surface-variant mb-2">
               {ar
-                ? "أراد رؤية سرعة موقعك أسبوعياً وليس مرة واحدة فقط؟"
-                : "Want to see this trend over time, not just once?"}
+                ? "أراد تتبّع مواقعك بحثاً عن هذه المشاكل تلقائياً؟"
+                : "Want to track sites for these issues automatically?"}
             </p>
             <a
               href={`/${locale}/auth/register`}

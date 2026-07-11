@@ -22,6 +22,7 @@ export default function Navbar() {
     { label: t("features"),   href: "#features" },
     { label: t("howItWorks"), href: "#how-it-works" },
     { label: locale === "ar" ? "عرض حيّ" : "Live demo", href: "/live-demo" },
+    { label: locale === "ar" ? "أدوات مجانية" : "Free Tools", href: "/free-tools" },
     { label: t("docs"),       href: "/docs" },
     { label: t("guide"),      href: "/help" },
     { label: t("pricing"),    href: "/pricing" },

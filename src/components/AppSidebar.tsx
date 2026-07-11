@@ -68,6 +68,7 @@ const HUB_GROUPS = [
       { key: "sharedReports",  href: "/dashboard/shared-reports",   icon: Share2 },
       { key: "exports",        href: "/dashboard/exports",          icon: Download },
       { key: "utmBuilder",     href: "/tools/utm-builder",          icon: Link2 },
+      { key: "speedChecker",   href: "/free-tools/speed-checker",   icon: Gauge },
       { key: "seoChecker",     href: "/tools/seo-checker",          icon: SearchCheck },
       { key: "seoRank",        href: "/tools/seo-rank",             icon: SearchCheck },
       { key: "sitemapCreator", href: "/tools/sitemap-creator",      icon: Layers },
