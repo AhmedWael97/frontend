@@ -9,7 +9,7 @@ type Props = Record<string, unknown>;
 
 declare global {
   interface Window {
-    ttq?: { track: (event: string, props?: Props) => void; page?: () => void };
+    ttq?: { track: (event: string, props?: Props, options?: { event_id?: string }) => void; page?: () => void };
     gtag?: (...args: unknown[]) => void;
     EYE?: {
       track?: (event: string, props?: Props) => void;
@@ -32,11 +32,15 @@ export function eyeTrack(event: string, props: Props = {}): void {
   }
 }
 
-/** Fire a TikTok standard event. */
-export function ttTrack(event: string, props: Props = {}): void {
+/**
+ * Fire a TikTok standard event. `eventId`, when given, is passed as TikTok's
+ * dedup key (3rd arg) — shared with a server-side Events API send of the same
+ * event so TikTok merges them instead of double-counting the conversion.
+ */
+export function ttTrack(event: string, props: Props = {}, eventId?: string): void {
   if (typeof window === "undefined") return;
   try {
-    window.ttq?.track(event, props);
+    window.ttq?.track(event, props, eventId ? { event_id: eventId } : undefined);
   } catch {
     /* pixel not loaded / blocked — ignore */
   }
@@ -52,9 +56,26 @@ export function gaEvent(event: string, params: Props = {}): void {
   }
 }
 
-/** Signup completed — the primary conversion. */
-export function trackSignup(): void {
-  ttTrack("CompleteRegistration");
+/**
+ * Signup completed — the primary conversion.
+ * @param userId   used to build a stable event_id shared with the server-side
+ *                 TikTok Events API send, so TikTok can dedup the pixel + CAPI
+ *                 hit for the same signup instead of double-counting it.
+ * @param email    enables Google Ads Enhanced Conversions — gtag hashes it
+ *                 client-side before sending, we never send it in plaintext.
+ */
+export function trackSignup(userId?: number | string, email?: string): void {
+  const eventId = userId != null ? `signup_${userId}` : undefined;
+
+  if (email && typeof window !== "undefined") {
+    try {
+      window.gtag?.("set", "user_data", { email: email.trim().toLowerCase() });
+    } catch {
+      /* gtag not loaded — ignore */
+    }
+  }
+
+  ttTrack("CompleteRegistration", {}, eventId);
   gaEvent("sign_up");
   // Google Ads "Add domain / signup" conversion.
   const label = process.env.NEXT_PUBLIC_GOOGLE_ADS_SIGNUP_LABEL

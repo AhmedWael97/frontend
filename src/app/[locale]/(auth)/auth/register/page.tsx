@@ -80,7 +80,7 @@ export default function RegisterPage() {
       const res = await authApi.register(data);
       setToken(res.data.token);
       setUser(res.data.user);
-      trackSignup(); // TikTok CompleteRegistration + Google Ads sign_up
+      trackSignup(res.data.user?.id, data.email); // TikTok CompleteRegistration + Google Ads sign_up (+ enhanced conversions)
       // Dogfooding: measure our own activation funnel via EYE's tracker.
       eyeTrack("register_complete", { email: data.email });
       if (res.data.user?.email_verified_at) {
