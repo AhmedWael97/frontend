@@ -89,10 +89,14 @@ const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||
 // ── Google Ads (gtag.js) ─────────────────────────────────────────────────────
 // Global site tag for Google Ads conversion tracking. ID is env-overridable.
 const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "AW-18257861903";
-// Define gtag() stub immediately (so gaEvent() queues), but DEFER loading the heavy
-// gtag.js + firing config until the browser is idle / after load — keeps pixels off
-// the hydration critical path (was competing on the main thread → late interactivity).
-const GTAG_INIT = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());function __eyeGtag(){var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}';document.head.appendChild(s);gtag('config',${JSON.stringify(GOOGLE_ADS_ID)});}if('requestIdleCallback'in window){requestIdleCallback(__eyeGtag,{timeout:4000});}else{addEventListener('load',function(){setTimeout(__eyeGtag,1500);});}`;
+// NOTE: gtag.js must load eagerly, not deferred to requestIdleCallback/on-load.
+// It was deferred for a perf pass (commit 3eb00be) — but the *only* thing that
+// flushes queued dataLayer events (incl. the signup "conversion" event) to
+// Google's servers is this script loading. A visitor who registers fast and
+// then closes the tab / backgrounds an ad-network in-app browser before the
+// idle callback fires never sends the beacon — conversions silently undercount.
+// The script tag itself is `async`, so it doesn't block first paint anyway.
+const GTAG_INIT = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',${JSON.stringify(GOOGLE_ADS_ID)});`;
 
 // Idle-defer wrapper for a script body (runs post-interactive).
 const deferIdle = (code: string) =>
@@ -131,7 +135,8 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('eye-appearance');if(t==='light')document.documentElement.classList.remove('dark');else if(t==='system'&&!window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.remove('dark');}catch(e){}` }} />
         {/* EYE self-tracking: loads our own tracker + replay (skips localhost) */}
         <script dangerouslySetInnerHTML={{ __html: EYE_LOADER }} />
-        {/* Google Ads (gtag.js) — stub now, heavy script deferred to idle */}
+        {/* Google Ads (gtag.js) — eager (async), so conversions aren't lost to fast bounces */}
+        <script async crossOrigin="anonymous" src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} />
         <script dangerouslySetInnerHTML={{ __html: GTAG_INIT }} />
         {/* TikTok Pixel — deferred to idle so it doesn't block hydration */}
         <script dangerouslySetInnerHTML={{ __html: deferIdle(TIKTOK_PIXEL) }} />
