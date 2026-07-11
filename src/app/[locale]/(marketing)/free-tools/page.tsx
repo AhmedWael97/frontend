@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Gauge, ScanSearch, ArrowRight } from "lucide-react";
+import { Gauge, ScanSearch, Layers, ArrowRight } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { SITE_URL } from "@/lib/seo";
@@ -16,6 +16,7 @@ const C = {
     tools: [
       { href: "/free-tools/speed-checker", icon: Gauge, name: "Speed Checker", desc: "Load time, TTFB, compression, render-blocking scripts." },
       { href: "/free-tools/seo-checker", icon: ScanSearch, name: "SEO Checker", desc: "Title, meta tags, headings, images, Open Graph, and more." },
+      { href: "/free-tools/sitemap-creator", icon: Layers, name: "Sitemap Creator", desc: "Crawl your site and generate a ready-to-use sitemap.xml." },
     ],
     cta: "Try it",
   },
@@ -27,6 +28,7 @@ const C = {
     tools: [
       { href: "/free-tools/speed-checker", icon: Gauge, name: "فحص السرعة", desc: "وقت التحميل، الاستجابة، الضغط، السكربتات المُعيقة." },
       { href: "/free-tools/seo-checker", icon: ScanSearch, name: "فحص السيو", desc: "العنوان، العلامات الوصفية، العناوين، الصور، Open Graph، والمزيد." },
+      { href: "/free-tools/sitemap-creator", icon: Layers, name: "منشئ خريطة الموقع", desc: "زحف لموقعك وإنشاء ملف sitemap.xml جاهز." },
     ],
     cta: "جرّبها",
   },
@@ -57,7 +59,7 @@ export default function FreeToolsPage({ params }: Props) {
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-on-surface text-center">{t.title}</h1>
         <p className="mt-3 text-center text-on-surface-variant">{t.subtitle}</p>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2">
+        <div className="mt-12 grid gap-4 sm:grid-cols-3">
           {t.tools.map((tool) => {
             const Icon = tool.icon;
             return (

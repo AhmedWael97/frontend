@@ -28,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/free-tools", changeFrequency: "monthly", priority: 0.8 },
     { path: "/free-tools/speed-checker", changeFrequency: "monthly", priority: 0.8 },
     { path: "/free-tools/seo-checker", changeFrequency: "monthly", priority: 0.8 },
+    { path: "/free-tools/sitemap-creator", changeFrequency: "monthly", priority: 0.8 },
     { path: "/about", changeFrequency: "yearly", priority: 0.5 },
     { path: "/contact", changeFrequency: "yearly", priority: 0.5 },
     { path: "/changelog", changeFrequency: "weekly", priority: 0.5 },

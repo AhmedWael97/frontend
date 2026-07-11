@@ -30,10 +30,21 @@ export interface SeoCheck {
   passing: SeoCheckItem[];
 }
 
+export interface SitemapCheck {
+  start_url: string;
+  pages_crawled: number;
+  truncated: boolean;
+  pages: Array<{ url: string; priority: string; changefreq: string }>;
+  xml: string;
+}
+
 export const toolsApi = {
   /** POST /tools/speed-check */
   speedCheck: (url: string) => client.post("/tools/speed-check", { url }),
 
   /** POST /tools/seo-check-public */
   seoCheckPublic: (url: string) => client.post("/tools/seo-check-public", { url }),
+
+  /** POST /tools/sitemap-check */
+  sitemapCheck: (url: string) => client.post("/tools/sitemap-check", { url }),
 };

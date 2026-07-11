@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { MarketingDoc } from "@/components/marketing/MarketingDoc";
 import SpeedCheckerTool from "@/components/marketing/SpeedCheckerTool";
-import { SITE_URL } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
+import { SITE_URL, faqJsonLd } from "@/lib/seo";
 
 type Props = { params: { locale: string } };
 
@@ -54,17 +55,20 @@ export default function SpeedCheckerPage({ params }: Props) {
   const t = C[ar ? "ar" : "en"];
 
   return (
-    <MarketingDoc locale={params.locale} title={t.title} subtitle={t.subtitle}>
-      <p>{t.intro}</p>
-      <SpeedCheckerTool locale={params.locale} />
+    <>
+      <JsonLd data={faqJsonLd(t.faq.map(([question, answer]) => ({ question, answer })))} />
+      <MarketingDoc locale={params.locale} title={t.title} subtitle={t.subtitle}>
+        <p>{t.intro}</p>
+        <SpeedCheckerTool locale={params.locale} />
 
-      <h2>{t.faqH}</h2>
-      {t.faq.map(([q, a]) => (
-        <div key={q}>
-          <p style={{ fontWeight: 700, marginBottom: 2 }}>{q}</p>
-          <p>{a}</p>
-        </div>
-      ))}
-    </MarketingDoc>
+        <h2>{t.faqH}</h2>
+        {t.faq.map(([q, a]) => (
+          <div key={q}>
+            <p style={{ fontWeight: 700, marginBottom: 2 }}>{q}</p>
+            <p>{a}</p>
+          </div>
+        ))}
+      </MarketingDoc>
+    </>
   );
 }
