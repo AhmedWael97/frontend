@@ -8,10 +8,6 @@ import { JsonLd } from "@/components/JsonLd";
 import { ALTERNATIVES, ALTERNATIVES_UI } from "@/content/alternatives";
 import { SITE_URL, breadcrumbJsonLd } from "@/lib/seo";
 
-export function generateStaticParams() {
-  return ALTERNATIVES.map((a) => ({ slug: a.slug }));
-}
-
 function getAlt(slug: string) {
   return ALTERNATIVES.find((a) => a.slug === slug) ?? null;
 }
