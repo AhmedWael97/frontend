@@ -76,7 +76,14 @@ const EYE_TOKEN = process.env.NEXT_PUBLIC_EYE_TOKEN || "9d9c35ffcf7fa952ead43411
 // eye-analysis.online it loads /tracker/eye.js and posts to /api/collect on
 // eye-analysis.online, not the other domain. Skips localhost so dev never
 // pollutes production analytics. Defers to idle/load so it never blocks paint.
-const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||h==='127.0.0.1'||h.endsWith('.local'))return;var o=location.origin;window.EYE_TOKEN=${JSON.stringify(EYE_TOKEN)};window.EYE_API=o+'/api/collect';function go(){var e=document.createElement('script');e.src=o+'/tracker/eye.js';e.async=true;document.head.appendChild(e);}if('requestIdleCallback' in window){requestIdleCallback(go,{timeout:3000});}else{window.addEventListener('load',go);}}catch(e){}})();`;
+// Stub installed synchronously (before the real script loads) so
+// EYE.track()/identify()/purchase() calls made in the gap — up to ~3s, since
+// the real script is deferred to requestIdleCallback for performance — queue
+// instead of silently no-oping. eye.js replays window.EYE.q once it loads.
+// Without this, exactly the fastest / highest-intent users (e.g. someone who
+// completes registration in a few seconds) were the least likely to ever be
+// tracked, because they finished before the deferred loader even ran.
+const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||h==='127.0.0.1'||h.endsWith('.local'))return;var o=location.origin;window.EYE_TOKEN=${JSON.stringify(EYE_TOKEN)};window.EYE_API=o+'/api/collect';window.EYE=window.EYE||{q:[]};['track','identify','purchase'].forEach(function(m){window.EYE[m]=window.EYE[m]||function(){window.EYE.q.push([m,arguments]);};});function go(){var e=document.createElement('script');e.src=o+'/tracker/eye.js';e.async=true;document.head.appendChild(e);}if('requestIdleCallback' in window){requestIdleCallback(go,{timeout:3000});}else{window.addEventListener('load',go);}}catch(e){}})();`;
 
 // ── Google Ads (gtag.js) ─────────────────────────────────────────────────────
 // Global site tag for Google Ads conversion tracking. ID is env-overridable.
