@@ -14,8 +14,11 @@ import {
 import {
   Users, Eye, Clock, TrendingDown, TrendingUp, Globe, Monitor, Smartphone,
   Tablet, Flame, Megaphone, Zap, Star, ArrowUpRight, ArrowDownRight,
-  BarChart2, AlertCircle, Info,
+  BarChart2, AlertCircle, Info, AlertTriangle, Sparkles, Bug, Gauge,
+  DollarSign, Bell, MousePointerClick, ChevronRight,
 } from "lucide-react";
+import Link from "next/link";
+import { useLocale } from "next-intl";
 import { formatDate } from "@/lib/utils";
 
 const TOOLTIP_STYLE = {
@@ -47,6 +50,36 @@ type SummaryData = {
   ux_score: { score: number; breakdown: Record<string, unknown>; calculated_at: string } | null;
   custom_events: { name: string; occurrences: number }[];
   trend: { date: string; visitors: number; sessions: number }[];
+  top_issues: { kind: string; severity: "critical" | "warning" | "good" | "info"; title: string; detail?: string; impact: number }[];
+  ai_summary: {
+    summary: string | null;
+    top_insight: string | null;
+    top_suggestions: { text: string; category: string; priority: string; estimated_impact: string }[];
+    generated_at: string | null;
+  } | null;
+  ux_issues: { type: string; occurrences: number; affected: number }[];
+  web_vitals: { rating: "good" | "needs-improvement" | "poor"; good: number; needs_improvement: number; poor: number };
+  revenue: { total: number; orders: number; prev_total: number };
+  recent_alerts: { title: string; body: string; created_at: string }[];
+};
+
+const SEVERITY_STYLE: Record<string, string> = {
+  critical: "bg-rose-400/15 text-rose-300 border-rose-400/30",
+  warning: "bg-amber-400/15 text-amber-300 border-amber-400/30",
+  good: "bg-emerald-400/15 text-emerald-300 border-emerald-400/30",
+  info: "bg-sky-400/15 text-sky-300 border-sky-400/30",
+};
+
+const VITALS_STYLE: Record<string, string> = {
+  good: "text-emerald-400",
+  "needs-improvement": "text-amber-400",
+  poor: "text-rose-400",
+};
+
+const UX_ISSUE_LABEL: Record<string, string> = {
+  rage_click: "Rage clicks",
+  dead_click: "Dead clicks",
+  js_error: "JS errors",
 };
 
 function pct(a: number, b: number): number {
@@ -183,6 +216,7 @@ function Section({ title, icon: Icon, children }: { title: string; icon: React.E
 
 function Content() {
   const { selectedDomainId } = useAuthStore();
+  const locale = useLocale();
   const [period, setPeriod] = useState("30d");
 
   // Custom date range
@@ -280,6 +314,179 @@ function Content() {
           )}
         </div>
       </div>
+
+      {/* ── Needs Your Attention — the whole point of this page ─────────────
+          Top issues + AI headline + UX/vitals/revenue snapshot + recent
+          alerts, so a quick look here answers "is anything wrong" without
+          visiting any other page. Deep-dive links go to the pages that have
+          the full detail. ─────────────────────────────────────────────── */}
+      <Section title="Needs Your Attention" icon={AlertTriangle}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Top issues (deterministic engine, ranked by impact) */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-2 flex-row items-center justify-between">
+              <CardTitle className="text-xs text-on-surface-variant uppercase tracking-widest">Top Issues</CardTitle>
+              <Link href={`/${locale}/dashboard/analytics`} className="text-xs text-primary hover:opacity-80 flex items-center gap-0.5">
+                Investigate <ChevronRight className="w-3 h-3 rtl:rotate-180" />
+              </Link>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {isLoading ? (
+                Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} />)
+              ) : (d?.top_issues ?? []).length === 0 ? (
+                <p className="text-xs text-on-surface-variant py-2">No notable issues detected in this period.</p>
+              ) : (
+                (d?.top_issues ?? []).map((issue, i) => (
+                  <div key={i} className="flex items-start gap-2.5 py-1.5">
+                    <span className={`shrink-0 mt-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase border ${SEVERITY_STYLE[issue.severity] ?? SEVERITY_STYLE.info}`}>
+                      {issue.severity}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm text-on-surface font-medium">{issue.title}</p>
+                      {issue.detail && <p className="text-xs text-on-surface-variant mt-0.5">{issue.detail}</p>}
+                    </div>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+
+          {/* AI headline */}
+          <Card>
+            <CardHeader className="pb-2 flex-row items-center justify-between">
+              <CardTitle className="text-xs text-on-surface-variant uppercase tracking-widest flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-violet-400" /> AI Take
+              </CardTitle>
+              <Link href={`/${locale}/dashboard/ai`} className="text-xs text-primary hover:opacity-80 flex items-center gap-0.5">
+                Full report <ChevronRight className="w-3 h-3 rtl:rotate-180" />
+              </Link>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton />
+              ) : d?.ai_summary ? (
+                <div className="space-y-2">
+                  {d.ai_summary.top_insight && (
+                    <p className="text-sm text-on-surface font-medium">{d.ai_summary.top_insight}</p>
+                  )}
+                  {d.ai_summary.top_suggestions.slice(0, 2).map((s, i) => (
+                    <p key={i} className="text-xs text-on-surface-variant border-s-2 border-primary/30 ps-2">{s.text}</p>
+                  ))}
+                  {d.ai_summary.generated_at && (
+                    <p className="text-[11px] text-on-surface-variant/70 pt-1">Generated {formatDate(d.ai_summary.generated_at)}</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-on-surface-variant py-2">No AI analysis run yet.</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* UX issues */}
+          <Card>
+            <CardHeader className="pb-2 flex-row items-center justify-between">
+              <CardTitle className="text-xs text-on-surface-variant uppercase tracking-widest flex items-center gap-1.5">
+                <MousePointerClick className="w-3.5 h-3.5" /> UX Issues
+              </CardTitle>
+              <Link href={`/${locale}/dashboard/ux`} className="text-xs text-primary hover:opacity-80 flex items-center gap-0.5">
+                Details <ChevronRight className="w-3 h-3 rtl:rotate-180" />
+              </Link>
+            </CardHeader>
+            <CardContent className="space-y-1.5">
+              {isLoading ? (
+                <Skeleton />
+              ) : (d?.ux_issues ?? []).length === 0 ? (
+                <p className="text-xs text-on-surface-variant py-2">No rage/dead clicks or JS errors this period.</p>
+              ) : (
+                (d?.ux_issues ?? []).map((u, i) => (
+                  <div key={i} className="flex items-center justify-between text-xs">
+                    <span className="text-on-surface flex items-center gap-1.5">
+                      {u.type === "js_error" ? <Bug className="w-3 h-3 text-rose-400" /> : <MousePointerClick className="w-3 h-3 text-amber-400" />}
+                      {UX_ISSUE_LABEL[u.type] ?? u.type}
+                    </span>
+                    <span className="font-semibold text-on-surface">{Number(u.occurrences).toLocaleString()} <span className="text-on-surface-variant font-normal">({Number(u.affected).toLocaleString()} visitors)</span></span>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Web Vitals */}
+          <Card>
+            <CardHeader className="pb-2 flex-row items-center justify-between">
+              <CardTitle className="text-xs text-on-surface-variant uppercase tracking-widest flex items-center gap-1.5">
+                <Gauge className="w-3.5 h-3.5" /> Web Vitals
+              </CardTitle>
+              <Link href={`/${locale}/dashboard/web-vitals`} className="text-xs text-primary hover:opacity-80 flex items-center gap-0.5">
+                Details <ChevronRight className="w-3 h-3 rtl:rotate-180" />
+              </Link>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton />
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className={`text-lg font-black capitalize ${VITALS_STYLE[d?.web_vitals?.rating ?? "good"]}`}>
+                    {d?.web_vitals?.rating ?? "—"}
+                  </span>
+                  <span className="text-xs text-on-surface-variant">
+                    {d?.web_vitals?.good ?? 0} good · {d?.web_vitals?.needs_improvement ?? 0} ok · {d?.web_vitals?.poor ?? 0} poor
+                  </span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Revenue */}
+          <Card>
+            <CardHeader className="pb-2 flex-row items-center justify-between">
+              <CardTitle className="text-xs text-on-surface-variant uppercase tracking-widest flex items-center gap-1.5">
+                <DollarSign className="w-3.5 h-3.5 text-emerald-400" /> Revenue
+              </CardTitle>
+              <Link href={`/${locale}/dashboard/campaigns`} className="text-xs text-primary hover:opacity-80 flex items-center gap-0.5">
+                Campaigns <ChevronRight className="w-3 h-3 rtl:rotate-180" />
+              </Link>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton />
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-black text-on-surface">
+                    ${(d?.revenue?.total ?? 0).toLocaleString()}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-on-surface-variant">{d?.revenue?.orders ?? 0} orders</span>
+                    <Delta val={pct(d?.revenue?.total ?? 0, d?.revenue?.prev_total ?? 0)} />
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recent alerts */}
+          {(d?.recent_alerts ?? []).length > 0 && (
+            <Card className="lg:col-span-3">
+              <CardHeader className="pb-2 flex-row items-center justify-between">
+                <CardTitle className="text-xs text-on-surface-variant uppercase tracking-widest flex items-center gap-1.5">
+                  <Bell className="w-3.5 h-3.5" /> Recent Alerts (last 7 days)
+                </CardTitle>
+                <Link href={`/${locale}/settings/alerts`} className="text-xs text-primary hover:opacity-80 flex items-center gap-0.5">
+                  Manage <ChevronRight className="w-3 h-3 rtl:rotate-180" />
+                </Link>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {(d?.recent_alerts ?? []).map((a, i) => (
+                  <div key={i} className="flex items-center justify-between gap-3 text-xs">
+                    <span className="text-on-surface font-medium truncate">{a.title}</span>
+                    <span className="text-on-surface-variant shrink-0">{formatDate(a.created_at)}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </Section>
 
       {/* ── Traffic KPIs ─────────────────────────────────────────────────── */}
       <Section title="Traffic Overview" icon={BarChart2}>
