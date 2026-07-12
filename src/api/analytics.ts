@@ -79,6 +79,10 @@ export const analyticsApi = {
   visitorsShow: (domainId: number, visitorId: string) =>
     client.get(ANALYTICS_ROUTES.visitorsShow(domainId, visitorId)),
 
+  /** GET /analytics/{domainId}/visitors/{visitorId}/sessions/{sessionId}/journey */
+  visitorsJourney: (domainId: number, visitorId: string, sessionId: string) =>
+    client.get(ANALYTICS_ROUTES.visitorsJourney(domainId, visitorId, sessionId)),
+
   /** GET /analytics/{domainId}/compare */
   compare: (domainId: number, params?: Record<string, unknown>) =>
     client.get(ANALYTICS_ROUTES.compare(domainId), { params }),

@@ -207,6 +207,8 @@ export const ANALYTICS_ROUTES = {
   visitorsList: (domainId: number) => `/analytics/${domainId}/visitors`,
   visitorsShow: (domainId: number, visitorId: string) =>
     `/analytics/${domainId}/visitors/${visitorId}`,
+  visitorsJourney: (domainId: number, visitorId: string, sessionId: string) =>
+    `/analytics/${domainId}/visitors/${visitorId}/sessions/${sessionId}/journey`,
   compare: (domainId: number) => `/analytics/${domainId}/compare`,
   forms: (domainId: number) => `/analytics/${domainId}/forms`,
   identitiesList: (domainId: number) => `/analytics/${domainId}/identities`,
