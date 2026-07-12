@@ -202,6 +202,18 @@ function pathOnly(url: string): string {
   }
 }
 
+/** ISO 3166-1 alpha-2 code (e.g. "EG") -> flag emoji via regional indicator symbols. */
+function countryFlag(code: string): string {
+  if (!/^[A-Za-z]{2}$/.test(code)) return "🏳️";
+  return String.fromCodePoint(
+    ...code.toUpperCase().split("").map((c) => 0x1f1e6 + (c.charCodeAt(0) - 65))
+  );
+}
+
+function truncate90(s: string): string {
+  return s.length > 90 ? `${s.slice(0, 90)}…` : s;
+}
+
 function Section({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
     <div>
@@ -602,7 +614,7 @@ function Content() {
                 : (d?.top_countries ?? []).map((c, i) => (
                     <div key={i} className="flex items-center justify-between gap-2">
                       <span className="text-xs text-on-surface flex items-center gap-1.5">
-                        <Globe className="w-3 h-3 text-on-surface-variant" />{c.country}
+                        <span className="text-sm leading-none">{countryFlag(c.country)}</span>{c.country || "Unknown"}
                       </span>
                       <Badge variant="secondary" className="text-xs">{Number(c.sessions).toLocaleString()}</Badge>
                     </div>
@@ -616,14 +628,29 @@ function Content() {
               <CardTitle className="text-xs text-on-surface-variant uppercase tracking-widest">Top Referrers</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {isLoading
-                ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} />)
-                : (d?.top_referrers ?? []).map((r, i) => (
-                    <div key={i} className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-on-surface truncate max-w-[160px]" title={r.referrer}>{pathOnly(r.referrer) || r.referrer || "(direct)"}</span>
-                      <Badge variant="secondary" className="text-xs">{Number(r.sessions).toLocaleString()}</Badge>
-                    </div>
-                  ))}
+              <TooltipProvider delayDuration={200}>
+                {isLoading
+                  ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} />)
+                  : (d?.top_referrers ?? []).map((r, i) => {
+                      const full = r.referrer || "(direct)";
+                      const shown = truncate90(full);
+                      return (
+                        <div key={i} className="flex items-center justify-between gap-2">
+                          {shown.length < full.length ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="text-xs text-on-surface break-all cursor-help">{shown}</span>
+                              </TooltipTrigger>
+                              <TooltipContent className="break-all">{full}</TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            <span className="text-xs text-on-surface break-all">{shown}</span>
+                          )}
+                          <Badge variant="secondary" className="text-xs shrink-0">{Number(r.sessions).toLocaleString()}</Badge>
+                        </div>
+                      );
+                    })}
+              </TooltipProvider>
             </CardContent>
           </Card>
         </div>
@@ -643,35 +670,44 @@ function Content() {
               ) : (d?.devices ?? []).length === 0 ? (
                 <p className="text-xs text-on-surface-variant text-center py-6">No device data yet.</p>
               ) : (
-                <>
-                  <ResponsiveContainer width="100%" height={140}>
-                    <PieChart>
-                      <Pie
-                        data={d?.devices ?? []}
-                        dataKey="sessions"
-                        nameKey="device_type"
-                        cx="50%" cy="50%"
-                        innerRadius={35} outerRadius={60}
-                        paddingAngle={3}
-                      >
-                        {(d?.devices ?? []).map((_, i) => (
-                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                (() => {
+                  // ClickHouse's HTTP/JSON interface serializes UInt64 aggregates
+                  // (count()) as strings to avoid JS precision loss — recharts'
+                  // Pie needs real numbers for its dataKey or the slice sizing
+                  // breaks. Coerce once, use everywhere below.
+                  const deviceData = (d?.devices ?? []).map((dv) => ({ ...dv, sessions: Number(dv.sessions) }));
+                  return (
+                    <>
+                      <ResponsiveContainer width="100%" height={140}>
+                        <PieChart>
+                          <Pie
+                            data={deviceData}
+                            dataKey="sessions"
+                            nameKey="device_type"
+                            cx="50%" cy="50%"
+                            innerRadius={35} outerRadius={60}
+                            paddingAngle={3}
+                          >
+                            {deviceData.map((_, i) => (
+                              <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <ChartTooltip contentStyle={TOOLTIP_STYLE} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {deviceData.map((dv, i) => (
+                          <span key={i} className="flex items-center gap-1 text-xs text-on-surface-variant">
+                            <span className="w-2 h-2 rounded-full" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                            <DeviceIcon type={dv.device_type} />
+                            {dv.device_type}
+                            <span className="text-on-surface-variant/60">({dv.sessions.toLocaleString()})</span>
+                          </span>
                         ))}
-                      </Pie>
-                      <ChartTooltip contentStyle={TOOLTIP_STYLE} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {(d?.devices ?? []).map((dv, i) => (
-                      <span key={i} className="flex items-center gap-1 text-xs text-on-surface-variant">
-                        <span className="w-2 h-2 rounded-full" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
-                        <DeviceIcon type={dv.device_type} />
-                        {dv.device_type}
-                        <span className="text-on-surface-variant/60">({Number(dv.sessions).toLocaleString()})</span>
-                      </span>
-                    ))}
-                  </div>
-                </>
+                      </div>
+                    </>
+                  );
+                })()
               )}
             </CardContent>
           </Card>
