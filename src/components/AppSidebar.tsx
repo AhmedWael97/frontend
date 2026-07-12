@@ -198,6 +198,7 @@ export function AppSidebar() {
                   <Link
                     href={full(group.hubHref)}
                     onClick={() => setOpen(false)}
+                    data-tour={`hub-${group.groupKey}`}
                     className={cn(
                       "flex items-center gap-2.5 flex-1 px-3 py-2.5 text-sm font-bold rounded-s-xl transition-all",
                       hubExact

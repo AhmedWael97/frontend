@@ -291,7 +291,7 @@ function Content() {
           <CardContent className="pt-0 space-y-3">
             <p className="text-xs text-on-surface-variant">Enter your website domain without http:// — e.g. <code className="text-primary">example.com</code></p>
             <div className="flex gap-3">
-              <Input value={newDomain} onChange={(e) => { setNewDomain(e.target.value); setCreateError(""); }} placeholder="example.com" className="max-w-sm" autoFocus />
+              <Input data-tour="add-domain-input" value={newDomain} onChange={(e) => { setNewDomain(e.target.value); setCreateError(""); }} placeholder="example.com" className="max-w-sm" autoFocus />
               <Button onClick={() => submitDomain()} disabled={!newDomain || createMutation.isPending}>
                 {createMutation.isPending ? "Adding…" : "Add"}
               </Button>

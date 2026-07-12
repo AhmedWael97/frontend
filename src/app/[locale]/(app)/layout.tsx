@@ -9,6 +9,7 @@ import { ImpersonationBanner } from "@/components/ImpersonationBanner";
 import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { NpsWidget } from "@/components/NpsWidget";
+import { TourGuide } from "@/components/onboarding/TourGuide";
 import { useAuthStore } from "@/store/auth";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -62,6 +63,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
       <FeedbackModal />
       <NpsWidget />
+      <TourGuide />
     </div>
   );
 }
