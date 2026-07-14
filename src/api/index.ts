@@ -31,6 +31,7 @@ export {
 export { analyticsApi } from "./analytics";
 export { uxApi } from "./ux";
 export { growthApi } from "./growth";
+export { socialApi } from "./social";
 export { replayApi } from "./replay";
 export { aiApi } from "./ai";
 export { chatbotApi } from "./chatbot";

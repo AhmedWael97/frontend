@@ -11,6 +11,7 @@ import {
   Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
   ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star,
   SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem, Scale, Menu, ClipboardList, Gift,
+  MessagesSquare,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -65,6 +66,7 @@ const HUB_GROUPS = [
     items: [
       { key: "ai",             href: "/dashboard/ai",               icon: Sparkles },
       { key: "leads",          href: "/dashboard/leads",            icon: Users },
+      { key: "social",         href: "/dashboard/social",           icon: MessagesSquare },
       { key: "sharedReports",  href: "/dashboard/shared-reports",   icon: Share2 },
       { key: "exports",        href: "/dashboard/exports",          icon: Download },
       { key: "utmBuilder",     href: "/tools/utm-builder",          icon: Link2 },

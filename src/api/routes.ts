@@ -255,6 +255,20 @@ export const GROWTH_ROUTES = {
   outreachSend: "/outreach/send",
 } as const;
 
+// ── Social manager (Chrome extension unified inbox + AI composer) ───────────────
+export const SOCIAL_ROUTES = {
+  inbox: "/social/inbox",
+  inboxSummary: "/social/inbox/summary",
+  inboxDraft: (id: number) => `/social/inbox/${id}/draft`,
+  inboxStatus: (id: number) => `/social/inbox/${id}/status`,
+  settings: "/social/settings",
+  posts: "/scheduled-posts",
+  postsGenerateText: "/scheduled-posts/generate-text",
+  postsGenerateImage: "/scheduled-posts/generate-image",
+  post: (id: number) => `/scheduled-posts/${id}`,
+  postStatus: (id: number) => `/scheduled-posts/${id}/status`,
+} as const;
+
 // ── UX Intelligence ───────────────────────────────────────────────────────────
 export const UX_ROUTES = {
   score: (domainId: number) => `/ux/${domainId}/score`,

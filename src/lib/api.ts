@@ -19,6 +19,7 @@ export {
   pipelinesApi,
   savedViewsApi,
   analyticsApi,
+  socialApi,
   uxApi,
   replayApi,
   aiApi,
