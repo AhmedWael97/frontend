@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { socialApi } from "@/lib/api";
 import { toast } from "@/lib/use-toast";
-import { Facebook, Twitter, Instagram, Sparkles, ImageIcon, Trash2, MessagesSquare } from "lucide-react";
+import { Facebook, Twitter, Instagram, Sparkles, ImageIcon, Trash2, MessagesSquare, Download } from "lucide-react";
 
 // Fixed platform -> color mapping (never cycled/index-based — see dataviz
 // skill). Validated: passes lightness/chroma/CVD checks against this
@@ -104,7 +104,7 @@ function InboxTab() {
       {detectedPlatforms.length === 0 && (
         <Card>
           <CardContent className="py-10 text-center text-sm text-on-surface-variant">
-            No data yet. Install the EYE Social Manager Chrome extension, log in, then browse
+            No data yet. Download the extension (button above), install it, log in, then browse
             Facebook/X/Instagram (logged in) — comments and DMs sync here automatically.
           </CardContent>
         </Card>
@@ -384,7 +384,12 @@ function SettingsTab() {
         <CardContent className="space-y-2 text-sm text-on-surface-variant">
           <p>This page reads what the <strong>EYE Social Manager</strong> Chrome extension syncs from your own
             logged-in Facebook/X/Instagram tabs — it never sees your platform password or session.</p>
-          <p>Load it: <code>chrome://extensions</code> → Developer mode → Load unpacked → the repo&apos;s <code>extension/</code> folder → log in with this EYE account.</p>
+          <p>
+            <a href="/downloads/eye-social-manager-extension.zip" download className="text-primary underline font-medium">
+              Download the extension (.zip)
+            </a>, unzip it, then: <code>chrome://extensions</code> → Developer mode → Load unpacked → pick the
+            unzipped <code>eye-social-manager-extension</code> folder → log in with this EYE account.
+          </p>
         </CardContent>
       </Card>
     </div>
@@ -394,14 +399,19 @@ function SettingsTab() {
 function Content() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-black text-on-surface tracking-tight flex items-center gap-2">
-          <MessagesSquare className="w-6 h-6 text-primary" /> Social Manager
-        </h1>
-        <p className="text-on-surface-variant text-sm mt-0.5">
-          Unified Facebook/X/Instagram inbox synced from the Chrome extension, AI-assisted replies, and an
-          AI post composer with scheduling.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-black text-on-surface tracking-tight flex items-center gap-2">
+            <MessagesSquare className="w-6 h-6 text-primary" /> Social Manager
+          </h1>
+          <p className="text-on-surface-variant text-sm mt-0.5">
+            Unified Facebook/X/Instagram inbox synced from the Chrome extension, AI-assisted replies, and an
+            AI post composer with scheduling.
+          </p>
+        </div>
+        <a href="/downloads/eye-social-manager-extension.zip" download>
+          <Button size="sm"><Download className="w-3.5 h-3.5 me-1" /> Download extension</Button>
+        </a>
       </div>
 
       <Tabs defaultValue="inbox">
