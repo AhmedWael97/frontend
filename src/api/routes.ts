@@ -265,6 +265,7 @@ export const SOCIAL_ROUTES = {
   posts: "/scheduled-posts",
   postsGenerateText: "/scheduled-posts/generate-text",
   postsGenerateImage: "/scheduled-posts/generate-image",
+  postsGenerateVideo: "/scheduled-posts/generate-video",
   post: (id: number) => `/scheduled-posts/${id}`,
   postStatus: (id: number) => `/scheduled-posts/${id}/status`,
 } as const;

@@ -46,7 +46,7 @@ type InboxItem = {
 };
 type ScheduledPost = {
   id: number; platform: string; language: string; content: string; image_url: string | null;
-  scheduled_at: string; status: string;
+  video_url: string | null; scheduled_at: string; status: string;
 };
 type DailyRow = { day: string; platform: string; total: number | string };
 type ByPlatformRow = { platform: string; total: number | string; unread: number | string; replied: number | string };
@@ -211,12 +211,14 @@ function ComposeTab() {
   const [prompt, setPrompt] = useState("");
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [scheduledAt, setScheduledAt] = useState("");
 
   const { data: settings } = useQuery({
     queryKey: ["social-settings"],
-    queryFn: () => socialApi.settingsShow().then((r: any) => unwrap<{ has_openai_key: boolean }>(r)),
+    queryFn: () => socialApi.settingsShow().then((r: any) => unwrap<{ has_openai_key: boolean; has_comfyui: boolean }>(r)),
   });
+  const canGenerateImage = settings?.has_openai_key || settings?.has_comfyui;
 
   const { data: posts } = useQuery({
     queryKey: ["scheduled-posts"],
@@ -231,16 +233,22 @@ function ComposeTab() {
 
   const genImage = useMutation({
     mutationFn: () => socialApi.generateImage(prompt || content).then((r: any) => unwrap<{ image_url: string }>(r)),
-    onSuccess: (data) => setImageUrl(data.image_url),
+    onSuccess: (data) => { setImageUrl(data.image_url); setVideoUrl(null); },
     onError: (e: any) => toast.error(e?.message ?? "Image generation failed."),
   });
 
+  const genVideo = useMutation({
+    mutationFn: () => socialApi.generateVideo(imageUrl!).then((r: any) => unwrap<{ video_url: string }>(r)),
+    onSuccess: (data) => setVideoUrl(data.video_url),
+    onError: (e: any) => toast.error(e?.message ?? "Video generation failed."),
+  });
+
   const createPost = useMutation({
-    mutationFn: () => socialApi.createPost({ platform, language, prompt, content, image_url: imageUrl, scheduled_at: scheduledAt }),
+    mutationFn: () => socialApi.createPost({ platform, language, prompt, content, image_url: imageUrl, video_url: videoUrl, scheduled_at: scheduledAt }),
     onSuccess: () => {
       toast.success("Queued. The extension will fill it in next time that platform's tab is open.");
       qc.invalidateQueries({ queryKey: ["scheduled-posts"] });
-      setContent(""); setImageUrl(null); setScheduledAt("");
+      setContent(""); setImageUrl(null); setVideoUrl(null); setScheduledAt("");
     },
     onError: (e: any) => toast.error(e?.message ?? "Could not queue post."),
   });
@@ -271,15 +279,25 @@ function ComposeTab() {
             <Button size="sm" variant="outline" disabled={!prompt || genText.isPending} onClick={() => genText.mutate()}>
               <Sparkles className="w-3.5 h-3.5 me-1" /> {genText.isPending ? "Generating…" : "Generate text"}
             </Button>
-            <Button size="sm" variant="outline" disabled={(!prompt && !content) || genImage.isPending || !settings?.has_openai_key} onClick={() => genImage.mutate()}
-              title={!settings?.has_openai_key ? "Add your OpenAI API key in Settings first" : undefined}>
+            <Button size="sm" variant="outline" disabled={(!prompt && !content) || genImage.isPending || !canGenerateImage} onClick={() => genImage.mutate()}
+              title={!canGenerateImage ? "Add your OpenAI API key in Settings first" : undefined}>
               <ImageIcon className="w-3.5 h-3.5 me-1" /> {genImage.isPending ? "Generating…" : "Generate image"}
             </Button>
+            {imageUrl && (
+              <Button size="sm" variant="outline" disabled={!settings?.has_comfyui || genVideo.isPending} onClick={() => genVideo.mutate()}
+                title={!settings?.has_comfyui ? "Needs the ComfyUI GPU box configured" : undefined}>
+                {genVideo.isPending ? "Animating…" : "Animate to video"}
+              </Button>
+            )}
           </div>
-          {!settings?.has_openai_key && <p className="text-xs text-on-surface-variant">Image generation needs your OpenAI API key — add it in the Settings tab.</p>}
+          {!canGenerateImage && <p className="text-xs text-on-surface-variant">Image generation needs your OpenAI API key (or our ComfyUI box) — add it in the Settings tab.</p>}
 
           <textarea className={inputCls + " min-h-[90px]"} placeholder="Post content (edit freely)" value={content} onChange={(e) => setContent(e.target.value)} />
-          {imageUrl && <img src={imageUrl} alt="Generated" className="rounded-lg max-h-56 object-cover" />}
+          {videoUrl ? (
+            <video src={videoUrl} controls className="rounded-lg max-h-56" />
+          ) : imageUrl ? (
+            <img src={imageUrl} alt="Generated" className="rounded-lg max-h-56 object-cover" />
+          ) : null}
 
           <div className="grid grid-cols-2 gap-3 items-end">
             <div>

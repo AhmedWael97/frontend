@@ -22,12 +22,15 @@ export const socialApi = {
     client.post(SOCIAL_ROUTES.postsGenerateText, data),
   generateImage: (prompt: string) =>
     client.post(SOCIAL_ROUTES.postsGenerateImage, { prompt }),
+  generateVideo: (image_url: string) =>
+    client.post(SOCIAL_ROUTES.postsGenerateVideo, { image_url }),
   createPost: (data: {
     platform: string;
     language: string;
     prompt?: string;
     content: string;
     image_url?: string | null;
+    video_url?: string | null;
     scheduled_at: string;
   }) => client.post(SOCIAL_ROUTES.posts, data),
   updatePost: (id: number, data: Record<string, unknown>) =>
