@@ -339,6 +339,7 @@ export const ADMIN_ROUTES = {
   paymentMethodsList: "/admin/payment-methods",
   paymentMethodsCreate: "/admin/payment-methods",
   paymentMethodsPaymobTest: "/admin/payment-methods/paymob/test",
+  paymentMethodsPaddleTest: "/admin/payment-methods/paddle/test",
   paymentMethodsUpdate: (id: number) => `/admin/payment-methods/${id}`,
   paymentMethodsDelete: (id: number) => `/admin/payment-methods/${id}`,
   // Subscriptions

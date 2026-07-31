@@ -35,7 +35,7 @@ type PaymentMethod = {
   id: number;
   name: string;
   name_ar?: string;
-  type: "paymob" | "bank_transfer" | "stripe" | "paypal" | "manual" | string;
+  type: "paymob" | "paddle" | "bank_transfer" | "stripe" | "paypal" | "manual" | string;
   config?: Record<string, any>;
 };
 
@@ -86,6 +86,8 @@ function methodMeta(type: string) {
   switch (type) {
     case "paymob":        return { icon: <Wallet className="w-5 h-5" />, tone: "text-blue-400",   bg: "bg-blue-500/10",   border: "border-blue-500/30",
                                    tagline: "Cards, wallets, Fawry, Vodafone Cash" };
+    case "paddle":        return { icon: <CreditCard className="w-5 h-5" />, tone: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/30",
+                                   tagline: "Cards, PayPal, global — Paddle checkout" };
     case "bank_transfer": return { icon: <Landmark className="w-5 h-5" />, tone: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/30",
                                    tagline: "Wire transfer + upload receipt" };
     case "stripe":        return { icon: <CreditCard className="w-5 h-5" />, tone: "text-violet-400",  bg: "bg-violet-500/10",  border: "border-violet-500/30",
@@ -136,6 +138,7 @@ function Content() {
   const [transactionReference, setTransactionReference] = useState("");
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [paymobLoading, setPaymobLoading] = useState(false);
+  const [paddleLoading, setPaddleLoading] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoResult, setPromoResult] = useState<{ code: string; discount_usd: number; final_price_usd: number } | null>(null);
@@ -271,6 +274,53 @@ function Content() {
       toast.error(e?.message ?? "Network error.");
     } finally {
       setPaymobLoading(false);
+    }
+  };
+
+  const loadPaddleJs = () =>
+    new Promise<void>((resolve, reject) => {
+      if ((window as any).Paddle) { resolve(); return; }
+      const script = document.createElement("script");
+      script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Could not load Paddle.js"));
+      document.head.appendChild(script);
+    });
+
+  const onPaddle = async () => {
+    if (!selectedPlanId) { toast.error("Please choose a plan first."); return; }
+    trackInitiateCheckout(selectedPlan?.name); // TikTok InitiateCheckout
+    setPaddleLoading(true);
+    try {
+      const res = await fetch(`${apiBase()}/billing/paddle/initiate`, {
+        method: "POST",
+        headers: apiHeaders(),
+        body: JSON.stringify({ plan_id: selectedPlanId }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        toast.error(json?.data?.message ?? json?.message ?? "Paddle initiation failed.");
+        return;
+      }
+      const { client_token, environment, price_id, reference, customer_email } = json?.data ?? {};
+      if (!client_token || !price_id) {
+        toast.error("Paddle checkout is not fully configured.");
+        return;
+      }
+
+      await loadPaddleJs();
+      const Paddle = (window as any).Paddle;
+      Paddle.Environment.set(environment === "production" ? "production" : "sandbox");
+      Paddle.Initialize({ token: client_token });
+      Paddle.Checkout.open({
+        items: [{ priceId: price_id, quantity: 1 }],
+        customer: { email: customer_email },
+        customData: { eye_reference: reference },
+      });
+    } catch (e: any) {
+      toast.error(e?.message ?? "Network error.");
+    } finally {
+      setPaddleLoading(false);
     }
   };
 
@@ -568,6 +618,34 @@ function Content() {
                   </div>
                 )}
 
+                {/* Paddle */}
+                {selectedMethod.type === "paddle" && (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-indigo-400" />
+                      <p className="text-sm font-bold text-on-surface">Pay with Paddle</p>
+                      <Badge variant="secondary" className="ml-auto">Card / PayPal · global</Badge>
+                    </div>
+                    <p className="text-xs text-on-surface-variant">
+                      Secure checkout opens right here on this page, handled by Paddle (our merchant of
+                      record). Paddle takes care of local tax/VAT automatically.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+                      <p className="text-xs text-on-surface-variant">
+                        {isChangingPlan
+                          ? <>Upgrading to <strong className="text-on-surface">{selectedPlan.name}</strong> at <strong className="text-on-surface">{fmtPrice(Number(selectedPlan.price_monthly))}/mo</strong>.</>
+                          : <>Renewing <strong className="text-on-surface">{selectedPlan.name}</strong> at <strong className="text-on-surface">{fmtPrice(Number(selectedPlan.price_monthly))}/mo</strong>.</>}
+                      </p>
+                      <Button onClick={onPaddle} disabled={paddleLoading} className="gap-2">
+                        {paddleLoading
+                          ? <><Loader2 className="w-4 h-4 animate-spin" /> Opening…</>
+                          : <><CreditCard className="w-4 h-4" /> Pay now with Paddle</>}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Bank transfer */}
                 {selectedMethod.type === "bank_transfer" && (
                   <div className="space-y-4">
@@ -644,7 +722,7 @@ function Content() {
                 )}
 
                 {/* Other gateways (stripe / paypal / manual) — fall back to receipt-style flow */}
-                {selectedMethod.type !== "paymob" && selectedMethod.type !== "bank_transfer" && (
+                {selectedMethod.type !== "paymob" && selectedMethod.type !== "paddle" && selectedMethod.type !== "bank_transfer" && (
                   <div className="space-y-3">
                     <p className="text-sm text-on-surface">
                       Submit a payment request for <strong>{selectedPlan.name}</strong>. An admin will verify and activate your plan.

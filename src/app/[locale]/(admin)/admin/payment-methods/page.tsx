@@ -40,6 +40,28 @@ const PAYMOB_FIELDS: Field[] = [
   { key: "hmac_secret", label: "HMAC Secret", placeholder: "DC724CB5...", secret: true },
 ];
 
+// ── Paddle credentials (per environment) ─────────────────────────────────────
+const PADDLE_FIELDS: Field[] = [
+  { key: "client_token", label: "Client-side Token", placeholder: "test_... / live_..." },
+  { key: "api_key", label: "API Key", placeholder: "pdl_sdbx_apikey_...", secret: true },
+  { key: "webhook_secret", label: "Webhook Secret", placeholder: "pdl_ntfset_...", secret: true },
+];
+
+function pricesToText(prices: Record<string, string> | undefined): string {
+  return Object.entries(prices ?? {})
+    .map(([planId, priceId]) => `${planId}=${priceId}`)
+    .join("\n");
+}
+
+function textToPrices(text: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const line of text.split("\n")) {
+    const [planId, priceId] = line.split("=").map((s) => s.trim());
+    if (planId && priceId) out[planId] = priceId;
+  }
+  return out;
+}
+
 function SecretInput({ field, value, onChange }: { field: Field; value: string; onChange: (v: string) => void }) {
   const [show, setShow] = useState(false);
   return (
@@ -195,6 +217,157 @@ function PaymobCard({ method }: { method?: PaymentMethod }) {
   );
 }
 
+// ── Paddle card with Test/Production environments ───────────────────────────
+function PaddleCard({ method, plans }: { method?: PaymentMethod; plans: { id: number; name: string }[] }) {
+  const client = useQueryClient();
+  const cfg = method?.config ?? {};
+
+  const initSet = (m: Record<string, any> | undefined): Record<string, string> =>
+    Object.fromEntries(PADDLE_FIELDS.map((f) => [f.key, String(m?.[f.key] ?? "")]));
+
+  const [mode, setMode] = useState<"test" | "production">(cfg.mode === "production" ? "production" : "test");
+  const [test, setTest] = useState<Record<string, string>>(initSet(cfg.test));
+  const [prod, setProd] = useState<Record<string, string>>(initSet(cfg.production));
+  const [testPrices, setTestPrices] = useState(pricesToText(cfg.test?.prices));
+  const [prodPrices, setProdPrices] = useState(pricesToText(cfg.production?.prices));
+
+  const isEnabled = method?.is_active ?? false;
+  const active = mode === "test" ? test : prod;
+  const setActive = mode === "test" ? setTest : setProd;
+  const activePrices = mode === "test" ? testPrices : prodPrices;
+  const setActivePrices = mode === "test" ? setTestPrices : setProdPrices;
+
+  const buildConfig = () => ({
+    mode,
+    test: { ...test, prices: textToPrices(testPrices) },
+    production: { ...prod, prices: textToPrices(prodPrices) },
+  });
+
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+  const testMutation = useMutation({
+    mutationFn: () => adminApi.testPaddle().then((r) => (r.data?.data ?? r.data) as { ok: boolean; message: string }),
+    onSuccess: (d) => setTestResult({ ok: !!d?.ok, message: d?.message ?? "" }),
+    onError: () => setTestResult({ ok: false, message: "Test request failed — try again." }),
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async () =>
+      method
+        ? adminApi.updatePaymentMethod(method.id, { config: buildConfig(), name: method.name, is_active: true })
+        : adminApi.createPaymentMethod({ name: "Paddle", type: "paddle", config: buildConfig(), is_active: true }),
+    onSuccess: () => {
+      toast.success("Paddle settings saved.");
+      client.invalidateQueries({ queryKey: ["admin-payment-methods"] });
+      setTestResult(null);
+      setTimeout(() => testMutation.mutate(), 400);
+    },
+    onError: () => toast.error("Could not save Paddle settings."),
+  });
+
+  const toggleMutation = useMutation({
+    mutationFn: async () =>
+      method
+        ? adminApi.updatePaymentMethod(method.id, { is_active: !isEnabled })
+        : adminApi.createPaymentMethod({ name: "Paddle", type: "paddle", config: buildConfig(), is_active: true }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["admin-payment-methods"] }),
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <span className="text-xl">💳</span> Paddle
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            {isEnabled
+              ? <Badge variant="success" className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Active</Badge>
+              : <Badge variant="secondary" className="flex items-center gap-1"><XCircle className="w-3 h-3" /> Disabled</Badge>}
+            <Button size="sm" variant={isEnabled ? "outline" : "default"} onClick={() => toggleMutation.mutate()} disabled={toggleMutation.isPending}>
+              {toggleMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : isEnabled ? "Disable" : "Enable"}
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Environment toggle */}
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-2">Environment</p>
+          <div className="flex gap-2">
+            {([
+              { v: "test", label: "Sandbox", icon: FlaskConical },
+              { v: "production", label: "Production", icon: Rocket },
+            ] as const).map(({ v, label, icon: Icon }) => (
+              <button key={v} type="button" onClick={() => setMode(v)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold border transition-colors ${
+                  mode === v
+                    ? v === "production"
+                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500"
+                      : "border-amber-500/40 bg-amber-500/10 text-amber-500"
+                    : "border-outline-variant/40 text-on-surface-variant hover:text-on-surface"
+                }`}>
+                <Icon className="w-3.5 h-3.5" /> {label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-on-surface-variant mt-2">
+            Editing the <strong>{mode}</strong> keys. The active environment (what live checkout uses) is whatever is selected here when you save — currently <strong>{mode}</strong>.
+          </p>
+        </div>
+
+        {/* Active environment keys */}
+        <div className="space-y-3 rounded-xl border border-outline-variant/20 p-3">
+          {PADDLE_FIELDS.map((f) => (
+            <SecretInput key={f.key} field={f} value={active[f.key] ?? ""} onChange={(val) => setActive((s) => ({ ...s, [f.key]: val }))} />
+          ))}
+        </div>
+
+        {/* Price ID mapping */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
+            Plan → Paddle Price ID mapping ({mode})
+          </label>
+          <textarea
+            value={activePrices}
+            onChange={(e) => setActivePrices(e.target.value)}
+            rows={4}
+            placeholder={"1=pri_01abc...\n2=pri_01def..."}
+            className="w-full rounded-md border border-outline-variant/25 bg-surface px-3 py-2 font-mono text-xs"
+          />
+          <p className="text-[11px] text-on-surface-variant">
+            One <code className="font-mono">plan_id=pri_xxx</code> per line. Create a <strong>one-time</strong> (not recurring) Price
+            per plan in the Paddle dashboard{plans.length > 0 && (
+              <> — your plan IDs: {plans.map((p) => `${p.id}=${p.name}`).join(", ")}</>
+            )}.
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <Button size="sm" onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending} className="flex-1">
+            {saveMutation.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin ltr:mr-2 rtl:ml-2" /> Saving…</> : <>Save &amp; activate</>}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => testMutation.mutate()} disabled={testMutation.isPending}>
+            {testMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Test connection"}
+          </Button>
+        </div>
+
+        {testResult && (
+          <div className={`flex items-start gap-2 rounded-lg p-3 text-sm ${testResult.ok ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}>
+            {testResult.ok ? <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" /> : <XCircle className="w-4 h-4 mt-0.5 shrink-0" />}
+            <span>{testResult.message}</span>
+          </div>
+        )}
+
+        <p className="text-xs text-on-surface-variant text-center">
+          Add the notification destination URL <code className="font-mono">/api/v1/billing/paddle/webhook</code> in your Paddle dashboard
+          (subscribe to <code className="font-mono">transaction.completed</code>). Keys here override <code className="font-mono">PADDLE_*</code> env vars.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ── Generic card (bank transfer) ─────────────────────────────────────────────
 function GatewayCard({ method }: { method?: PaymentMethod }) {
   const client = useQueryClient();
@@ -259,7 +432,16 @@ function Content() {
     },
   });
 
+  const { data: plansData } = useQuery({
+    queryKey: ["admin-plans-for-paddle"],
+    queryFn: async () => {
+      const res = await adminApi.listPlans();
+      return (res.data?.data ?? res.data ?? []) as { id: number; name: string }[];
+    },
+  });
+
   const methods = Array.isArray(data) ? data : [];
+  const plans = Array.isArray(plansData) ? plansData : [];
   const findByType = (type: string) => methods.find((m) => m.type === type);
 
   return (
@@ -269,7 +451,8 @@ function Content() {
           <CreditCard className="w-6 h-6 text-primary" /> Payment Methods
         </h1>
         <p className="text-on-surface-variant text-sm mt-0.5">
-          EYE accepts <strong>Paymob</strong> (cards, wallets, Fawry) and <strong>Bank Transfer</strong>.
+          EYE accepts <strong>Paymob</strong> (cards, wallets, Fawry), <strong>Paddle</strong> (global cards/PayPal,
+          merchant of record), and <strong>Bank Transfer</strong>.
         </p>
       </div>
 
@@ -284,6 +467,7 @@ function Content() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <PaymobCard method={findByType("paymob")} />
+          <PaddleCard method={findByType("paddle")} plans={plans} />
           <GatewayCard method={findByType("bank_transfer")} />
         </div>
       )}
