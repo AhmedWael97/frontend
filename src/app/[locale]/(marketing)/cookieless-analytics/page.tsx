@@ -84,7 +84,7 @@ export function generateMetadata({ params }: Props): Metadata {
   return {
     title: t.metaTitle,
     description: t.metaDesc,
-    keywords: ["cookieless analytics", "GDPR analytics", "Google Analytics alternative", "analytics without cookie banner", "privacy analytics", "تحليلات بدون كوكيز", "بديل جوجل أناليتكس"],
+    keywords: ["cookieless analytics", "GDPR analytics", "Google Analytics alternative", "analytics without cookie banner", "analytics without cookies", "cookie-free analytics", "privacy analytics", "تحليلات بدون كوكيز", "بديل جوجل أناليتكس"],
     alternates: {
       canonical: url,
       languages: { en: `${SITE_URL}/en/cookieless-analytics`, ar: `${SITE_URL}/ar/cookieless-analytics` },
