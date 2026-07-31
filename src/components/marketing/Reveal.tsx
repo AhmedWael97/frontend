@@ -84,15 +84,15 @@ export function GradientBlobs({ variant = "default" }: { variant?: "default" | "
       />
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
         <div
-          className={`absolute top-[-14%] ltr:left-[8%] rtl:right-[8%] ${big ? "w-[620px] h-[620px]" : "w-[380px] h-[380px]"} max-w-[110vw] rounded-full bg-indigo-500/12 dark:bg-indigo-600/10 blur-[120px]`}
+          className={`absolute top-[-14%] ltr:left-[8%] rtl:right-[8%] ${big ? "w-[620px] h-[620px]" : "w-[380px] h-[380px]"} max-w-[110vw] rounded-full bg-indigo-500/30 dark:bg-indigo-500/25 blur-[100px]`}
           style={{ animation: "eyeDrift 14s ease-in-out infinite" }}
         />
         <div
-          className={`absolute top-[10%] ltr:right-[2%] rtl:left-[2%] ${big ? "w-[440px] h-[440px]" : "w-[280px] h-[280px]"} max-w-[100vw] rounded-full bg-violet-500/12 dark:bg-violet-600/10 blur-[110px]`}
+          className={`absolute top-[10%] ltr:right-[2%] rtl:left-[2%] ${big ? "w-[440px] h-[440px]" : "w-[280px] h-[280px]"} max-w-[100vw] rounded-full bg-violet-500/28 dark:bg-violet-500/22 blur-[95px]`}
           style={{ animation: "eyeDrift 18s ease-in-out infinite 1.2s" }}
         />
         <div
-          className="absolute bottom-[-4%] ltr:left-[4%] rtl:right-[4%] w-[300px] h-[300px] rounded-full bg-pink-500/8 dark:bg-pink-600/6 blur-[100px]"
+          className="absolute bottom-[-4%] ltr:left-[4%] rtl:right-[4%] w-[300px] h-[300px] rounded-full bg-pink-500/20 dark:bg-pink-500/16 blur-[90px]"
           style={{ animation: "eyeDrift 16s ease-in-out infinite 0.6s" }}
         />
       </div>

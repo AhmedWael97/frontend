@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Eye, Check, X, ShieldCheck, Zap, BarChart3, Cookie } from "lucide-react";
+import { Check, X, ShieldCheck, Zap, BarChart3, Cookie } from "lucide-react";
 import { SITE_URL } from "@/lib/seo";
 import { Reveal, RevealGroup, RevealItem, GradientBlobs } from "@/components/marketing/Reveal";
+import { BrowserFrame } from "@/components/marketing/BrowserFrame";
+import Navbar from "@/components/marketing/Navbar";
+import Footer from "@/components/marketing/Footer";
+import MobileCtaBar from "@/components/marketing/MobileCtaBar";
 
 type Props = { params: { locale: string } };
 
@@ -13,9 +17,13 @@ const C = {
     metaDesc: "Cookieless, GDPR-ready website analytics — no consent popup, no personal data. See 100% of your traffic with heatmaps, funnels & live visitors. Free 30-day trial.",
     cta: "Start free — no credit card",
     ctaShort: "Create free account",
-    trust: "30-day free trial · No cookies · GDPR ready",
+    badge: "30-day free trial — no credit card, ever",
     heroH: "Website analytics without the cookie banner.",
     heroSub: "EYE tracks visitors, conversions, and behavior with zero cookies and zero personal data. GDPR compliant out of the box — no consent popup, no legal headache.",
+    previewH: "Visitors actually counted",
+    previewA: "EYE (cookieless)",
+    previewB: "Typical cookie-based tool",
+    previewNote: "Illustrative — cookie-based tools miss anyone who rejects consent. EYE has nothing to reject.",
     probH: "Consent banners are killing your data.",
     probP: "Every visitor who clicks “Reject” is a visitor Google Analytics never sees. You’re making decisions on half your traffic — and annoying users with popups on the other half.",
     benefits: [
@@ -48,9 +56,13 @@ const C = {
     metaDesc: "تحليلات مواقع بدون كوكيز ومتوافقة مع GDPR — بلا نافذة موافقة وبلا بيانات شخصية. شاهد 100% من زياراتك مع خرائط حرارية وقمع تحويل وزوّار مباشرين. تجربة مجانية 30 يومًا.",
     cta: "ابدأ مجانًا — بدون بطاقة ائتمان",
     ctaShort: "أنشئ حسابك المجاني",
-    trust: "تجربة مجانية ٣٠ يومًا · بدون كوكيز · متوافق مع GDPR",
+    badge: "تجربة مجانية 30 يومًا — بدون بطاقة ائتمان أبدًا",
     heroH: "تحليلات لموقعك — بدون شريط الموافقة على الكوكيز.",
     heroSub: "EYE يتتبّع الزوّار والتحويلات وسلوك المستخدمين بدون أي كوكيز وبدون تخزين بيانات شخصية. متوافق مع GDPR تلقائيًا — بلا نافذة موافقة، وبلا صداع قانوني.",
+    previewH: "الزوّار المُحتسبون فعليًا",
+    previewA: "EYE (بدون كوكيز)",
+    previewB: "أداة تعتمد على الكوكيز",
+    previewNote: "توضيحي — الأدوات القائمة على الكوكيز تفقد كل من يرفض الموافقة. EYE لا يوجد لديه ما يُرفض.",
     probH: "شريط الموافقة يضيّع نصف بياناتك.",
     probP: "كل زائر يضغط “رفض” هو زائر لن يظهر أبدًا في Google Analytics. أنت تتخذ قراراتك بناءً على نصف الزيارات فقط — وتزعج النصف الآخر بنوافذ منبثقة.",
     benefits: [
@@ -106,121 +118,148 @@ export default function CookielessLanding({ params }: Props) {
   };
 
   const CTA = ({ label }: { label: string }) => (
-    <Link href={reg} className="inline-flex items-center justify-center rounded-xl bg-primary text-on-primary px-7 py-3.5 text-base font-bold hover:opacity-90 transition-opacity">
+    <Link href={reg} className="inline-flex items-center justify-center rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/30 px-7 py-3.5 text-base font-bold transition-colors">
       {label}
     </Link>
+  );
+  const Badge = ({ label }: { label: string }) => (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-6">
+      <ShieldCheck className="w-3.5 h-3.5" /> {label}
+    </span>
   );
 
   return (
     <div dir={t.dir} className="min-h-screen bg-background text-on-surface">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
+      <Navbar />
 
-      {/* Minimal header — logo only, no nav (dedicated landing) */}
-      <header className="border-b border-outline-variant/10">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center">
-          <Link href={`/${params.locale}`} className="flex items-center gap-2" aria-label="EYE home">
-            <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center"><Eye className="w-4 h-4 text-white" /></span>
-            <span className="text-lg font-black tracking-tighter text-primary uppercase">EYE</span>
-          </Link>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4">
+      <main className="overflow-hidden">
         {/* Hero */}
-        <section className="relative isolate overflow-hidden text-center py-16 sm:py-24">
+        <section className="relative isolate overflow-hidden text-center pt-28 sm:pt-36 pb-16 sm:pb-24 bg-surface">
           <GradientBlobs />
-          <div className="relative">
-            <Reveal><span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-5"><ShieldCheck className="w-3.5 h-3.5" />GDPR</span></Reveal>
-            <Reveal delay={0.05}><h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.05] mb-5">{t.heroH}</h1></Reveal>
-            <Reveal delay={0.12}><p className="text-lg text-on-surface-variant max-w-2xl mx-auto mb-8">{t.heroSub}</p></Reveal>
-            <Reveal delay={0.19}><CTA label={t.cta} /></Reveal>
-            <Reveal delay={0.25}><p className="text-sm text-on-surface-variant/80 mt-4">{t.trust}</p></Reveal>
+          <div className="relative max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
+            <Reveal><Badge label={t.badge} /></Reveal>
+            <Reveal delay={0.06}><h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] mb-5">{t.heroH}</h1></Reveal>
+            <Reveal delay={0.14}><p className="text-lg sm:text-xl text-on-surface-variant max-w-2xl mx-auto mb-8">{t.heroSub}</p></Reveal>
+            <Reveal delay={0.22}><CTA label={t.cta} /></Reveal>
+
+            <Reveal delay={0.3} className="mt-14 sm:mt-16 max-w-2xl mx-auto">
+              <BrowserFrame url="dashboard.eye-analysis.online">
+                <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">{t.previewH}</p>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1.5">
+                      <span className="font-semibold text-on-surface">{t.previewA}</span>
+                      <span className="font-black text-emerald-500">100%</span>
+                    </div>
+                    <div className="h-3 bg-surface-container-high rounded-full overflow-hidden"><div className="h-full w-full bg-emerald-500 rounded-full" /></div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1.5">
+                      <span className="text-on-surface-variant">{t.previewB}</span>
+                      <span className="font-black text-on-surface-variant">~60%</span>
+                    </div>
+                    <div className="h-3 bg-surface-container-high rounded-full overflow-hidden"><div className="h-full w-[60%] bg-on-surface/25 rounded-full" /></div>
+                  </div>
+                </div>
+                <p className="text-xs text-on-surface-variant mt-4">{t.previewNote}</p>
+              </BrowserFrame>
+            </Reveal>
           </div>
         </section>
 
         {/* Problem */}
-        <Reveal as="section" className="py-12 border-t border-outline-variant/10">
-          <h2 className="text-2xl sm:text-3xl font-black mb-4">{t.probH}</h2>
-          <p className="text-lg text-on-surface-variant max-w-3xl">{t.probP}</p>
-        </Reveal>
-
-        {/* Benefits */}
-        <RevealGroup className="py-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {t.benefits.map((b) => (
-            <RevealItem key={b.h} className="rounded-2xl border border-outline-variant/15 p-6 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300">
-              <span className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4"><b.icon className="w-5 h-5 text-primary" /></span>
-              <h3 className="font-black text-lg mb-2">{b.h}</h3>
-              <p className="text-sm text-on-surface-variant leading-relaxed">{b.p}</p>
-            </RevealItem>
-          ))}
-        </RevealGroup>
-
-        {/* Comparison */}
-        <section className="py-12">
-          <Reveal><h2 className="text-2xl sm:text-3xl font-black mb-6 text-center">{t.cmpH}</h2></Reveal>
-          <Reveal delay={0.1} className="overflow-x-auto rounded-2xl border border-outline-variant/15">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-outline-variant/15 bg-surface-container/40">
-                  <th className="text-start px-4 py-3"></th>
-                  <th className="px-4 py-3 font-black text-primary">EYE</th>
-                  <th className="px-4 py-3 font-bold text-on-surface-variant">Google Analytics</th>
-                </tr>
-              </thead>
-              <tbody>
-                {t.cmpRows.map((r) => (
-                  <tr key={r[0] as string} className="border-b border-outline-variant/10 last:border-0">
-                    <td className="px-4 py-3 text-on-surface-variant">{r[0]}</td>
-                    <td className="px-4 py-3 text-center">
-                      {["Yes", "No", "نعم", "لا"].includes(String(r[3]))
-                        ? (r[1] ? <Check className="w-5 h-5 text-emerald-500 mx-auto" /> : <X className="w-5 h-5 text-red-400 mx-auto" />)
-                        : <span className="font-semibold text-on-surface">{r[3]}</span>}
-                    </td>
-                    <td className="px-4 py-3 text-center text-on-surface-variant">
-                      {["Yes", "No", "نعم", "لا"].includes(String(r[4]))
-                        ? (r[2] ? <Check className="w-5 h-5 text-emerald-500 mx-auto" /> : <X className="w-5 h-5 text-red-400 mx-auto" />)
-                        : r[4]}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <section className="py-16 sm:py-20 bg-surface-container/15">
+          <Reveal className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
+            <h2 className="text-2xl sm:text-3xl font-black mb-4">{t.probH}</h2>
+            <p className="text-lg text-on-surface-variant max-w-3xl">{t.probP}</p>
           </Reveal>
         </section>
 
-        {/* Setup */}
-        <Reveal as="section" className="py-12 text-center border-t border-outline-variant/10">
-          <h2 className="text-2xl sm:text-3xl font-black mb-3">{t.setupH}</h2>
-          <p className="text-lg text-on-surface-variant max-w-2xl mx-auto">{t.setupP}</p>
-        </Reveal>
-
-        {/* FAQ */}
-        <section className="py-12">
-          <Reveal><h2 className="text-2xl sm:text-3xl font-black mb-6">{t.faqH}</h2></Reveal>
-          <RevealGroup className="space-y-4 max-w-3xl">
-            {t.faq.map(([q, a]) => (
-              <RevealItem key={q} className="rounded-xl border border-outline-variant/15 p-5">
-                <p className="font-bold text-on-surface mb-1">{q}</p>
-                <p className="text-on-surface-variant">{a}</p>
+        {/* Benefits */}
+        <section className="py-16 sm:py-20 bg-surface">
+          <RevealGroup className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {t.benefits.map((b) => (
+              <RevealItem key={b.h} className="rounded-2xl border border-outline-variant/15 p-6 hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 bg-surface-container/20">
+                <span className="w-11 h-11 rounded-xl bg-emerald-500/12 flex items-center justify-center mb-4"><b.icon className="w-5 h-5 text-emerald-500 dark:text-emerald-400" /></span>
+                <h3 className="font-black text-lg mb-2">{b.h}</h3>
+                <p className="text-sm text-on-surface-variant leading-relaxed">{b.p}</p>
               </RevealItem>
             ))}
           </RevealGroup>
         </section>
 
+        {/* Comparison */}
+        <section className="py-16 sm:py-20 bg-surface-container/15">
+          <div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
+            <Reveal><h2 className="text-2xl sm:text-3xl font-black mb-6 text-center">{t.cmpH}</h2></Reveal>
+            <Reveal delay={0.1} className="overflow-x-auto rounded-2xl border border-outline-variant/15 bg-surface">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-outline-variant/15 bg-surface-container/40">
+                    <th className="text-start px-4 py-3"></th>
+                    <th className="px-4 py-3 font-black text-emerald-500">EYE</th>
+                    <th className="px-4 py-3 font-bold text-on-surface-variant">Google Analytics</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {t.cmpRows.map((r) => (
+                    <tr key={r[0] as string} className="border-b border-outline-variant/10 last:border-0">
+                      <td className="px-4 py-3 text-on-surface-variant">{r[0]}</td>
+                      <td className="px-4 py-3 text-center">
+                        {["Yes", "No", "نعم", "لا"].includes(String(r[3]))
+                          ? (r[1] ? <Check className="w-5 h-5 text-emerald-500 mx-auto" /> : <X className="w-5 h-5 text-red-400 mx-auto" />)
+                          : <span className="font-semibold text-on-surface">{r[3]}</span>}
+                      </td>
+                      <td className="px-4 py-3 text-center text-on-surface-variant">
+                        {["Yes", "No", "نعم", "لا"].includes(String(r[4]))
+                          ? (r[2] ? <Check className="w-5 h-5 text-emerald-500 mx-auto" /> : <X className="w-5 h-5 text-red-400 mx-auto" />)
+                          : r[4]}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* Setup */}
+        <section className="py-16 sm:py-20 text-center bg-surface">
+          <Reveal className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
+            <h2 className="text-2xl sm:text-3xl font-black mb-3">{t.setupH}</h2>
+            <p className="text-lg text-on-surface-variant max-w-2xl mx-auto">{t.setupP}</p>
+          </Reveal>
+        </section>
+
+        {/* FAQ */}
+        <section className="py-16 sm:py-20 bg-surface-container/15">
+          <div className="max-w-3xl mx-auto px-5 sm:px-6 lg:px-8">
+            <Reveal><h2 className="text-2xl sm:text-3xl font-black mb-6">{t.faqH}</h2></Reveal>
+            <RevealGroup className="space-y-4">
+              {t.faq.map(([q, a]) => (
+                <RevealItem key={q} className="rounded-xl border border-outline-variant/15 p-5 bg-surface">
+                  <p className="font-bold text-on-surface mb-1">{q}</p>
+                  <p className="text-on-surface-variant">{a}</p>
+                </RevealItem>
+              ))}
+            </RevealGroup>
+          </div>
+        </section>
+
         {/* Final CTA */}
-        <section className="relative isolate overflow-hidden py-20 text-center border-t border-outline-variant/10">
+        <section className="relative isolate overflow-hidden py-20 sm:py-24 text-center bg-surface">
           <GradientBlobs variant="compact" />
-          <div className="relative">
-            <Reveal><h2 className="text-3xl sm:text-4xl font-black mb-6">{t.finalH}</h2></Reveal>
+          <div className="relative max-w-2xl mx-auto px-5 sm:px-6 lg:px-8">
+            <Reveal><h2 className="text-3xl sm:text-5xl font-black mb-6 leading-[1.08]">{t.finalH}</h2></Reveal>
             <Reveal delay={0.1}><CTA label={t.ctaShort} /></Reveal>
             <Reveal delay={0.18}><p className="text-sm text-on-surface-variant/80 mt-4">{t.finalNote}</p></Reveal>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-outline-variant/10 py-8 text-center text-xs text-on-surface-variant">
-        © {new Date().getFullYear()} EYE Analytics · <a href="mailto:info@eye-analysis.online" className="hover:text-on-surface">info@eye-analysis.online</a>
-      </footer>
+      <Footer locale={params.locale} />
+      <MobileCtaBar />
     </div>
   );
 }
