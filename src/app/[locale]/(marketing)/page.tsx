@@ -16,6 +16,7 @@ import { getTranslations } from "next-intl/server";
 import { JsonLd } from "@/components/JsonLd";
 import { organizationJsonLd, websiteJsonLd, softwareApplicationJsonLd } from "@/lib/seo";
 import { headers } from "next/headers";
+import { Reveal, RevealGroup, RevealItem } from "@/components/marketing/Reveal";
 
 // Resolve the base URL from the actual request host, so every absolute URL on the
 // page (canonical, OG, JSON-LD, the install snippet) matches the domain it's
@@ -292,34 +293,34 @@ export default async function HomePage({
         {/* ── Problem ──────────────────────────────────────────────────────── */}
         <section className="py-20 sm:py-24 bg-surface-container/15">
           <div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
+            <Reveal className="text-center mb-10">
               <Badge className="mb-4 bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
                 {t("problem.badge")}
               </Badge>
               <h2 className="text-3xl sm:text-4xl font-black text-on-surface tracking-tight">
                 {t("problem.headline")}
               </h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
+            </Reveal>
+            <RevealGroup className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
               {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="flex items-start gap-3 rounded-2xl bg-surface border border-outline-variant/20 p-4">
+                <RevealItem key={i} className="flex items-start gap-3 rounded-2xl bg-surface border border-outline-variant/20 p-4">
                   <div className="w-5 h-5 rounded-full bg-rose-100 dark:bg-rose-500/15 flex items-center justify-center shrink-0 mt-0.5">
                     <X className="w-3 h-3 text-rose-500 dark:text-rose-400" />
                   </div>
                   <p className="text-sm text-on-surface-variant">{t(`problem.${i}` as any)}</p>
-                </div>
+                </RevealItem>
               ))}
-            </div>
-            <div className="rounded-2xl bg-indigo-500/8 dark:bg-indigo-500/12 border border-indigo-200 dark:border-indigo-500/25 p-5 text-center">
+            </RevealGroup>
+            <Reveal delay={0.1} className="rounded-2xl bg-indigo-500/8 dark:bg-indigo-500/12 border border-indigo-200 dark:border-indigo-500/25 p-5 text-center">
               <p className="text-base font-semibold text-on-surface">{t("problem.answer")}</p>
-            </div>
+            </Reveal>
           </div>
         </section>
 
         {/* ── Features ──────────────────────────────────────────────────────── */}
         <section id="features" className="py-20 sm:py-28 bg-surface">
           <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-            <div className="text-center mb-12 sm:mb-16">
+            <Reveal className="text-center mb-12 sm:mb-16">
               <Badge className="mb-4 bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-500/20 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
                 {t("features.badge")}
               </Badge>
@@ -330,29 +331,29 @@ export default async function HomePage({
               <p className="text-base sm:text-lg text-on-surface-variant max-w-2xl mx-auto">
                 {t("features.description")}
               </p>
-            </div>
+            </Reveal>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            <RevealGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               {FEATURES.map((feature) => {
                 const Icon = feature.icon;
                 return (
-                  <div key={feature.idx} className="rounded-2xl sm:rounded-3xl bg-surface-container/30 border border-outline-variant/15 p-6 hover:border-outline-variant/40 hover:bg-surface-container/50 hover:-translate-y-0.5 transition-all group">
+                  <RevealItem key={feature.idx} className="rounded-2xl sm:rounded-3xl bg-surface-container/30 border border-outline-variant/15 p-6 hover:border-outline-variant/40 hover:bg-surface-container/50 hover:-translate-y-0.5 transition-all group">
                     <div className={`w-12 h-12 rounded-2xl ${feature.iconBg} flex items-center justify-center mb-5 ${feature.iconColor} group-hover:scale-110 transition-transform`}>
                       <Icon className="w-6 h-6" />
                     </div>
                     <h3 className="text-base font-bold text-on-surface mb-2">{t(`features.${feature.idx}title` as any)}</h3>
                     <p className="text-sm text-on-surface-variant leading-relaxed">{t(`features.${feature.idx}desc` as any)}</p>
-                  </div>
+                  </RevealItem>
                 );
               })}
-            </div>
+            </RevealGroup>
           </div>
         </section>
 
         {/* ── How It Works ──────────────────────────────────────────────────── */}
         <section id="how-it-works" className="py-20 sm:py-28 bg-surface-container/15">
           <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-            <div className="text-center mb-12 sm:mb-16">
+            <Reveal className="text-center mb-12 sm:mb-16">
               <Badge className="mb-4 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
                 {t("howItWorks.badge")}
               </Badge>
@@ -363,13 +364,13 @@ export default async function HomePage({
               <p className="text-base sm:text-lg text-on-surface-variant max-w-xl mx-auto">
                 {t("howItWorks.description")}
               </p>
-            </div>
+            </Reveal>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 mb-14 sm:mb-16">
+            <RevealGroup className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 mb-14 sm:mb-16">
               {STEPS.map((step, i) => {
                 const Icon = step.icon;
                 return (
-                  <div key={step.idx} className="relative text-center">
+                  <RevealItem key={step.idx} className="relative text-center">
                     {i < STEPS.length - 1 && (
                       <div className="hidden md:block absolute top-10 ltr:left-[calc(50%+52px)] rtl:right-[calc(50%+52px)] ltr:right-[-50%] rtl:left-[-50%] h-px border-t border-dashed border-outline-variant/30" />
                     )}
@@ -381,13 +382,13 @@ export default async function HomePage({
                     </div>
                     <h3 className="text-lg font-bold text-on-surface mb-2">{t(`howItWorks.${step.idx}title` as any)}</h3>
                     <p className="text-sm text-on-surface-variant leading-relaxed">{t(`howItWorks.${step.idx}desc` as any)}</p>
-                  </div>
+                  </RevealItem>
                 );
               })}
-            </div>
+            </RevealGroup>
 
             {/* Code snippet */}
-            <div className="max-w-2xl mx-auto">
+            <Reveal delay={0.1} className="max-w-2xl mx-auto">
               <div className="rounded-2xl sm:rounded-3xl bg-surface-container border border-outline-variant/25 overflow-hidden shadow-sm">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/20 bg-surface-container-high/50">
                   <div className="flex items-center gap-2">
@@ -414,14 +415,14 @@ export default async function HomePage({
               <p className="text-center text-xs text-on-surface-variant/80 mt-3 font-medium">
                 {t("howItWorks.codeNote")}
               </p>
-            </div>
+            </Reveal>
           </div>
         </section>
 
         {/* ── AI differentiator: tells you what to fix ──────────────────────── */}
         <section className="py-20 sm:py-28 bg-surface">
           <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
-            <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-8 sm:p-12">
+            <Reveal className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-8 sm:p-12">
               <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary mb-5">
                 <Sparkles className="w-3.5 h-3.5" /> {locale === "ar" ? "مدعوم بالذكاء الاصطناعي" : "AI-powered"}
               </div>
@@ -433,7 +434,7 @@ export default async function HomePage({
                   ? "معظم أدوات التحليل تُغرقك بالرسوم البيانية. EYE يقرأ بياناتك ويكتب لك بلغة بسيطة: أين يغادر الزوّار، لماذا، وما الخطوة التالية بالضبط."
                   : "Most analytics tools drown you in dashboards. EYE reads your data and writes it in plain language: where visitors drop off, why, and exactly what to do next."}
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <RevealGroup className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {(locale === "ar"
                   ? [
                       ["تشخيص النماذج", "«78% يغادرون عند حقل البريد — فعّل التركيز التلقائي أو أضف تسجيل جوجل.»"],
@@ -446,22 +447,22 @@ export default async function HomePage({
                       ["Actionable fixes", "Specific steps ranked by impact-vs-effort — no guesswork."],
                     ]
                 ).map(([h, p]) => (
-                  <div key={h} className="rounded-2xl border border-outline-variant/15 bg-surface p-5">
+                  <RevealItem key={h} className="rounded-2xl border border-outline-variant/15 bg-surface p-5">
                     <p className="font-black text-on-surface mb-1">{h}</p>
                     <p className="text-sm text-on-surface-variant leading-relaxed">{p}</p>
-                  </div>
+                  </RevealItem>
                 ))}
-              </div>
-            </div>
+              </RevealGroup>
+            </Reveal>
           </div>
         </section>
 
         {/* ── Trust / Privacy Bar ───────────────────────────────────────────── */}
         <section className="py-14 sm:py-16 border-y border-outline-variant/15 bg-surface">
           <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+            <RevealGroup className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
               {TRUST_ITEMS.map(({ icon: Icon, lk, dk, bg, ic }) => (
-                <div key={lk} className="flex items-start gap-3 sm:gap-4">
+                <RevealItem key={lk} className="flex items-start gap-3 sm:gap-4">
                   <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0 mt-0.5`}>
                     <Icon className={`w-5 h-5 ${ic}`} />
                   </div>
@@ -469,36 +470,38 @@ export default async function HomePage({
                     <p className="text-sm font-bold text-on-surface">{t(lk as any)}</p>
                     <p className="text-xs text-on-surface-variant mt-0.5">{t(dk as any)}</p>
                   </div>
-                </div>
+                </RevealItem>
               ))}
-            </div>
+            </RevealGroup>
           </div>
         </section>
 
         {/* ── FAQ ──────────────────────────────────────────────────────────── */}
         <section className="py-20 sm:py-24 bg-surface-container/15">
           <div className="max-w-3xl mx-auto px-5 sm:px-6 lg:px-8">
-            <div className="text-center mb-10 sm:mb-12">
+            <Reveal className="text-center mb-10 sm:mb-12">
               <Badge className="mb-4 bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
                 {t("faq.badge")}
               </Badge>
               <h2 className="text-3xl sm:text-4xl font-black text-on-surface tracking-tight">
                 {t("faq.headline")}
               </h2>
-            </div>
-            <div className="space-y-3">
+            </Reveal>
+            <RevealGroup className="space-y-3">
               {[0, 1, 2, 3].map((i) => (
-                <details key={i} className="group rounded-2xl bg-surface border border-outline-variant/20 overflow-hidden">
-                  <summary className="flex items-center justify-between gap-4 p-5 cursor-pointer list-none hover:bg-surface-container/50 transition-colors">
-                    <span className="text-sm font-semibold text-on-surface">{t(`faq.q${i}` as any)}</span>
-                    <ChevronRight className="w-4 h-4 text-on-surface-variant shrink-0 transition-transform duration-200 group-open:rotate-90 rtl:rotate-180 rtl:group-open:rotate-90" />
-                  </summary>
-                  <div className="px-5 pb-5">
-                    <p className="text-sm text-on-surface-variant leading-relaxed">{t(`faq.a${i}` as any)}</p>
-                  </div>
-                </details>
+                <RevealItem key={i}>
+                  <details className="group rounded-2xl bg-surface border border-outline-variant/20 overflow-hidden">
+                    <summary className="flex items-center justify-between gap-4 p-5 cursor-pointer list-none hover:bg-surface-container/50 transition-colors">
+                      <span className="text-sm font-semibold text-on-surface">{t(`faq.q${i}` as any)}</span>
+                      <ChevronRight className="w-4 h-4 text-on-surface-variant shrink-0 transition-transform duration-200 group-open:rotate-90 rtl:rotate-180 rtl:group-open:rotate-90" />
+                    </summary>
+                    <div className="px-5 pb-5">
+                      <p className="text-sm text-on-surface-variant leading-relaxed">{t(`faq.a${i}` as any)}</p>
+                    </div>
+                  </details>
+                </RevealItem>
               ))}
-            </div>
+            </RevealGroup>
           </div>
         </section>
 
@@ -508,27 +511,29 @@ export default async function HomePage({
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] max-w-[120vw] rounded-full bg-indigo-500/12 dark:bg-indigo-600/10 blur-[140px]" />
           </div>
           <div className="relative max-w-2xl mx-auto px-5 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl sm:text-6xl font-black text-on-surface tracking-tight mb-5 leading-[1.08]">
+            <Reveal><h2 className="text-4xl sm:text-6xl font-black text-on-surface tracking-tight mb-5 leading-[1.08]">
               {t("cta.headline")}
               <span className="bg-gradient-to-r from-indigo-500 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
                 {" "}{t("cta.headlineAccent")}
               </span>
-            </h2>
-            <p className="text-base sm:text-lg text-on-surface-variant mb-8 leading-relaxed">{t("cta.description")}</p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
-              <Link href={`/${locale}/auth/register`} className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-xl shadow-indigo-500/25 px-10 h-14 text-lg font-bold gap-2">
-                  {t("cta.primary")}
-                  <ArrowRight className="w-5 h-5 rtl:rotate-180" />
-                </Button>
-              </Link>
-              <Link href={`/${locale}/pricing`} className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 text-base">
-                  {t("cta.secondary")}
-                </Button>
-              </Link>
-            </div>
-            <p className="mt-5 text-sm text-on-surface-variant/80">{t("cta.note")}</p>
+            </h2></Reveal>
+            <Reveal delay={0.08}><p className="text-base sm:text-lg text-on-surface-variant mb-8 leading-relaxed">{t("cta.description")}</p></Reveal>
+            <Reveal delay={0.14}>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+                <Link href={`/${locale}/auth/register`} className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-xl shadow-indigo-500/25 px-10 h-14 text-lg font-bold gap-2">
+                    {t("cta.primary")}
+                    <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+                  </Button>
+                </Link>
+                <Link href={`/${locale}/pricing`} className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 text-base">
+                    {t("cta.secondary")}
+                  </Button>
+                </Link>
+              </div>
+            </Reveal>
+            <Reveal delay={0.2}><p className="mt-5 text-sm text-on-surface-variant/80">{t("cta.note")}</p></Reveal>
           </div>
         </section>
 

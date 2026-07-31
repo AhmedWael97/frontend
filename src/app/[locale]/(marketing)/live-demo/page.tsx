@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { Users, Activity, Clock, TrendingDown, Flame, Globe, MousePointerClick, ArrowRight, Sparkles } from "lucide-react";
+import { Reveal, RevealGroup, RevealItem, GradientBlobs } from "@/components/marketing/Reveal";
 
 const CHART = [
   { date: "Jun 8", visitors: 142, sessions: 188 }, { date: "Jun 9", visitors: 168, sessions: 210 },
@@ -60,12 +61,15 @@ export default function LiveDemoPage() {
     <div dir={ar ? "rtl" : "ltr"} className="min-h-screen bg-background text-on-surface">
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 py-10 space-y-6">
-        <div className="text-center mb-2">
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight">{ar ? "جرّب اللوحة الآن — بدون تسجيل" : "Play with the dashboard — no signup"}</h1>
-          <p className="text-on-surface-variant mt-2">{ar ? "هذه بيانات تجريبية. أنشئ حسابك المجاني لترى بيانات موقعك الحقيقية." : "This is sample data. Create a free account to see your own site's real data."}</p>
+        <div className="relative isolate overflow-hidden text-center mb-2 pb-6">
+          <GradientBlobs variant="compact" />
+          <div className="relative">
+            <Reveal><h1 className="text-3xl sm:text-4xl font-black tracking-tight">{ar ? "جرّب اللوحة الآن — بدون تسجيل" : "Play with the dashboard — no signup"}</h1></Reveal>
+            <Reveal delay={0.08}><p className="text-on-surface-variant mt-2">{ar ? "هذه بيانات تجريبية. أنشئ حسابك المجاني لترى بيانات موقعك الحقيقية." : "This is sample data. Create a free account to see your own site's real data."}</p></Reveal>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <Reveal className="rounded-xl border border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-start gap-3">
             <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
             <div>
@@ -74,15 +78,15 @@ export default function LiveDemoPage() {
             </div>
           </div>
           <Link href={reg} className="inline-flex items-center gap-2 rounded-xl bg-primary text-on-primary px-5 py-2.5 text-sm font-bold shrink-0 hover:opacity-90">{ar ? "ابدأ مجانًا" : "Start free"} <ArrowRight className="w-4 h-4 rtl:rotate-180" /></Link>
-        </div>
+        </Reveal>
 
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <Kpi label={ar ? "الزوّار" : "Visitors"} value="2,847" icon={Users} />
-          <Kpi label={ar ? "الجلسات" : "Sessions"} value="3,912" icon={Activity} />
-          <Kpi label={ar ? "متوسط الوقت" : "Avg. time"} value="2m 14s" icon={Clock} />
-          <Kpi label={ar ? "معدل الارتداد" : "Bounce rate"} value="38.2%" icon={TrendingDown} hint={ar ? "جيد — أقل من 50%" : "Healthy — below 50%"} />
-          <Kpi label={ar ? "عملاء محتملون" : "Hot leads"} value="64" icon={Flame} hint={ar ? "الأكثر احتمالًا للتحويل" : "Most likely to convert"} />
-        </div>
+        <RevealGroup className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <RevealItem><Kpi label={ar ? "الزوّار" : "Visitors"} value="2,847" icon={Users} /></RevealItem>
+          <RevealItem><Kpi label={ar ? "الجلسات" : "Sessions"} value="3,912" icon={Activity} /></RevealItem>
+          <RevealItem><Kpi label={ar ? "متوسط الوقت" : "Avg. time"} value="2m 14s" icon={Clock} /></RevealItem>
+          <RevealItem><Kpi label={ar ? "معدل الارتداد" : "Bounce rate"} value="38.2%" icon={TrendingDown} hint={ar ? "جيد — أقل من 50%" : "Healthy — below 50%"} /></RevealItem>
+          <RevealItem><Kpi label={ar ? "عملاء محتملون" : "Hot leads"} value="64" icon={Flame} hint={ar ? "الأكثر احتمالًا للتحويل" : "Most likely to convert"} /></RevealItem>
+        </RevealGroup>
 
         <Card>
           <CardHeader><CardTitle className="text-sm font-semibold uppercase tracking-widest text-on-surface-variant">{ar ? "الزوّار والجلسات (آخر 14 يومًا)" : "Visitors & sessions (last 14 days)"}</CardTitle></CardHeader>
@@ -104,7 +108,7 @@ export default function LiveDemoPage() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <Reveal className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Card className="lg:col-span-2">
             <CardHeader><CardTitle className="text-sm font-semibold uppercase tracking-widest text-on-surface-variant flex items-center gap-2"><MousePointerClick className="w-4 h-4 text-primary" /> {ar ? "أهم الصفحات" : "Top pages"}</CardTitle></CardHeader>
             <CardContent className="space-y-2">
@@ -127,9 +131,9 @@ export default function LiveDemoPage() {
               ))}
             </CardContent>
           </Card>
-        </div>
+        </Reveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Reveal className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card>
             <CardHeader><CardTitle className="text-sm font-semibold uppercase tracking-widest text-on-surface-variant">{ar ? "خريطة النقر الحرارية" : "Click heatmap"}</CardTitle></CardHeader>
             <CardContent>
@@ -155,13 +159,13 @@ export default function LiveDemoPage() {
               ))}
             </CardContent>
           </Card>
-        </div>
+        </Reveal>
 
-        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-8 text-center space-y-3">
+        <Reveal className="rounded-2xl border border-primary/30 bg-primary/5 p-8 text-center space-y-3">
           <p className="text-xl font-black text-on-surface">{ar ? "جاهز لرؤية بيانات موقعك؟" : "Ready to see your own data?"}</p>
           <p className="text-sm text-on-surface-variant">{ar ? "أضف موقعك وابدأ تتبّع الزوّار الحقيقيين خلال دقائق." : "Add your website and start tracking real visitors in minutes."}</p>
           <Link href={reg} className="inline-flex items-center gap-2 rounded-xl bg-primary text-on-primary px-6 py-3 text-sm font-bold hover:opacity-90">{ar ? "ابدأ مجانًا — بدون بطاقة" : "Start free — no card"} <ArrowRight className="w-4 h-4 rtl:rotate-180" /></Link>
-        </div>
+        </Reveal>
       </main>
       <Footer locale={locale} />
     </div>

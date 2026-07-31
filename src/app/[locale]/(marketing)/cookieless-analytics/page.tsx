@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Eye, Check, X, ShieldCheck, Zap, BarChart3, Cookie } from "lucide-react";
 import { SITE_URL } from "@/lib/seo";
+import { Reveal, RevealGroup, RevealItem, GradientBlobs } from "@/components/marketing/Reveal";
 
 type Props = { params: { locale: string } };
 
@@ -126,35 +127,38 @@ export default function CookielessLanding({ params }: Props) {
 
       <main className="max-w-5xl mx-auto px-4">
         {/* Hero */}
-        <section className="text-center py-16 sm:py-24">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-5"><ShieldCheck className="w-3.5 h-3.5" />GDPR</span>
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.05] mb-5">{t.heroH}</h1>
-          <p className="text-lg text-on-surface-variant max-w-2xl mx-auto mb-8">{t.heroSub}</p>
-          <CTA label={t.cta} />
-          <p className="text-sm text-on-surface-variant/80 mt-4">{t.trust}</p>
+        <section className="relative isolate overflow-hidden text-center py-16 sm:py-24">
+          <GradientBlobs />
+          <div className="relative">
+            <Reveal><span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-5"><ShieldCheck className="w-3.5 h-3.5" />GDPR</span></Reveal>
+            <Reveal delay={0.05}><h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.05] mb-5">{t.heroH}</h1></Reveal>
+            <Reveal delay={0.12}><p className="text-lg text-on-surface-variant max-w-2xl mx-auto mb-8">{t.heroSub}</p></Reveal>
+            <Reveal delay={0.19}><CTA label={t.cta} /></Reveal>
+            <Reveal delay={0.25}><p className="text-sm text-on-surface-variant/80 mt-4">{t.trust}</p></Reveal>
+          </div>
         </section>
 
         {/* Problem */}
-        <section className="py-12 border-t border-outline-variant/10">
+        <Reveal as="section" className="py-12 border-t border-outline-variant/10">
           <h2 className="text-2xl sm:text-3xl font-black mb-4">{t.probH}</h2>
           <p className="text-lg text-on-surface-variant max-w-3xl">{t.probP}</p>
-        </section>
+        </Reveal>
 
         {/* Benefits */}
-        <section className="py-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <RevealGroup className="py-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
           {t.benefits.map((b) => (
-            <div key={b.h} className="rounded-2xl border border-outline-variant/15 p-6">
+            <RevealItem key={b.h} className="rounded-2xl border border-outline-variant/15 p-6 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300">
               <span className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4"><b.icon className="w-5 h-5 text-primary" /></span>
               <h3 className="font-black text-lg mb-2">{b.h}</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed">{b.p}</p>
-            </div>
+            </RevealItem>
           ))}
-        </section>
+        </RevealGroup>
 
         {/* Comparison */}
         <section className="py-12">
-          <h2 className="text-2xl sm:text-3xl font-black mb-6 text-center">{t.cmpH}</h2>
-          <div className="overflow-x-auto rounded-2xl border border-outline-variant/15">
+          <Reveal><h2 className="text-2xl sm:text-3xl font-black mb-6 text-center">{t.cmpH}</h2></Reveal>
+          <Reveal delay={0.1} className="overflow-x-auto rounded-2xl border border-outline-variant/15">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-outline-variant/15 bg-surface-container/40">
@@ -181,33 +185,36 @@ export default function CookielessLanding({ params }: Props) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </Reveal>
         </section>
 
         {/* Setup */}
-        <section className="py-12 text-center border-t border-outline-variant/10">
+        <Reveal as="section" className="py-12 text-center border-t border-outline-variant/10">
           <h2 className="text-2xl sm:text-3xl font-black mb-3">{t.setupH}</h2>
           <p className="text-lg text-on-surface-variant max-w-2xl mx-auto">{t.setupP}</p>
-        </section>
+        </Reveal>
 
         {/* FAQ */}
         <section className="py-12">
-          <h2 className="text-2xl sm:text-3xl font-black mb-6">{t.faqH}</h2>
-          <div className="space-y-4 max-w-3xl">
+          <Reveal><h2 className="text-2xl sm:text-3xl font-black mb-6">{t.faqH}</h2></Reveal>
+          <RevealGroup className="space-y-4 max-w-3xl">
             {t.faq.map(([q, a]) => (
-              <div key={q} className="rounded-xl border border-outline-variant/15 p-5">
+              <RevealItem key={q} className="rounded-xl border border-outline-variant/15 p-5">
                 <p className="font-bold text-on-surface mb-1">{q}</p>
                 <p className="text-on-surface-variant">{a}</p>
-              </div>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
         </section>
 
         {/* Final CTA */}
-        <section className="py-20 text-center border-t border-outline-variant/10">
-          <h2 className="text-3xl sm:text-4xl font-black mb-6">{t.finalH}</h2>
-          <CTA label={t.ctaShort} />
-          <p className="text-sm text-on-surface-variant/80 mt-4">{t.finalNote}</p>
+        <section className="relative isolate overflow-hidden py-20 text-center border-t border-outline-variant/10">
+          <GradientBlobs variant="compact" />
+          <div className="relative">
+            <Reveal><h2 className="text-3xl sm:text-4xl font-black mb-6">{t.finalH}</h2></Reveal>
+            <Reveal delay={0.1}><CTA label={t.ctaShort} /></Reveal>
+            <Reveal delay={0.18}><p className="text-sm text-on-surface-variant/80 mt-4">{t.finalNote}</p></Reveal>
+          </div>
         </section>
       </main>
 
