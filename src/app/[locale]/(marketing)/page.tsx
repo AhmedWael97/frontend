@@ -153,9 +153,9 @@ export default async function HomePage({
         <section className="relative isolate bg-surface pt-28 sm:pt-36 pb-16 sm:pb-24">
           {/* Ambient gradient blobs */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-            <div className="absolute top-[-12%] ltr:left-[10%] rtl:right-[10%] w-[680px] h-[680px] max-w-[110vw] rounded-full bg-indigo-500/12 dark:bg-indigo-600/10 blur-[130px]" />
-            <div className="absolute top-[18%] ltr:right-[4%] rtl:left-[4%] w-[480px] h-[480px] max-w-[100vw] rounded-full bg-violet-500/12 dark:bg-violet-600/10 blur-[120px]" />
-            <div className="absolute bottom-[0%] ltr:left-[2%] rtl:right-[2%] w-[320px] h-[320px] rounded-full bg-pink-500/8 dark:bg-pink-600/6 blur-[100px]" />
+            <div className="absolute top-[-12%] ltr:left-[10%] rtl:right-[10%] w-[680px] h-[680px] max-w-[110vw] rounded-full bg-indigo-500/30 dark:bg-indigo-500/25 blur-[110px]" />
+            <div className="absolute top-[18%] ltr:right-[4%] rtl:left-[4%] w-[480px] h-[480px] max-w-[100vw] rounded-full bg-violet-500/28 dark:bg-violet-500/22 blur-[100px]" />
+            <div className="absolute bottom-[0%] ltr:left-[2%] rtl:right-[2%] w-[320px] h-[320px] rounded-full bg-pink-500/20 dark:bg-pink-500/16 blur-[90px]" />
           </div>
           {/* Faint grid texture, fading out toward edges */}
           <div
@@ -508,7 +508,7 @@ export default async function HomePage({
         {/* ── Final CTA ─────────────────────────────────────────────────────── */}
         <section className="py-24 sm:py-32 relative overflow-hidden bg-surface">
           <div className="absolute inset-0 pointer-events-none" aria-hidden>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] max-w-[120vw] rounded-full bg-indigo-500/12 dark:bg-indigo-600/10 blur-[140px]" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] max-w-[120vw] rounded-full bg-indigo-500/25 dark:bg-indigo-500/20 blur-[120px]" />
           </div>
           <div className="relative max-w-2xl mx-auto px-5 sm:px-6 lg:px-8 text-center">
             <Reveal><h2 className="text-4xl sm:text-6xl font-black text-on-surface tracking-tight mb-5 leading-[1.08]">
