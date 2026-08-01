@@ -11,7 +11,7 @@ import {
   Bell, Webhook, Link2, Eye, ChevronDown, ChevronUp,
   ArrowDownToLine, Gauge, Bug, Lightbulb, Megaphone, Flame, Star,
   SearchCheck, Settings, FileText, Layers, Repeat, FlaskConical, LayoutGrid, Gem, Scale, Menu, ClipboardList, Gift,
-  MessagesSquare,
+  MessagesSquare, Sunrise,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -39,6 +39,7 @@ const HUB_GROUPS = [
       { key: "identities",     href: "/dashboard/identities",       icon: UserCheck },
       { key: "companies",      href: "/dashboard/companies",        icon: Building2 },
       { key: "summary",        href: "/dashboard/summary",          icon: Star },
+      { key: "dailyBrief",     href: "/dashboard/daily-brief",      icon: Sunrise },
     ],
   },
   {
