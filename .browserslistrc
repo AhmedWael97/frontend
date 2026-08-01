@@ -1,9 +1,13 @@
-# Modern browsers only — drop legacy polyfills/transforms (Array.prototype.at,
-# Object.fromEntries, etc.) that bloated the mobile bundle. Covers ~all real
-# mobile traffic (Chrome/Safari/Samsung Internet 2021+).
-chrome >= 91
-safari >= 15
-firefox >= 90
+# Widened Jul 2026 — the 2021+ cutoff was crashing (not just missing
+# polyfills, actual parse failures: "Unexpected token .", "globalThis is
+# not defined") on the register page for a real slice of our ad traffic
+# (~95% mobile, TikTok/Facebook ads reaching older/budget Android devices
+# common in Egypt). Lost real signups. Trade bundle size for those visitors
+# actually being able to load the page.
+chrome >= 70
+safari >= 12.1
+firefox >= 78
 edge >= 91
-ios_saf >= 15
-samsung >= 15
+ios_saf >= 12.1
+samsung >= 10
+android >= 70
