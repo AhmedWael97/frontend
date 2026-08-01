@@ -7,6 +7,7 @@ import { BrowserFrame } from "@/components/marketing/BrowserFrame";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import MobileCtaBar from "@/components/marketing/MobileCtaBar";
+import SignupPopup from "@/components/marketing/SignupPopup";
 
 type Props = { params: { locale: string } };
 
@@ -260,6 +261,7 @@ export default function CookielessLanding({ params }: Props) {
 
       <Footer locale={params.locale} />
       <MobileCtaBar />
+      <SignupPopup />
     </div>
   );
 }

@@ -17,6 +17,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { organizationJsonLd, websiteJsonLd, softwareApplicationJsonLd } from "@/lib/seo";
 import { headers } from "next/headers";
 import { Reveal, RevealGroup, RevealItem } from "@/components/marketing/Reveal";
+import SignupPopup from "@/components/marketing/SignupPopup";
 
 // Resolve the base URL from the actual request host, so every absolute URL on the
 // page (canonical, OG, JSON-LD, the install snippet) matches the domain it's
@@ -541,6 +542,7 @@ export default async function HomePage({
       <Footer locale={locale} />
       <MobileCtaBar />
       <GoogleOneTap />
+      <SignupPopup />
     </>
   );
 }
