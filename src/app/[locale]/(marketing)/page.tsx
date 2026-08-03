@@ -211,6 +211,10 @@ export default async function HomePage({
               </Link>
             </div>
 
+            <p className="text-xs sm:text-sm font-medium text-emerald-600 dark:text-emerald-400 mb-5">
+              {t("hero.noSignupNote")}
+            </p>
+
             <div className="flex items-center justify-center gap-x-5 gap-y-2 flex-wrap text-xs sm:text-sm text-on-surface-variant/70">
               <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> {t("hero.trustFree")}</span>
               <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> {t("hero.trustCookies")}</span>
