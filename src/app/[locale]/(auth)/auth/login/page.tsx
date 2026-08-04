@@ -35,10 +35,14 @@ export default function LoginPage() {
     resolver: zodResolver(schema),
   });
   const [googleHref, setGoogleHref] = useState("");
+  const [facebookHref, setFacebookHref] = useState("");
 
   useEffect(() => {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    setGoogleHref(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/google/redirect?redirect=${encodeURIComponent(`${origin}/${locale}/auth/callback`)}`);
+    const callback = encodeURIComponent(`${origin}/${locale}/auth/callback`);
+    const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    setGoogleHref(`${api}/api/v1/auth/google/redirect?redirect=${callback}`);
+    setFacebookHref(`${api}/api/v1/auth/facebook/redirect?redirect=${callback}`);
   }, [locale]);
 
   const onSubmit = async (data: FormData) => {
@@ -98,6 +102,15 @@ export default function LoginPage() {
                 <path d="M21.35 11.1H12v2.8h5.35c-.2 1.35-1.4 3.95-5.35 3.95-3.2 0-5.8-2.65-5.8-5.9s2.6-5.9 5.8-5.9c1.85 0 3.1.8 3.8 1.5l2.55-2.45C17.3 3.1 15.05 2 12 2 6.48 2 2 6.48 2 12s4.48 10 10 10c5.8 0 9.7-4.05 9.7-9.75 0-.65-.05-1.15-.35-1.45Z" fill="#4285F4"/>
               </svg>
               {locale === "ar" ? "الدخول بحساب Google" : "Continue with Google"}
+            </a>
+            <a
+              href={facebookHref}
+              className="inline-flex w-full items-center justify-center gap-2.5 rounded-xl border-2 border-primary/30 bg-surface h-12 text-base font-bold text-on-surface shadow-md transition hover:bg-surface-container hover:border-primary/50"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true" fill="#1877F2" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06C2 17.06 5.66 21.2 10.44 22v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22C18.34 21.2 22 17.06 22 12.06Z"/>
+              </svg>
+              {locale === "ar" ? "الدخول بحساب Facebook" : "Continue with Facebook"}
             </a>
             <p className="text-center text-[11px] text-on-surface-variant/70">{locale === "ar" ? "الأسرع — بدون كلمة مرور" : "Fastest — no password to remember"}</p>
             <div className="flex items-center gap-3 text-xs text-on-surface-variant/70">
