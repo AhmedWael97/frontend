@@ -1,3 +1,5 @@
+import InAppBrowserEscape from "@/components/auth/InAppBrowserEscape";
+
 export default function AuthLayout({
   children,
   params,
@@ -9,6 +11,7 @@ export default function AuthLayout({
   const base = `/${params?.locale || "en"}`;
   return (
     <div className="min-h-screen bg-surface flex flex-col">
+      <InAppBrowserEscape />
       {/* Ambient background glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
