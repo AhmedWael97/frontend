@@ -24,6 +24,13 @@ export default function GoogleOneTap() {
 
   useEffect(() => {
     if (!CLIENT_ID || token) return;
+    // Google's GSI script probes native app bridges internally and throws
+    // uncaught errors inside Instagram/Facebook's in-app WebView (seen in
+    // production as "window.webkit.messageHandlers" / "Java object is gone"
+    // js_errors) — a known GSI-vs-in-app-browser incompatibility, not
+    // something we can catch from our side. Skip entirely there; the
+    // email/password + explicit "Continue with Google" button still work.
+    if (/Instagram|FBAN|FBAV/i.test(navigator.userAgent)) return;
     let cancelled = false;
 
     const handle = async (resp: { credential?: string }) => {
