@@ -143,6 +143,10 @@ export const analyticsApi = {
   retention: (domainId: number, params?: { period?: "week" | "month"; cohorts?: number }) =>
     client.get(ANALYTICS_ROUTES.retention(domainId), { params }),
 
+  /** GET /analytics/{domainId}/traffic-quality — per-day 0-100 quality score */
+  trafficQuality: (domainId: number, params: { from: string; to: string }) =>
+    client.get(ANALYTICS_ROUTES.trafficQuality(domainId), { params }),
+
   /** GET /analytics/{domainId}/experiments */
   experimentsList: (domainId: number) =>
     client.get(ANALYTICS_ROUTES.experiments(domainId)),

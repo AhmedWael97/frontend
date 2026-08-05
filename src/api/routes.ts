@@ -222,6 +222,7 @@ export const ANALYTICS_ROUTES = {
   campaigns: (domainId: number) => `/analytics/${domainId}/campaigns`,
   retention: (domainId: number) => `/analytics/${domainId}/retention`,
   ltv: (domainId: number) => `/analytics/${domainId}/ltv`,
+  trafficQuality: (domainId: number) => `/analytics/${domainId}/traffic-quality`,
   seoRank: (domainId: number) => `/analytics/${domainId}/seo-rank`,
   seoRankKeywords: (domainId: number) => `/analytics/${domainId}/seo-rank/keywords`,
   seoRankImport: (domainId: number) => `/analytics/${domainId}/seo-rank/import`,

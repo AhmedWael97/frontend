@@ -29,6 +29,7 @@ const HUB_GROUPS = [
       { key: "analytics",      href: "/dashboard/analytics",        icon: BarChart3 },
       { key: "compare",        href: "/dashboard/compare",          icon: Scale },
       { key: "campaigns",      href: "/dashboard/campaigns",        icon: Megaphone },
+      { key: "trafficQuality", href: "/dashboard/traffic-quality",  icon: Gauge },
       { key: "channels",       href: "/dashboard/channels",         icon: Layers },
       { key: "engagedVisitors",href: "/dashboard/engaged-visitors", icon: Flame },
       { key: "retention",      href: "/dashboard/retention",        icon: Repeat },
