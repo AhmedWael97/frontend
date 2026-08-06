@@ -11,6 +11,7 @@ declare global {
   interface Window {
     ttq?: { track: (event: string, props?: Props, options?: { event_id?: string }) => void; page?: () => void };
     gtag?: (...args: unknown[]) => void;
+    fbq?: (...args: unknown[]) => void;
     EYE?: {
       track?: (event: string, props?: Props) => void;
       identify?: (id: string, traits?: Props) => void;
@@ -57,6 +58,20 @@ export function gaEvent(event: string, params: Props = {}): void {
 }
 
 /**
+ * Fire a Meta Pixel standard event. `eventId`, when given, is passed as the
+ * dedup key — shared with a server-side Conversions API send of the same
+ * event so Meta merges them instead of double-counting the conversion.
+ */
+export function fbTrack(event: string, props: Props = {}, eventId?: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.fbq?.("track", event, props, eventId ? { eventID: eventId } : undefined);
+  } catch {
+    /* pixel not loaded / blocked — ignore */
+  }
+}
+
+/**
  * Signup completed — the primary conversion.
  * @param userId   used to build a stable event_id shared with the server-side
  *                 TikTok Events API send, so TikTok can dedup the pixel + CAPI
@@ -76,6 +91,7 @@ export function trackSignup(userId?: number | string, email?: string): void {
   }
 
   ttTrack("CompleteRegistration", {}, eventId);
+  fbTrack("CompleteRegistration", {}, eventId);
   gaEvent("sign_up");
   // Google Ads "Add domain / signup" conversion.
   const label = process.env.NEXT_PUBLIC_GOOGLE_ADS_SIGNUP_LABEL
@@ -86,9 +102,11 @@ export function trackSignup(userId?: number | string, email?: string): void {
 /** Viewed a plan / pricing — top of funnel. */
 export function trackViewPlans(): void {
   ttTrack("ViewContent", { content_type: "product", content_name: "plans" });
+  fbTrack("ViewContent", { content_type: "product", content_name: "plans" });
 }
 
 /** Started an upgrade / subscribe flow — mid funnel. */
 export function trackInitiateCheckout(planName?: string): void {
   ttTrack("InitiateCheckout", planName ? { content_name: planName } : {});
+  fbTrack("InitiateCheckout", planName ? { content_name: planName } : {});
 }
