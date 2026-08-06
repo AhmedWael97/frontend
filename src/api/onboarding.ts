@@ -25,8 +25,17 @@ export type QuizPayload = {
   languages: string[];
   features: string[];
   domains: QuizDomain[];
+  visitor_id?: string;
   email?: string;
-  name?: string;
+  first_name?: string;
+  last_name?: string;
+  password?: string;
+  password_confirmation?: string;
+};
+
+export type QuizProgressPayload = Partial<Omit<QuizPayload, "visitor_id">> & {
+  visitor_id: string;
+  step_reached: number;
 };
 
 export const onboardingApi = {
@@ -39,4 +48,7 @@ export const onboardingApi = {
 
   /** POST /onboarding/quiz — "get started" questionnaire finalize step. */
   submitQuiz: (payload: QuizPayload) => client.post("/onboarding/quiz", payload),
+
+  /** POST /onboarding/quiz/progress — autosave, fired on every wizard step. */
+  saveQuizProgress: (payload: QuizProgressPayload) => client.post("/onboarding/quiz/progress", payload),
 };

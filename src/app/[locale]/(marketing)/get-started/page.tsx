@@ -90,13 +90,30 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
   const [domainInput, setDomainInput] = useState("");
   const [domains, setDomains] = useState<TestedDomain[]>([]);
   const [features, setFeatures] = useState<string[]>([]);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [result, setResult] = useState<{ domains: { domain: string }[]; plan: { name: string } | null; trial_ends_at: string | null } | null>(null);
+  const [visitorId, setVisitorId] = useState("");
 
   const t = (en: string, arText: string) => (ar ? arText : en);
+
+  // Stable per-browser id so an abandoned attempt can still be autosaved and
+  // matched back up if they return — independent of EYE's own visitor
+  // tracking, so it works even if that script is blocked.
+  useEffect(() => {
+    let id = "";
+    try { id = localStorage.getItem("eye_quiz_visitor_id") || ""; } catch {}
+    if (!id) {
+      id = `q_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+      try { localStorage.setItem("eye_quiz_visitor_id", id); } catch {}
+    }
+    setVisitorId(id);
+  }, []);
 
   const toggle = (list: string[], setList: (v: string[]) => void, item: string) => {
     setList(list.includes(item) ? list.filter((i) => i !== item) : [...list, item]);
@@ -155,12 +172,42 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
     domains: domains.map(({ domain, seo_score, speed_score, pages_found }) => ({ domain, seo_score, speed_score, pages_found })),
   });
 
+  // Autosave on every step change so an abandoned attempt still shows up for
+  // the superadmin — who started, how far they got, whatever they'd answered.
+  useEffect(() => {
+    if (!visitorId) return;
+    onboardingApi
+      .saveQuizProgress({
+        visitor_id: visitorId,
+        step_reached: step > TOTAL_STEPS ? TOTAL_STEPS : step,
+        role: role ?? undefined,
+        sites_managed: sitesManaged !== "" ? Number(sitesManaged) : undefined,
+        languages,
+        features,
+        domains: domains.map(({ domain, seo_score, speed_score, pages_found }) => ({ domain, seo_score, speed_score, pages_found })),
+      })
+      .catch(() => {}); // best-effort — never blocks the wizard
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, visitorId]);
+
   const submitWithEmail = async () => {
-    if (!email.trim() || submitting) return;
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password || submitting) return;
+    if (password !== passwordConfirm) {
+      setSubmitError(t("Passwords don't match.", "كلمتا المرور غير متطابقتين."));
+      return;
+    }
     setSubmitting(true);
     setSubmitError("");
     try {
-      const r = await onboardingApi.submitQuiz({ ...buildPayload(), email: email.trim(), name: name.trim() || undefined });
+      const r = await onboardingApi.submitQuiz({
+        ...buildPayload(),
+        visitor_id: visitorId,
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        email: email.trim(),
+        password,
+        password_confirmation: passwordConfirm,
+      });
       const data = r.data?.data ?? r.data;
       if (data.token) {
         setToken(data.token);
@@ -336,8 +383,8 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
 
               {step === 6 && (
                 <div>
-                  <h1 className="text-2xl font-black mb-2">{t("Last step — how do we reach you?", "الخطوة الأخيرة — كيف نصل إليك؟")}</h1>
-                  <p className="text-sm text-on-surface-variant mb-5">{t("No password needed right now.", "بدون كلمة مرور الآن.")}</p>
+                  <h1 className="text-2xl font-black mb-2">{t("Last step — create your account", "الخطوة الأخيرة — أنشئ حسابك")}</h1>
+                  <p className="text-sm text-on-surface-variant mb-5">{t("This is a real account — you'll use it to log in.", "هذا حساب حقيقي — ستستخدمه لتسجيل الدخول.")}</p>
 
                   {submitError && <div className="rounded-lg bg-error-container/30 border border-error/20 px-4 py-3 text-sm text-error mb-4">{submitError}</div>}
 
@@ -353,13 +400,22 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
                   </a>
                   <div className="flex items-center gap-3 text-xs text-on-surface-variant/70 mb-4">
                     <span className="h-px flex-1 bg-outline-variant/50" />
-                    {t("or use email", "أو بالبريد")}
+                    {t("or register with email", "أو سجّل بالبريد")}
                     <span className="h-px flex-1 bg-outline-variant/50" />
                   </div>
                   <div className="space-y-3">
-                    <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("Name (optional)", "الاسم (اختياري)")} className="h-12" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={t("First name", "الاسم الأول")} className="h-12" />
+                      <Input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t("Last name", "اسم العائلة")} className="h-12" />
+                    </div>
                     <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("Email address", "بريدك الإلكتروني")} className="h-12" />
-                    <Button onClick={submitWithEmail} disabled={submitting || !email.trim()} className="w-full h-14 text-lg font-bold gap-2">
+                    <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("Password (min. 8 characters)", "كلمة المرور (8 أحرف على الأقل)")} className="h-12" autoComplete="new-password" />
+                    <Input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder={t("Confirm password", "تأكيد كلمة المرور")} className="h-12" autoComplete="new-password" />
+                    <Button
+                      onClick={submitWithEmail}
+                      disabled={submitting || !firstName.trim() || !lastName.trim() || !email.trim() || password.length < 8 || !passwordConfirm}
+                      className="w-full h-14 text-lg font-bold gap-2"
+                    >
                       {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowRight className="w-5 h-5 rtl:rotate-180" />}
                       {t("Finish", "إنهاء")}
                     </Button>

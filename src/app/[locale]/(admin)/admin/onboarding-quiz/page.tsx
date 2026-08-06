@@ -5,8 +5,11 @@ import { adminApi } from "@/lib/api";
 
 type QuizItem = {
   id: number;
-  role: string;
-  sites_managed: number;
+  visitor_id: string | null;
+  completed: boolean;
+  step_reached: number;
+  role: string | null;
+  sites_managed: number | null;
   languages: string[] | null;
   features: string[] | null;
   domains: { domain: string; seo_score?: number; speed_score?: number; pages_found?: number }[] | null;
@@ -15,6 +18,8 @@ type QuizItem = {
   user_email: string | null;
   created_at: string;
 };
+
+const TOTAL_STEPS = 6;
 
 function Chips({ items }: { items: string[] | null }) {
   if (!items || items.length === 0) return <span className="text-on-surface-variant/50">—</span>;
@@ -35,18 +40,23 @@ export default function AdminOnboardingQuizPage() {
 
   const items: QuizItem[] = data?.items ?? [];
   const topFeatures: Record<string, number> = data?.top_features ?? {};
+  const completedCount = items.filter((r) => r.completed).length;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-black text-on-surface tracking-tight">Get Started — Questionnaire</h1>
-        <p className="text-on-surface-variant text-sm mt-0.5">Every "get started" wizard response</p>
+        <p className="text-on-surface-variant text-sm mt-0.5">Every "get started" wizard attempt — completed or abandoned</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="rounded-2xl border border-outline-variant/20 p-5">
-          <p className="text-xs uppercase tracking-widest text-on-surface-variant">Responses</p>
+          <p className="text-xs uppercase tracking-widest text-on-surface-variant">Started</p>
           <p className="text-3xl font-black text-on-surface mt-1">{data?.total ?? "—"}</p>
+        </div>
+        <div className="rounded-2xl border border-outline-variant/20 p-5">
+          <p className="text-xs uppercase tracking-widest text-on-surface-variant">Completed</p>
+          <p className="text-3xl font-black text-emerald-500 mt-1">{completedCount} <span className="text-sm text-on-surface-variant font-medium">/ {data?.total ?? 0}</span></p>
         </div>
         <div className="rounded-2xl border border-outline-variant/20 p-5">
           <p className="text-xs uppercase tracking-widest text-on-surface-variant mb-2">Most-wanted features</p>
@@ -66,14 +76,19 @@ export default function AdminOnboardingQuizPage() {
           <div key={r.id} className="p-4 space-y-2">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-bold text-on-surface">{r.user_name || "—"}</span>
+                <span className="text-sm font-bold text-on-surface">{r.user_name || (r.visitor_id ? `Anonymous (${r.visitor_id.slice(0, 10)}…)` : "—")}</span>
                 <span className="text-xs text-on-surface-variant">{r.user_email || "—"}</span>
-                <span className="rounded-full bg-surface-container-high px-2 py-0.5 text-[11px] font-semibold text-on-surface-variant capitalize">{r.role.replace("_", " ")}</span>
-                {r.plan_assigned && <span className="rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 text-[11px] font-semibold">{r.plan_assigned}</span>}
+                {r.role && <span className="rounded-full bg-surface-container-high px-2 py-0.5 text-[11px] font-semibold text-on-surface-variant capitalize">{r.role.replace("_", " ")}</span>}
+                {r.completed ? (
+                  <span className="rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 text-[11px] font-semibold">Completed</span>
+                ) : (
+                  <span className="rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 text-[11px] font-semibold">Abandoned — step {r.step_reached}/{TOTAL_STEPS}</span>
+                )}
+                {r.plan_assigned && <span className="rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 text-[11px] font-semibold">{r.plan_assigned}</span>}
               </div>
               <span className="text-xs text-on-surface-variant">{new Date(r.created_at).toLocaleString()}</span>
             </div>
-            <p className="text-xs text-on-surface-variant">Manages {r.sites_managed} site(s)</p>
+            <p className="text-xs text-on-surface-variant">{r.sites_managed != null ? `Manages ${r.sites_managed} site(s)` : "—"}</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
               <div><p className="text-on-surface-variant/70 mb-1">Languages</p><Chips items={r.languages} /></div>
               <div><p className="text-on-surface-variant/70 mb-1">Interested in</p><Chips items={r.features} /></div>
