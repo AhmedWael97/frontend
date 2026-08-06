@@ -24,6 +24,9 @@ export const adminApi = {
   /** GET /admin/feedback */
   feedback: () => client.get("/admin/feedback"),
 
+  /** GET /admin/onboarding-quiz — "get started" questionnaire responses */
+  onboardingQuiz: () => client.get("/admin/onboarding-quiz"),
+
   /** GET /admin/email/audiences */
   emailAudiences: () => client.get("/admin/email/audiences"),
   /** POST /admin/email/send */
