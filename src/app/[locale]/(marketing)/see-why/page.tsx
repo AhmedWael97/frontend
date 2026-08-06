@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, PlayCircle, Map, GitMerge, TrendingDown } from "lucide-react";
+import { ArrowRight, Check, PlayCircle, Map, GitMerge, TrendingDown, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import MobileCtaBar from "@/components/marketing/MobileCtaBar";
 import SignupPopup from "@/components/marketing/SignupPopup";
@@ -25,11 +24,15 @@ const DOTS: [number, number, number][] = [
 // own copy 1:1 so the visitor instantly recognizes "this is the thing I
 // clicked on"; ?h=b (variant B) is a curiosity/voyeur framing instead.
 // Wired to a real split_url experiment targeting this exact page.
+//
+// h1a is stored pre-split into two clauses (breaking after the "..." pause)
+// so the headline always wraps as complete thoughts, never mid-phrase.
 const C = {
   ar: {
     dir: "rtl" as const,
     badge: "بدون كوكيز • بدون بانر موافقة",
-    h1a: "زوارك بيدخلوا موقعك... وبيمشوا من غير ما يشتروا.",
+    h1a1: "زوارك بيدخلوا موقعك...",
+    h1a2: "وبيمشوا من غير ما يشتروا.",
     h1b: "دلوقتي تقدر تشوف ليه.",
     h1a_b: "اقعد اتفرّج على زوار موقعك وهما بيتصفحوا.",
     h1b_b: "هتعرف ليه بيمشوا في أول دقيقة.",
@@ -50,7 +53,8 @@ const C = {
   en: {
     dir: "ltr" as const,
     badge: "No cookies • No consent banner",
-    h1a: "Visitors land on your site... and leave without buying.",
+    h1a1: "Visitors land on your site...",
+    h1a2: "and leave without buying.",
     h1b: "Now you can see exactly why.",
     h1a_b: "Watch your visitors browse your site, live.",
     h1b_b: "You'll know why they leave within the first minute.",
@@ -74,7 +78,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
   const url = `${SITE_URL}${localePath(params.locale, "/see-why")}`;
   return {
-    title: `${t.h1a} ${t.h1b} | EYE`,
+    title: `${t.h1a1} ${t.h1a2} | EYE`,
     description: t.sub,
     alternates: { canonical: url, languages: { en: `${SITE_URL}${localePath("en", "/see-why")}`, ar: `${SITE_URL}${localePath("ar", "/see-why")}` } },
     robots: { index: false, follow: true }, // A/B ad-landing variant — don't compete with the control page in search
@@ -90,45 +94,62 @@ export default function SeeWhyLanding({ params, searchParams }: Props) {
 
   return (
     <div dir={t.dir} className="min-h-screen bg-background text-on-surface">
-      <Navbar />
+      {/* Minimal logo-only header — no nav, no login/pricing/demo links. Every
+          link off an ad-landing page is a conversion leak; the only path
+          forward here is the CTA. */}
+      <header className="relative z-20 py-5">
+        <div className="max-w-3xl mx-auto px-5 sm:px-6 flex items-center justify-center gap-2">
+          <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+            <Eye className="w-4 h-4 text-white" />
+          </span>
+          <span className="text-lg font-black tracking-tight text-on-surface">
+            EYE<span className="text-indigo-500 dark:text-indigo-400">.</span>
+          </span>
+        </div>
+      </header>
+
       <main className="overflow-hidden">
-        {/* Hero */}
-        <section className="relative isolate overflow-hidden text-center pt-24 sm:pt-32 pb-16 sm:pb-24 bg-surface">
+        {/* Hero — everything here is above the fold on load, so it renders at
+            full opacity immediately (no scroll-triggered Reveal). A prior
+            version wrapped this in Reveal's whileInView animation, which left
+            the hero visibly faded (~30% opacity) on a cold load until the
+            visitor scrolled — the IntersectionObserver wasn't reliably firing
+            for content already in the viewport on first paint. */}
+        <section className="relative isolate overflow-hidden text-center pt-6 sm:pt-10 pb-16 sm:pb-24 bg-surface">
           <GradientBlobs />
           <div className="relative max-w-3xl mx-auto px-5 sm:px-6">
-            <Reveal>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-6">
-                <Check className="w-3.5 h-3.5" /> {t.badge}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-6">
+              <Check className="w-3.5 h-3.5" /> {t.badge}
+            </span>
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.45] mb-5">
+              {variantB ? (
+                <span className="block">{t.h1a_b}</span>
+              ) : (
+                <>
+                  <span className="block">{t.h1a1}</span>
+                  <span className="block">{t.h1a2}</span>
+                </>
+              )}
+              <span className="block mt-2 sm:mt-3 bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 bg-clip-text text-transparent">
+                {variantB ? t.h1b_b : t.h1b}
               </span>
-            </Reveal>
-            <Reveal delay={0.06}>
-              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.45] mb-5">
-                <span className="block">{variantB ? t.h1a_b : t.h1a}</span>
-                <span className="block mt-2 sm:mt-3 bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 bg-clip-text text-transparent">
-                  {variantB ? t.h1b_b : t.h1b}
-                </span>
-              </h1>
-            </Reveal>
-            <Reveal delay={0.12}>
-              <p className="text-base sm:text-lg text-on-surface-variant max-w-xl mx-auto mb-8 leading-relaxed">{t.sub}</p>
-            </Reveal>
-            <Reveal delay={0.18}>
-              <Link href={registerHref}>
-                <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-10 h-14 sm:h-16 text-lg sm:text-xl font-bold gap-2">
-                  {t.cta} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
-                </Button>
-              </Link>
-            </Reveal>
-            <Reveal delay={0.24}>
-              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-6 text-xs sm:text-sm text-on-surface-variant">
-                {t.trustItems.map((item) => (
-                  <span key={item} className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> {item}</span>
-                ))}
-              </div>
-            </Reveal>
+            </h1>
+            <p className="text-base sm:text-lg text-on-surface-variant max-w-xl mx-auto mb-8 leading-relaxed">{t.sub}</p>
+            <Link href={registerHref}>
+              <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-10 h-14 sm:h-16 text-lg sm:text-xl font-bold gap-2">
+                {t.cta} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+              </Button>
+            </Link>
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-6 text-xs sm:text-sm text-on-surface-variant">
+              {t.trustItems.map((item) => (
+                <span key={item} className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> {item}</span>
+              ))}
+            </div>
 
-            {/* Product preview — concrete visual proof, not just claims */}
-            <Reveal delay={0.3} className="mt-14 sm:mt-16 max-w-2xl mx-auto text-start">
+            {/* Product preview — concrete visual proof, not just claims.
+                Tight top margin so its edge is visible on the first screen,
+                enough to earn the scroll. */}
+            <div className="mt-8 sm:mt-10 max-w-2xl mx-auto text-start">
               <BrowserFrame url="yoursite.com">
                 <div className="relative w-full aspect-[16/10] rounded-lg bg-surface-container-lowest border border-outline-variant/20 overflow-hidden">
                   <div className="absolute inset-x-6 top-4 h-4 rounded bg-on-surface/10" />
@@ -143,13 +164,23 @@ export default function SeeWhyLanding({ params, searchParams }: Props) {
                 </div>
                 <p className="text-xs text-on-surface-variant mt-3 text-center">{t.previewNote}</p>
               </BrowserFrame>
-            </Reveal>
+              {/* CTA repeated right under the preview — by here the case is
+                  made; don't make anyone scroll back up to act on it. */}
+              <div className="mt-6 text-center">
+                <Link href={registerHref}>
+                  <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-10 h-14 sm:h-16 text-lg sm:text-xl font-bold gap-2">
+                    {t.cta} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
 
         <LiveStatsStrip />
 
-        {/* 3 differentiators, matching the subheadline's promise */}
+        {/* 3 differentiators, matching the subheadline's promise — genuinely
+            below the fold, safe to animate on scroll. */}
         <section className="py-16 sm:py-20 bg-surface-container/15">
           <RevealGroup className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
             {t.benefits.map((b) => (

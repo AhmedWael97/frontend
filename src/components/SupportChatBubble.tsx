@@ -13,7 +13,7 @@ const IDLE_POLL_MS = 45000;
 const GUEST_KEY = "eye_support_guest";
 const GREETING_DISMISSED_KEY = "eye_chat_greeting_dismissed_at";
 const GREETING_COOLDOWN_MS = 24 * 60 * 60 * 1000; // reappears once a day, not every visit
-const GREETING_DELAY_MS = 6000;
+const GREETING_DELAY_MS = 30000; // wait until the visitor is actually reading, not still orienting
 
 // Two-tone "ding" synthesized with Web Audio — no audio file to host/fetch.
 // Browsers block audio before any user gesture, so this is best-effort: it
