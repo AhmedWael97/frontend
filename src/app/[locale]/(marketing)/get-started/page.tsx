@@ -277,20 +277,32 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
                   {domains.length > 0 && (
                     <div className="space-y-3 mb-5">
                       {domains.map((d) => (
-                        <div key={d.domain} className="rounded-xl border border-outline-variant/15 px-4 py-3 flex items-center gap-3">
-                          <span className="font-mono text-sm flex-1 truncate">{d.domain}</span>
-                          {d.testing && <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />}
-                          {d.testError && <span className="text-xs text-error">{d.testError}</span>}
-                          {!d.testing && d.seo_score != null && (
-                            <span className="inline-flex items-center gap-1 text-xs font-bold"><ScanSearch className="w-3.5 h-3.5 text-indigo-500" /> {d.seo_score}</span>
+                        <div key={d.domain} className="rounded-xl border border-outline-variant/15 px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <span className="font-mono text-sm flex-1 truncate">{d.domain}</span>
+                            {d.testing && <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />}
+                            <button onClick={() => removeDomain(d.domain)} aria-label="remove"><X className="w-4 h-4 text-on-surface-variant/60 hover:text-error" /></button>
+                          </div>
+                          {d.testError && <p className="text-xs text-error mt-2">{d.testError}</p>}
+                          {!d.testing && (d.seo_score != null || d.speed_score != null || d.pages_found != null) && (
+                            <div className="flex flex-wrap items-center gap-2 mt-2.5">
+                              {d.seo_score != null && (
+                                <span className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500/10 px-2.5 py-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                                  <ScanSearch className="w-3.5 h-3.5" /> {t("SEO score", "درجة السيو")}: {d.seo_score}/100
+                                </span>
+                              )}
+                              {d.speed_score != null && (
+                                <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                  <Gauge className="w-3.5 h-3.5" /> {t("Speed score", "درجة السرعة")}: {d.speed_score}/100
+                                </span>
+                              )}
+                              {d.pages_found != null && (
+                                <span className="inline-flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-2.5 py-1.5 text-xs font-bold text-violet-600 dark:text-violet-400">
+                                  <Layers className="w-3.5 h-3.5" /> {t("Pages found", "عدد الصفحات")}: {d.pages_found}
+                                </span>
+                              )}
+                            </div>
                           )}
-                          {!d.testing && d.speed_score != null && (
-                            <span className="inline-flex items-center gap-1 text-xs font-bold"><Gauge className="w-3.5 h-3.5 text-emerald-500" /> {d.speed_score}</span>
-                          )}
-                          {!d.testing && d.pages_found != null && (
-                            <span className="inline-flex items-center gap-1 text-xs font-bold"><Layers className="w-3.5 h-3.5 text-violet-500" /> {d.pages_found}</span>
-                          )}
-                          <button onClick={() => removeDomain(d.domain)} aria-label="remove"><X className="w-4 h-4 text-on-surface-variant/60 hover:text-error" /></button>
                         </div>
                       ))}
                       <Button type="button" variant="outline" onClick={runTests} className="w-full h-11 gap-2">
