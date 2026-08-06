@@ -1,15 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, PlayCircle, Map, GitMerge } from "lucide-react";
+import { ArrowRight, Check, PlayCircle, Map, GitMerge, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import MobileCtaBar from "@/components/marketing/MobileCtaBar";
 import SignupPopup from "@/components/marketing/SignupPopup";
 import { Reveal, RevealGroup, RevealItem, GradientBlobs } from "@/components/marketing/Reveal";
+import { BrowserFrame } from "@/components/marketing/BrowserFrame";
 import { SITE_URL, localePath } from "@/lib/seo";
 
 type Props = { params: { locale: string }; searchParams: { h?: string } };
+
+// Illustrative heatmap dots for the hero mockup — same sample-data pattern
+// as /heatmaps, not real visitor data (BrowserFrame's "Sample data" badge
+// makes that explicit).
+const DOTS: [number, number, number][] = [
+  [50, 22, 1], [48, 23, 0.9], [52, 21, 0.8], [30, 40, 0.5], [70, 42, 0.6],
+  [22, 62, 0.35], [78, 63, 0.4], [50, 88, 0.9], [45, 89, 0.8], [55, 87, 0.7],
+];
 
 // Headline A/B: default (variant A, loss-framing) matches the running ad's
 // own copy 1:1 so the visitor instantly recognizes "this is the thing I
@@ -17,6 +26,7 @@ type Props = { params: { locale: string }; searchParams: { h?: string } };
 // Wired to a real split_url experiment targeting this exact page.
 const C = {
   ar: {
+    dir: "rtl" as const,
     badge: "بدون كوكيز • بدون بانر موافقة",
     h1a: "زوارك بيدخلوا موقعك... وبيمشوا من غير ما يشتروا.",
     h1b: "دلوقتي تقدر تشوف ليه.",
@@ -24,7 +34,8 @@ const C = {
     h1b_b: "هتعرف ليه بيمشوا في أول دقيقة.",
     sub: "شوف فيديو لكل زائر وهو بيتصفح موقعك، وخريطة حرارية توريك إيه اللي بيتشاف وإيه اللي بيتجاهلوه، وقمع يقولك في أنهي خطوة بالظبط بيسيبوك.",
     cta: "ابدأ 30 يوم مجاناً",
-    trustLine: "من غير بطاقة ائتمان • التركيب دقيقتين • سطر واحد في موقعك",
+    trustItems: ["من غير بطاقة ائتمان", "التركيب دقيقتين", "سطر واحد في موقعك"],
+    previewNote: "أفتح البقع = نقرات أكتر. الزوار بيتجاهلوا الجزء تحت.",
     benefits: [
       { icon: PlayCircle, t: "فيديو لكل زائر", d: "شوف بالظبط إيه اللي عمله من لحظة ما دخل لحد ما مشي." },
       { icon: Map, t: "خريطة حرارية", d: "إيه اللي بيتشاف، وإيه اللي بيتجاهلوه تماماً." },
@@ -36,6 +47,7 @@ const C = {
     finalCta: "إنشاء حساب مجاني",
   },
   en: {
+    dir: "ltr" as const,
     badge: "No cookies • No consent banner",
     h1a: "Visitors land on your site... and leave without buying.",
     h1b: "Now you can see exactly why.",
@@ -43,7 +55,8 @@ const C = {
     h1b_b: "You'll know why they leave within the first minute.",
     sub: "A video of every visitor as they browse, a heatmap of what they actually look at vs. ignore, and a funnel that names the exact step they quit on.",
     cta: "Start your 30-day trial",
-    trustLine: "No credit card • 2-minute setup • One script tag",
+    trustItems: ["No credit card", "2-minute setup", "One script tag"],
+    previewNote: "Brighter spots = more clicks. Visitors are ignoring the section below.",
     benefits: [
       { icon: PlayCircle, t: "A video per visitor", d: "See exactly what they did from the moment they landed to the moment they left." },
       { icon: Map, t: "Click heatmaps", d: "What gets looked at, and what gets ignored completely." },
@@ -75,20 +88,20 @@ export default function SeeWhyLanding({ params, searchParams }: Props) {
   const registerHref = localePath(locale, "/auth/register");
 
   return (
-    <div dir={ar ? "rtl" : "ltr"} className="min-h-screen bg-background text-on-surface">
+    <div dir={t.dir} className="min-h-screen bg-background text-on-surface">
       <Navbar />
       <main className="overflow-hidden">
         {/* Hero */}
-        <section className="relative isolate overflow-hidden text-center pt-24 sm:pt-32 pb-14 sm:pb-20 bg-surface">
+        <section className="relative isolate overflow-hidden text-center pt-24 sm:pt-32 pb-16 sm:pb-24 bg-surface">
           <GradientBlobs />
-          <div className="relative max-w-2xl mx-auto px-5 sm:px-6">
+          <div className="relative max-w-3xl mx-auto px-5 sm:px-6">
             <Reveal>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-6">
                 <Check className="w-3.5 h-3.5" /> {t.badge}
               </span>
             </Reveal>
             <Reveal delay={0.06}>
-              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.15] mb-4">
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.2] mb-5">
                 {variantB ? t.h1a_b : t.h1a}
                 <br />
                 <span className="bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 bg-clip-text text-transparent">
@@ -106,36 +119,63 @@ export default function SeeWhyLanding({ params, searchParams }: Props) {
                 </Button>
               </Link>
             </Reveal>
-            <Reveal delay={0.22}>
-              <p className="text-xs sm:text-sm font-medium text-on-surface-variant/80 mt-4">{t.trustLine}</p>
+            <Reveal delay={0.24}>
+              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-6 text-xs sm:text-sm text-on-surface-variant">
+                {t.trustItems.map((item) => (
+                  <span key={item} className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> {item}</span>
+                ))}
+              </div>
+            </Reveal>
+
+            {/* Product preview — concrete visual proof, not just claims */}
+            <Reveal delay={0.3} className="mt-14 sm:mt-16 max-w-2xl mx-auto text-start">
+              <BrowserFrame url="yoursite.com">
+                <div className="relative w-full aspect-[16/10] rounded-lg bg-surface-container-lowest border border-outline-variant/20 overflow-hidden">
+                  <div className="absolute inset-x-6 top-4 h-4 rounded bg-on-surface/10" />
+                  <div className="absolute inset-x-6 top-11 h-3 w-2/3 rounded bg-on-surface/5" />
+                  <div className="absolute left-1/2 -translate-x-1/2 top-[35%] h-8 w-36 rounded-full bg-indigo-500/25 border border-indigo-500/30" />
+                  <div className="absolute inset-x-6 top-[58%] h-3 w-3/4 rounded bg-on-surface/5" />
+                  <div className="absolute inset-x-6 top-[64%] h-3 w-1/2 rounded bg-on-surface/5" />
+                  <div className="absolute left-1/2 -translate-x-1/2 top-[85%] h-9 w-40 rounded-full bg-on-surface/5 border border-outline-variant/20" />
+                  {DOTS.map(([x, y, i], idx) => (
+                    <span key={idx} className="absolute rounded-full" style={{ left: `${x}%`, top: `${y}%`, width: 30, height: 30, transform: "translate(-50%,-50%)", background: `radial-gradient(circle, rgba(239,68,68,${i}) 0%, rgba(239,68,68,0) 70%)` }} />
+                  ))}
+                </div>
+                <p className="text-xs text-on-surface-variant mt-3 text-center">{t.previewNote}</p>
+              </BrowserFrame>
             </Reveal>
           </div>
         </section>
 
         {/* 3 differentiators, matching the subheadline's promise */}
-        <RevealGroup className="max-w-2xl mx-auto px-5 sm:px-6 py-10 sm:py-14 space-y-6">
-          {t.benefits.map((b) => (
-            <RevealItem key={b.t} className="flex items-start gap-4">
-              <span className="w-11 h-11 rounded-xl bg-indigo-500/12 flex items-center justify-center shrink-0">
-                <b.icon className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
-              </span>
-              <div>
-                <h3 className="font-black text-on-surface mb-0.5">{b.t}</h3>
+        <section className="py-16 sm:py-20 bg-surface-container/15">
+          <RevealGroup className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {t.benefits.map((b) => (
+              <RevealItem key={b.t} className="rounded-2xl border border-outline-variant/15 bg-surface p-6 hover:border-indigo-500/30 hover:-translate-y-1 transition-all duration-300">
+                <span className="w-11 h-11 rounded-xl bg-indigo-500/12 flex items-center justify-center mb-4">
+                  <b.icon className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+                </span>
+                <h3 className="font-black text-lg text-on-surface mb-2">{b.t}</h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed">{b.d}</p>
-              </div>
-            </RevealItem>
-          ))}
-        </RevealGroup>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        </section>
 
         {/* Pain — the sharpest positioning line */}
-        <Reveal className="border-y border-outline-variant/15 bg-surface-container/15 py-10">
-          <div className="max-w-2xl mx-auto px-5 sm:px-6 text-center">
-            <p className="text-xl sm:text-2xl font-black leading-snug">{t.painH}</p>
-          </div>
-        </Reveal>
+        <section className="py-16 sm:py-20 bg-surface">
+          <Reveal className="max-w-3xl mx-auto px-5 sm:px-6">
+            <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-8 sm:p-10 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-start">
+              <span className="w-12 h-12 rounded-xl bg-rose-500/15 flex items-center justify-center shrink-0">
+                <TrendingDown className="w-6 h-6 text-rose-500 dark:text-rose-400" />
+              </span>
+              <p className="text-xl sm:text-2xl font-black leading-snug">{t.painH}</p>
+            </div>
+          </Reveal>
+        </section>
 
         {/* Final CTA — single button only, no pricing link */}
-        <section className="relative isolate overflow-hidden py-16 sm:py-20 text-center bg-surface">
+        <section className="relative isolate overflow-hidden py-16 sm:py-20 text-center bg-surface-container/15">
           <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] max-w-[120vw] rounded-full bg-indigo-500/25 dark:bg-indigo-500/20 blur-[110px]" />
           </div>
