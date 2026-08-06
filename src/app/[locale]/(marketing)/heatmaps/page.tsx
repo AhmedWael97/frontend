@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MousePointerClick, ArrowDownToLine, Layers, Check } from "lucide-react";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, localePath } from "@/lib/seo";
 import { Reveal, RevealGroup, RevealItem, GradientBlobs } from "@/components/marketing/Reveal";
 import { BrowserFrame } from "@/components/marketing/BrowserFrame";
 import Navbar from "@/components/marketing/Navbar";
@@ -94,19 +94,19 @@ const DOTS: [number, number, number][] = [
 
 export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
-  const url = `${SITE_URL}/${params.locale}/heatmaps`;
+  const url = `${SITE_URL}${localePath(params.locale, "/heatmaps")}`;
   return {
     title: t.metaTitle, description: t.metaDesc,
     keywords: ["heatmap tool", "Hotjar alternative", "click heatmap", "scroll depth tracking", "website heatmap free", "خرائط حرارية", "بديل هوتجار"],
-    alternates: { canonical: url, languages: { en: `${SITE_URL}/en/heatmaps`, ar: `${SITE_URL}/ar/heatmaps` } },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
+    alternates: { canonical: url, languages: { en: `${SITE_URL}${localePath("en", "/heatmaps")}`, ar: `${SITE_URL}${localePath("ar", "/heatmaps")}` } },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}${localePath(params.locale, "/opengraph-image")}`] },
   };
 }
 
 export default function HeatmapsLanding({ params }: Props) {
   const ar = params.locale === "ar";
   const t = C[ar ? "ar" : "en"];
-  const reg = `/${params.locale}/auth/register`;
+  const reg = localePath(params.locale, "/auth/register");
   const faqLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: t.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) };
   const CTA = ({ label }: { label: string }) => (
     <Link href={reg} className="inline-flex items-center justify-center rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-7 py-3.5 text-base font-bold transition-colors">{label}</Link>

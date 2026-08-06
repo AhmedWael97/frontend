@@ -7,7 +7,7 @@ import Footer from "@/components/marketing/Footer";
 import MobileCtaBar from "@/components/marketing/MobileCtaBar";
 import SignupPopup from "@/components/marketing/SignupPopup";
 import { Reveal, RevealGroup, RevealItem } from "@/components/marketing/Reveal";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, localePath } from "@/lib/seo";
 
 type Props = { params: { locale: string } };
 
@@ -46,11 +46,11 @@ const C = {
 
 export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
-  const url = `${SITE_URL}/${params.locale}/quick`;
+  const url = `${SITE_URL}${localePath(params.locale, "/quick")}`;
   return {
     title: `${t.h1a} ${t.h1b} | EYE`,
     description: t.sub,
-    alternates: { canonical: url, languages: { en: `${SITE_URL}/en/quick`, ar: `${SITE_URL}/ar/quick` } },
+    alternates: { canonical: url, languages: { en: `${SITE_URL}${localePath("en", "/quick")}`, ar: `${SITE_URL}${localePath("ar", "/quick")}` } },
     robots: { index: false, follow: true }, // A/B variant — don't compete with the control page in search
   };
 }

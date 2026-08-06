@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { FileText } from "lucide-react";
+import { localePath } from "@/lib/seo";
 
 const CONTENT = {
   en: {
@@ -128,7 +129,7 @@ export async function generateMetadata(
     title,
     description,
     robots: { index: true, follow: true },
-    alternates: { canonical: `/${params.locale}/terms`, languages: { en: "/en/terms", ar: "/ar/terms" } },
+    alternates: { canonical: localePath(params.locale, "/terms"), languages: { en: localePath("en", "/terms"), ar: localePath("ar", "/terms") } },
   };
 }
 

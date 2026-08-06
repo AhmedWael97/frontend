@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MarketingDoc } from "@/components/marketing/MarketingDoc";
 import SitemapCreatorTool from "@/components/marketing/SitemapCreatorTool";
 import { JsonLd } from "@/components/JsonLd";
-import { SITE_URL, faqJsonLd } from "@/lib/seo";
+import { SITE_URL, faqJsonLd, localePath } from "@/lib/seo";
 
 type Props = { params: { locale: string } };
 
@@ -37,16 +37,16 @@ const C = {
 
 export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
-  const url = `${SITE_URL}/${params.locale}/free-tools/sitemap-creator`;
+  const url = `${SITE_URL}${localePath(params.locale, "/free-tools/sitemap-creator")}`;
   return {
     title: t.metaTitle,
     description: t.metaDesc,
     keywords: ["free sitemap generator", "sitemap.xml creator", "xml sitemap tool", "منشئ خريطة الموقع", "sitemap مجاني"],
     alternates: {
       canonical: url,
-      languages: { en: `${SITE_URL}/en/free-tools/sitemap-creator`, ar: `${SITE_URL}/ar/free-tools/sitemap-creator` },
+      languages: { en: `${SITE_URL}${localePath("en", "/free-tools/sitemap-creator")}`, ar: `${SITE_URL}${localePath("ar", "/free-tools/sitemap-creator")}` },
     },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}${localePath(params.locale, "/opengraph-image")}`] },
   };
 }
 

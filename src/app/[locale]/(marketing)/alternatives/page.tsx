@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { ALTERNATIVES, ALTERNATIVES_UI } from "@/content/alternatives";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, localePath } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const ar = params.locale === "ar";
@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     title,
     description,
     alternates: {
-      canonical: `${SITE_URL}/${params.locale}/alternatives`,
-      languages: { en: `${SITE_URL}/en/alternatives`, ar: `${SITE_URL}/ar/alternatives` },
+      canonical: `${SITE_URL}${localePath(params.locale, "/alternatives")}`,
+      languages: { en: `${SITE_URL}${localePath("en", "/alternatives")}`, ar: `${SITE_URL}${localePath("ar", "/alternatives")}` },
     },
   };
 }

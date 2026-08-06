@@ -5,6 +5,7 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { localePath } from "@/lib/seo";
 
 type FeatureDoc = {
   id: string;
@@ -138,8 +139,8 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     title: content.pageTitle,
     description: content.pageDescription,
     alternates: {
-      canonical: `/${params.locale}/docs`,
-      languages: { en: "/en/docs", ar: "/ar/docs" },
+      canonical: localePath(params.locale, "/docs"),
+      languages: { en: localePath("en", "/docs"), ar: localePath("ar", "/docs") },
     },
   };
 }

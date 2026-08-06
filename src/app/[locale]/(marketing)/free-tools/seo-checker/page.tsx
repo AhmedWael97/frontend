@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MarketingDoc } from "@/components/marketing/MarketingDoc";
 import SeoCheckerTool from "@/components/marketing/SeoCheckerTool";
 import { JsonLd } from "@/components/JsonLd";
-import { SITE_URL, faqJsonLd } from "@/lib/seo";
+import { SITE_URL, faqJsonLd, localePath } from "@/lib/seo";
 
 type Props = { params: { locale: string } };
 
@@ -37,16 +37,16 @@ const C = {
 
 export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
-  const url = `${SITE_URL}/${params.locale}/free-tools/seo-checker`;
+  const url = `${SITE_URL}${localePath(params.locale, "/free-tools/seo-checker")}`;
   return {
     title: t.metaTitle,
     description: t.metaDesc,
     keywords: ["free seo checker", "seo audit tool", "meta tag checker", "on-page seo test", "فحص سيو مجاني", "اختبار السيو"],
     alternates: {
       canonical: url,
-      languages: { en: `${SITE_URL}/en/free-tools/seo-checker`, ar: `${SITE_URL}/ar/free-tools/seo-checker` },
+      languages: { en: `${SITE_URL}${localePath("en", "/free-tools/seo-checker")}`, ar: `${SITE_URL}${localePath("ar", "/free-tools/seo-checker")}` },
     },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}${localePath(params.locale, "/opengraph-image")}`] },
   };
 }
 

@@ -14,7 +14,7 @@ import GoogleOneTap from "@/components/auth/GoogleOneTap";
 import Footer from "@/components/marketing/Footer";
 import { getTranslations } from "next-intl/server";
 import { JsonLd } from "@/components/JsonLd";
-import { organizationJsonLd, websiteJsonLd, softwareApplicationJsonLd } from "@/lib/seo";
+import { organizationJsonLd, websiteJsonLd, softwareApplicationJsonLd, localePath } from "@/lib/seo";
 import { headers } from "next/headers";
 import { Reveal, RevealGroup, RevealItem } from "@/components/marketing/Reveal";
 import SignupPopup from "@/components/marketing/SignupPopup";
@@ -27,7 +27,7 @@ function siteBase(): string {
   const h = headers();
   const host = h.get("host");
   const proto = h.get("x-forwarded-proto") || "https";
-  return host ? `${proto}://${host}` : "https://eye-analsyis.live";
+  return host ? `${proto}://${host}` : "https://eye-analysis.online";
 }
 
 // ─── SEO Metadata ─────────────────────────────────────────────────────────────
@@ -67,25 +67,25 @@ export async function generateMetadata(
     openGraph: {
       type: "website",
       locale: isAr ? "ar_SA" : "en_US",
-      url: `/${locale}`,
+      url: localePath(locale),
       title,
       description,
       siteName: "EYE Analytics",
       // An explicit openGraph object here replaces (not merges with) the root
       // layout's default, including its images — so it must repeat them, or
       // the homepage silently ships with no OG image at all.
-      images: [`${siteBase()}/${locale}/opengraph-image`],
+      images: [`${siteBase()}${localePath(locale, "/opengraph-image")}`],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
       creator: "@eye_analytics",
-      images: [`${siteBase()}/${locale}/twitter-image`],
+      images: [`${siteBase()}${localePath(locale, "/twitter-image")}`],
     },
     alternates: {
-      canonical: `/${locale}`,
-      languages: { en: "/en", ar: "/ar" },
+      canonical: localePath(locale),
+      languages: { en: localePath("en"), ar: localePath("ar") },
     },
     category: "technology",
   };

@@ -5,9 +5,20 @@
  * sitemap, canonical/hreflang and structured data) so we never ship the wrong
  * canonical domain again.
  */
-export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://eye-analsyis.live").replace(/\/$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://eye-analysis.online").replace(/\/$/, "");
 export const SITE_NAME = "EYE Analytics";
 export const TWITTER_HANDLE = "@eye_analytics";
+
+/**
+ * Locale-aware path builder matching routing.ts's localePrefix: "as-needed" —
+ * "en" (default locale) carries no /en prefix, "ar" keeps /ar. Use this for
+ * every canonical/hreflang URL instead of hand-rolling `/${locale}${path}`,
+ * so a page can never assert a canonical that contradicts the sitemap.
+ */
+export function localePath(locale: string, path: string = ""): string {
+  const p = path && path !== "/" ? (path.startsWith("/") ? path : `/${path}`) : "";
+  return locale === "en" ? (p || "/") : `/ar${p}`;
+}
 
 export const DEFAULT_KEYWORDS = [
   "visitor analytics", "website analytics", "heatmaps", "session replay",

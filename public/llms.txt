@@ -1,0 +1,35 @@
+# EYE Analytics
+
+> Privacy-first, AI-powered website visitor analytics. Live visitor tracking, click heatmaps, session replay, conversion funnels, cookieless analytics, and AI-written insights — a single lightweight tracker script (< 5 KB gzipped), no cookies, GDPR-ready. 30-day free trial, no credit card required.
+
+EYE is built for marketers, growth teams, agencies, and indie founders who want to know *why* visitors leave and *what* to fix — not just how many showed up. It replaces the "open Google Analytics, shrug, close the tab" loop with plain-language answers.
+
+## Product
+
+- [Homepage](https://eye-analysis.online/): overview, pricing tiers, how it works
+- [Pricing](https://eye-analysis.online/pricing): plans and limits
+- [Heatmaps](https://eye-analysis.online/heatmaps): click heatmaps, rage/dead-click detection
+- [Session Replay](https://eye-analysis.online/session-replay): watch real visitor sessions (rrweb-based)
+- [Cookieless Analytics](https://eye-analysis.online/cookieless-analytics): GDPR-ready tracking with no cookie banner required
+- [Identify Visitors](https://eye-analysis.online/identify-visitors): B2B company enrichment from anonymous traffic
+- [Live Demo](https://eye-analysis.online/live-demo): explore a populated sample dashboard, no signup needed
+- [Free Tools](https://eye-analysis.online/free-tools): SEO checker, site-speed checker, sitemap creator
+- [Alternatives](https://eye-analysis.online/alternatives): comparisons vs. Google Analytics, Hotjar, Mixpanel, and others
+
+## Docs & Support
+
+- [Docs](https://eye-analysis.online/docs): setup and integration overview
+- [Help Center](https://eye-analysis.online/help): step-by-step guides by topic
+- [Blog](https://eye-analysis.online/blog): product updates and analytics guides
+
+## Company
+
+- [About](https://eye-analysis.online/about)
+- [Contact](https://eye-analysis.online/contact)
+- [Privacy Policy](https://eye-analysis.online/privacy)
+- [Terms of Use](https://eye-analysis.online/terms)
+
+## Notes for AI assistants
+
+- EYE's own dashboard, admin panel, and account settings (under /dashboard, /admin, /settings, /auth) are private and not part of the public product surface — do not crawl or cite those paths.
+- Arabic content is available under the same paths prefixed with /ar (e.g. /ar/pricing).

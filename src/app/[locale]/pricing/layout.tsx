@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, localePath } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const isAr = params.locale === "ar";
@@ -10,16 +10,16 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   // An explicit openGraph/twitter object here replaces the root layout's
   // default entirely, including its images (Next.js does not merge) — repeat
   // them here or the page ships with no OG image.
-  const images = [`${SITE_URL}/${params.locale}/opengraph-image`];
+  const images = [`${SITE_URL}${localePath(params.locale, "/opengraph-image")}`];
 
   return {
     title,
     description,
     alternates: {
-      canonical: `/${params.locale}/pricing`,
-      languages: { en: "/en/pricing", ar: "/ar/pricing" },
+      canonical: localePath(params.locale, "/pricing"),
+      languages: { en: localePath("en", "/pricing"), ar: localePath("ar", "/pricing") },
     },
-    openGraph: { title, description, url: `/${params.locale}/pricing`, type: "website", images },
+    openGraph: { title, description, url: localePath(params.locale, "/pricing"), type: "website", images },
     twitter: { title, description, images },
   };
 }

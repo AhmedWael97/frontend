@@ -6,7 +6,7 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { JsonLd } from "@/components/JsonLd";
 import { ALTERNATIVES, ALTERNATIVES_UI } from "@/content/alternatives";
-import { SITE_URL, breadcrumbJsonLd } from "@/lib/seo";
+import { SITE_URL, breadcrumbJsonLd, localePath } from "@/lib/seo";
 
 function getAlt(slug: string) {
   return ALTERNATIVES.find((a) => a.slug === slug) ?? null;
@@ -28,8 +28,11 @@ export async function generateMetadata(
     openGraph: { title, description },
     twitter: { title, description },
     alternates: {
-      canonical: `${SITE_URL}/${params.locale}/alternatives/${alt.slug}`,
-      languages: { en: `${SITE_URL}/en/alternatives/${alt.slug}`, ar: `${SITE_URL}/ar/alternatives/${alt.slug}` },
+      canonical: `${SITE_URL}${localePath(params.locale, `/alternatives/${alt.slug}`)}`,
+      languages: {
+        en: `${SITE_URL}${localePath("en", `/alternatives/${alt.slug}`)}`,
+        ar: `${SITE_URL}${localePath("ar", `/alternatives/${alt.slug}`)}`,
+      },
     },
   };
 }

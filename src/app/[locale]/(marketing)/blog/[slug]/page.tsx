@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, localePath } from "@/lib/seo";
 
 type Post = {
   slug: string; title_en: string; title_ar?: string;
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: { locale: string; s
     title,
     description: desc || undefined,
     openGraph: { title, description: desc || undefined, images: post.cover_image_url ? [post.cover_image_url] : undefined },
-    alternates: { canonical: `${SITE_URL}/${params.locale}/blog/${post.slug}` },
+    alternates: { canonical: `${SITE_URL}${localePath(params.locale, `/blog/${post.slug}`)}` },
   };
 }
 

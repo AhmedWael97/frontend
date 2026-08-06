@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MarketingDoc } from "@/components/marketing/MarketingDoc";
 import SpeedCheckerTool from "@/components/marketing/SpeedCheckerTool";
 import { JsonLd } from "@/components/JsonLd";
-import { SITE_URL, faqJsonLd } from "@/lib/seo";
+import { SITE_URL, faqJsonLd, localePath } from "@/lib/seo";
 
 type Props = { params: { locale: string } };
 
@@ -37,16 +37,16 @@ const C = {
 
 export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
-  const url = `${SITE_URL}/${params.locale}/free-tools/speed-checker`;
+  const url = `${SITE_URL}${localePath(params.locale, "/free-tools/speed-checker")}`;
   return {
     title: t.metaTitle,
     description: t.metaDesc,
     keywords: ["website speed test", "page speed checker", "free speed test", "TTFB checker", "فحص سرعة الموقع", "اختبار سرعة الصفحة"],
     alternates: {
       canonical: url,
-      languages: { en: `${SITE_URL}/en/free-tools/speed-checker`, ar: `${SITE_URL}/ar/free-tools/speed-checker` },
+      languages: { en: `${SITE_URL}${localePath("en", "/free-tools/speed-checker")}`, ar: `${SITE_URL}${localePath("ar", "/free-tools/speed-checker")}` },
     },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}${localePath(params.locale, "/opengraph-image")}`] },
   };
 }
 

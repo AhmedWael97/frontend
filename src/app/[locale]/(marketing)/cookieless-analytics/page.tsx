@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, X, ShieldCheck, Zap, BarChart3, Cookie } from "lucide-react";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, localePath } from "@/lib/seo";
 import { Reveal, RevealGroup, RevealItem, GradientBlobs } from "@/components/marketing/Reveal";
 import { BrowserFrame } from "@/components/marketing/BrowserFrame";
 import Navbar from "@/components/marketing/Navbar";
@@ -94,16 +94,16 @@ const C = {
 
 export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
-  const url = `${SITE_URL}/${params.locale}/cookieless-analytics`;
+  const url = `${SITE_URL}${localePath(params.locale, "/cookieless-analytics")}`;
   return {
     title: t.metaTitle,
     description: t.metaDesc,
     keywords: ["cookieless analytics", "GDPR analytics", "Google Analytics alternative", "analytics without cookie banner", "analytics without cookies", "cookie-free analytics", "privacy analytics", "تحليلات بدون كوكيز", "بديل جوجل أناليتكس"],
     alternates: {
       canonical: url,
-      languages: { en: `${SITE_URL}/en/cookieless-analytics`, ar: `${SITE_URL}/ar/cookieless-analytics` },
+      languages: { en: `${SITE_URL}${localePath("en", "/cookieless-analytics")}`, ar: `${SITE_URL}${localePath("ar", "/cookieless-analytics")}` },
     },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}${localePath(params.locale, "/opengraph-image")}`] },
   };
 }
 

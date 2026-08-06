@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Gauge, ScanSearch, Layers, ArrowRight } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, localePath } from "@/lib/seo";
 
 type Props = { params: { locale: string } };
 
@@ -36,15 +36,15 @@ const C = {
 
 export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
-  const url = `${SITE_URL}/${params.locale}/free-tools`;
+  const url = `${SITE_URL}${localePath(params.locale, "/free-tools")}`;
   return {
     title: t.metaTitle,
     description: t.metaDesc,
     alternates: {
       canonical: url,
-      languages: { en: `${SITE_URL}/en/free-tools`, ar: `${SITE_URL}/ar/free-tools` },
+      languages: { en: `${SITE_URL}${localePath("en", "/free-tools")}`, ar: `${SITE_URL}${localePath("ar", "/free-tools")}` },
     },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}${localePath(params.locale, "/opengraph-image")}`] },
   };
 }
 

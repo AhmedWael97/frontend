@@ -9,11 +9,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // hardcoded SITE_URL — otherwise Google rejects it ("URL not allowed for a
   // Sitemap at this location").
   const h = headers();
-  const host = h.get("host") || "eye-analsyis.live";
+  const host = h.get("host") || "eye-analysis.online";
   const proto = h.get("x-forwarded-proto") || "https";
   const base = `${proto}://${host}`;
 
   const locales = ["en", "ar"];
+  // "en" is the default locale (localePrefix: "as-needed") — its URLs carry
+  // no /en prefix; only "ar" is prefixed with /ar.
+  const prefix = (locale: string) => (locale === "en" ? "" : `/${locale}`);
 
   // Public, indexable marketing pages.
   const pages: { path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number }[] = [
@@ -61,12 +64,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const locale of locales) {
     for (const page of pages) {
       entries.push({
-        url: `${base}/${locale}${page.path}`,
+        url: `${base}${prefix(locale)}${page.path}`,
         lastModified: new Date(),
         changeFrequency: page.changeFrequency,
         priority: page.priority,
         alternates: {
-          languages: Object.fromEntries(locales.map((l) => [l, `${base}/${l}${page.path}`])),
+          languages: Object.fromEntries(locales.map((l) => [l, `${base}${prefix(l)}${page.path}`])),
         },
       });
     }

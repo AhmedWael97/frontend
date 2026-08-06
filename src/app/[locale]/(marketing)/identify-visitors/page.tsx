@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Building2, Target, Filter, ShieldCheck } from "lucide-react";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, localePath } from "@/lib/seo";
 import { Reveal, RevealGroup, RevealItem, GradientBlobs } from "@/components/marketing/Reveal";
 import { BrowserFrame } from "@/components/marketing/BrowserFrame";
 import Navbar from "@/components/marketing/Navbar";
@@ -96,12 +96,12 @@ const C = {
 
 export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
-  const url = `${SITE_URL}/${params.locale}/identify-visitors`;
+  const url = `${SITE_URL}${localePath(params.locale, "/identify-visitors")}`;
   return {
     title: t.metaTitle, description: t.metaDesc,
     keywords: ["identify website visitors", "Leadfeeder alternative", "B2B visitor identification", "which companies visit my website", "website visitor tracking B2B", "تحديد زوار الموقع", "بديل Leadfeeder"],
-    alternates: { canonical: url, languages: { en: `${SITE_URL}/en/identify-visitors`, ar: `${SITE_URL}/ar/identify-visitors` } },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
+    alternates: { canonical: url, languages: { en: `${SITE_URL}${localePath("en", "/identify-visitors")}`, ar: `${SITE_URL}${localePath("ar", "/identify-visitors")}` } },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}${localePath(params.locale, "/opengraph-image")}`] },
   };
 }
 

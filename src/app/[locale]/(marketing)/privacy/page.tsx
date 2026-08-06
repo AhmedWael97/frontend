@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { ShieldCheck } from "lucide-react";
+import { localePath } from "@/lib/seo";
 
 const CONTENT = {
   en: {
@@ -120,7 +121,7 @@ export async function generateMetadata(
     title,
     description,
     robots: { index: true, follow: true },
-    alternates: { canonical: `/${params.locale}/privacy`, languages: { en: "/en/privacy", ar: "/ar/privacy" } },
+    alternates: { canonical: localePath(params.locale, "/privacy"), languages: { en: localePath("en", "/privacy"), ar: localePath("ar", "/privacy") } },
   };
 }
 

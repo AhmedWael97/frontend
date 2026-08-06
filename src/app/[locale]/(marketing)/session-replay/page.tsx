@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PlayCircle, Flag, GitBranch, Check } from "lucide-react";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, localePath } from "@/lib/seo";
 import { Reveal, RevealGroup, RevealItem, GradientBlobs } from "@/components/marketing/Reveal";
 import { BrowserFrame } from "@/components/marketing/BrowserFrame";
 import Navbar from "@/components/marketing/Navbar";
@@ -88,12 +88,12 @@ const C = {
 
 export function generateMetadata({ params }: Props): Metadata {
   const t = C[params.locale === "ar" ? "ar" : "en"];
-  const url = `${SITE_URL}/${params.locale}/session-replay`;
+  const url = `${SITE_URL}${localePath(params.locale, "/session-replay")}`;
   return {
     title: t.metaTitle, description: t.metaDesc,
     keywords: ["session replay tool", "session replay software", "visitor recording", "screen recording analytics", "Hotjar alternative", "rrweb session replay", "إعادة تشغيل الجلسات", "تسجيل الزوار"],
-    alternates: { canonical: url, languages: { en: `${SITE_URL}/en/session-replay`, ar: `${SITE_URL}/ar/session-replay` } },
-    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}/${params.locale}/opengraph-image`] },
+    alternates: { canonical: url, languages: { en: `${SITE_URL}${localePath("en", "/session-replay")}`, ar: `${SITE_URL}${localePath("ar", "/session-replay")}` } },
+    openGraph: { title: t.metaTitle, description: t.metaDesc, url, type: "website", images: [`${SITE_URL}${localePath(params.locale, "/opengraph-image")}`] },
   };
 }
 
