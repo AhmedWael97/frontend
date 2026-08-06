@@ -71,27 +71,23 @@ export default function QuickHomeVariant({ params }: Props) {
             <div className="absolute top-[15%] ltr:right-[4%] rtl:left-[4%] w-[380px] h-[380px] max-w-[100vw] rounded-full bg-violet-500/25 dark:bg-violet-500/20 blur-[90px]" />
           </div>
           <div className="relative max-w-2xl mx-auto px-5 sm:px-6">
-            <Reveal>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-6">
-                <Check className="w-3.5 h-3.5" /> {t.badge}
-              </span>
-            </Reveal>
-            <Reveal delay={0.06}>
-              <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.05] mb-4">
-                {t.h1a}<br />
-                <span className="bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 bg-clip-text text-transparent">{t.h1b}</span>
-              </h1>
-            </Reveal>
-            <Reveal delay={0.12}>
-              <p className="text-base sm:text-lg text-on-surface-variant max-w-xl mx-auto mb-8">{t.sub}</p>
-            </Reveal>
-            <Reveal delay={0.18}>
-              <Link href={`/${locale}/auth/register`}>
-                <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-8 h-13 text-base font-bold gap-2">
-                  {t.cta} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-                </Button>
-              </Link>
-            </Reveal>
+            {/* Above-the-fold hero: renders at full opacity immediately, no
+                scroll-triggered Reveal — whileInView wasn't reliably firing
+                for content already in the viewport on cold load, leaving a
+                washed-out ~30%-opacity hero until the visitor scrolled. */}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-6">
+              <Check className="w-3.5 h-3.5" /> {t.badge}
+            </span>
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.05] mb-4">
+              {t.h1a}<br />
+              <span className="bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 bg-clip-text text-transparent">{t.h1b}</span>
+            </h1>
+            <p className="text-base sm:text-lg text-on-surface-variant max-w-xl mx-auto mb-8">{t.sub}</p>
+            <Link href={`/${locale}/auth/register`}>
+              <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-8 h-13 text-base font-bold gap-2">
+                {t.cta} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+              </Button>
+            </Link>
           </div>
         </section>
 

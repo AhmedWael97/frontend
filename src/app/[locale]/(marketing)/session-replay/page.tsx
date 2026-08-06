@@ -120,12 +120,16 @@ export default function SessionReplayLanding({ params }: Props) {
         <section className="relative isolate overflow-hidden text-center pt-28 sm:pt-36 pb-16 sm:pb-24 bg-surface">
           <GradientBlobs />
           <div className="relative max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
-            <Reveal><Badge label={t.badge} /></Reveal>
-            <Reveal delay={0.06}><h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] mb-5">{t.heroH}</h1></Reveal>
-            <Reveal delay={0.14}><p className="text-lg sm:text-xl text-on-surface-variant max-w-2xl mx-auto mb-8">{t.heroSub}</p></Reveal>
-            <Reveal delay={0.22}><CTA label={t.cta} /></Reveal>
+            {/* Above-the-fold hero: renders at full opacity immediately, no
+                scroll-triggered Reveal — whileInView wasn't reliably firing
+                for content already in the viewport on cold load, leaving a
+                washed-out ~30%-opacity hero until the visitor scrolled. */}
+            <Badge label={t.badge} />
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] mb-5">{t.heroH}</h1>
+            <p className="text-lg sm:text-xl text-on-surface-variant max-w-2xl mx-auto mb-8">{t.heroSub}</p>
+            <CTA label={t.cta} />
 
-            <Reveal delay={0.3} className="mt-14 sm:mt-16 max-w-3xl mx-auto">
+            <div className="mt-14 sm:mt-16 max-w-3xl mx-auto">
               <BrowserFrame url={t.previewLabel}>
                 <div className="relative w-full aspect-[16/9] rounded-lg bg-surface-container-lowest border border-outline-variant/20 overflow-hidden flex items-center justify-center">
                   <div className="w-16 h-16 rounded-full bg-violet-500/15 border border-violet-500/30 flex items-center justify-center">
@@ -145,7 +149,7 @@ export default function SessionReplayLanding({ params }: Props) {
                   ))}
                 </div>
               </BrowserFrame>
-            </Reveal>
+            </div>
           </div>
         </section>
 
