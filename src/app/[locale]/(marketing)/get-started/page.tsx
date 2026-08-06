@@ -1,22 +1,68 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import {
   ArrowRight, ArrowLeft, Check, X, Loader2, User, Megaphone, Globe,
-  ScanSearch, Gauge, Layers, PartyPopper, Sparkles,
+  ScanSearch, Gauge, Layers, PartyPopper, Sparkles, Eye, Sun, Moon, Languages,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Navbar from "@/components/marketing/Navbar";
-import Footer from "@/components/marketing/Footer";
-import { GradientBlobs } from "@/components/marketing/Reveal";
 import { onboardingApi, type QuizDomain } from "@/api/onboarding";
 import { toolsApi } from "@/api/tools";
 import { useAuthStore } from "@/store/auth";
 import { localePath } from "@/lib/seo";
 import { trackSignup, eyeTrack } from "@/lib/track";
+
+/** Minimal header: logo + Home on the start side, language + theme toggle on
+ * the end side. No full nav — same reasoning as the see-why ad page, every
+ * extra link here is a way to leave the wizard before finishing it. */
+function MinimalHeader({ locale }: { locale: string }) {
+  const router = useRouter();
+  const ar = locale === "ar";
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    try { localStorage.setItem("eye-appearance", next ? "dark" : "light"); } catch {}
+  };
+
+  const switchLocale = () => router.push(`/${ar ? "en" : "ar"}/get-started`);
+
+  return (
+    <header className="py-4 border-b border-outline-variant/10">
+      <div className="max-w-2xl mx-auto px-5 sm:px-6 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link href={localePath(locale)} className="flex items-center gap-2">
+            <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <Eye className="w-4 h-4 text-white" />
+            </span>
+            <span className="text-lg font-black tracking-tight text-on-surface">EYE<span className="text-indigo-500 dark:text-indigo-400">.</span></span>
+          </Link>
+          <Link href={localePath(locale)} className="text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
+            {ar ? "الرئيسية" : "Home"}
+          </Link>
+        </div>
+        <div className="flex items-center gap-1">
+          <button onClick={switchLocale} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+            <Languages className="w-4 h-4" /> {ar ? "EN" : "عربي"}
+          </button>
+          <button onClick={toggleTheme} aria-label="Toggle theme" className="rounded-lg p-2 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
 
 const LANGUAGES = ["PHP", "JavaScript", "TypeScript", "Python", "Ruby", "Java", "C#/.NET", "Go", "WordPress", "Shopify", "Other"];
 
@@ -142,12 +188,11 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
   const progress = Math.round(((step > TOTAL_STEPS ? TOTAL_STEPS : step) / TOTAL_STEPS) * 100);
 
   return (
-    <div dir={ar ? "rtl" : "ltr"} className="min-h-screen bg-background text-on-surface">
-      <Navbar />
-      <main className="overflow-hidden">
-        <section className="relative isolate overflow-hidden pt-24 sm:pt-32 pb-20 bg-surface">
-          <GradientBlobs />
-          <div className="relative max-w-2xl mx-auto px-5 sm:px-6">
+    <div dir={ar ? "rtl" : "ltr"} className="min-h-screen bg-background text-on-surface flex flex-col">
+      <MinimalHeader locale={locale} />
+      <main className="flex-1 bg-surface">
+        <section className="py-10 sm:py-16">
+          <div className="max-w-2xl mx-auto px-5 sm:px-6">
             {step <= TOTAL_STEPS && (
               <div className="mb-8">
                 <div className="flex items-center justify-between text-xs text-on-surface-variant mb-2">
@@ -355,7 +400,6 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
           </div>
         </section>
       </main>
-      <Footer locale={locale} />
     </div>
   );
 }
