@@ -8,6 +8,7 @@ import MobileCtaBar from "@/components/marketing/MobileCtaBar";
 import SignupPopup from "@/components/marketing/SignupPopup";
 import { Reveal, RevealGroup, RevealItem, GradientBlobs } from "@/components/marketing/Reveal";
 import { BrowserFrame } from "@/components/marketing/BrowserFrame";
+import LiveStatsStrip from "@/components/marketing/LiveStatsStrip";
 import { SITE_URL, localePath } from "@/lib/seo";
 
 type Props = { params: { locale: string }; searchParams: { h?: string } };
@@ -101,10 +102,9 @@ export default function SeeWhyLanding({ params, searchParams }: Props) {
               </span>
             </Reveal>
             <Reveal delay={0.06}>
-              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.2] mb-5">
-                {variantB ? t.h1a_b : t.h1a}
-                <br />
-                <span className="bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 bg-clip-text text-transparent">
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.45] mb-5">
+                <span className="block">{variantB ? t.h1a_b : t.h1a}</span>
+                <span className="block mt-2 sm:mt-3 bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 bg-clip-text text-transparent">
                   {variantB ? t.h1b_b : t.h1b}
                 </span>
               </h1>
@@ -114,8 +114,8 @@ export default function SeeWhyLanding({ params, searchParams }: Props) {
             </Reveal>
             <Reveal delay={0.18}>
               <Link href={registerHref}>
-                <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-8 h-13 text-base font-bold gap-2">
-                  {t.cta} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+                <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-10 h-14 sm:h-16 text-lg sm:text-xl font-bold gap-2">
+                  {t.cta} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
                 </Button>
               </Link>
             </Reveal>
@@ -146,6 +146,8 @@ export default function SeeWhyLanding({ params, searchParams }: Props) {
             </Reveal>
           </div>
         </section>
+
+        <LiveStatsStrip />
 
         {/* 3 differentiators, matching the subheadline's promise */}
         <section className="py-16 sm:py-20 bg-surface-container/15">
@@ -184,8 +186,8 @@ export default function SeeWhyLanding({ params, searchParams }: Props) {
             <Reveal delay={0.05}><p className="text-on-surface-variant mb-8">{t.finalSub}</p></Reveal>
             <Reveal delay={0.1}>
               <Link href={registerHref}>
-                <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-8 h-13 text-base font-bold gap-2">
-                  {t.finalCta} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+                <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-10 h-14 sm:h-16 text-lg sm:text-xl font-bold gap-2">
+                  {t.finalCta} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
                 </Button>
               </Link>
             </Reveal>

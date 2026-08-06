@@ -11,6 +11,38 @@ import { cn } from "@/lib/utils";
 const POLL_MS = 4000;
 const IDLE_POLL_MS = 45000;
 const GUEST_KEY = "eye_support_guest";
+const GREETING_DISMISSED_KEY = "eye_chat_greeting_dismissed_at";
+const GREETING_COOLDOWN_MS = 24 * 60 * 60 * 1000; // reappears once a day, not every visit
+const GREETING_DELAY_MS = 6000;
+
+// Two-tone "ding" synthesized with Web Audio — no audio file to host/fetch.
+// Browsers block audio before any user gesture, so this is best-effort: it
+// plays once the user has interacted with the page at all (click/scroll),
+// silently no-ops otherwise (never throws).
+function playChime() {
+  try {
+    const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    const notes = [660, 880];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      const start = ctx.currentTime + i * 0.11;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.15, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.18);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 0.2);
+    });
+    setTimeout(() => ctx.close().catch(() => {}), 500);
+  } catch {
+    /* autoplay blocked or unsupported — silent */
+  }
+}
 
 /**
  * Live customer-service chat bubble, shown on every page — marketing and app.
@@ -26,6 +58,7 @@ export default function SupportChatBubble() {
   const { token } = useAuthStore();
 
   const [open, setOpen] = useState(false);
+  const [showGreeting, setShowGreeting] = useState(false);
   const [chat, setChat] = useState<SupportChat | null>(null);
   const [guestToken, setGuestToken] = useState<string | null>(null);
   const [body, setBody] = useState("");
@@ -71,6 +104,22 @@ export default function SupportChatBubble() {
   useEffect(() => {
     bottom.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat?.messages?.length]);
+
+  useEffect(() => {
+    if (isAdminArea || open) return;
+    const dismissedAt = Number(localStorage.getItem(GREETING_DISMISSED_KEY) || 0);
+    if (Date.now() - dismissedAt < GREETING_COOLDOWN_MS) return;
+    const timer = setTimeout(() => {
+      setShowGreeting(true);
+      playChime();
+    }, GREETING_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [isAdminArea, open]);
+
+  const dismissGreeting = () => {
+    setShowGreeting(false);
+    localStorage.setItem(GREETING_DISMISSED_KEY, String(Date.now()));
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -193,8 +242,24 @@ export default function SupportChatBubble() {
         </div>
       )}
 
+      {showGreeting && !open && (
+        <div className="fixed bottom-24 end-5 z-50 flex max-w-[calc(100vw-2.5rem)] animate-in fade-in slide-in-from-bottom-2 items-center gap-2 rounded-2xl border border-outline-variant/20 bg-surface px-4 py-3 shadow-2xl">
+          <p className="text-sm font-semibold text-on-surface">{ar ? "إزّاي أقدر أساعدك؟" : "How can I help you?"}</p>
+          <button
+            onClick={dismissGreeting}
+            aria-label={ar ? "إغلاق" : "Dismiss"}
+            className="shrink-0 rounded-lg p-1 text-on-surface-variant/70 hover:bg-surface-container-high hover:text-on-surface"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
       <button
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          setOpen((v) => !v);
+          if (showGreeting) dismissGreeting();
+        }}
         aria-label={ar ? "الدعم الفني" : "Customer support"}
         className="fixed bottom-5 end-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-on-primary shadow-xl transition hover:scale-105"
       >
