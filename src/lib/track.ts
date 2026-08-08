@@ -93,10 +93,25 @@ export function trackSignup(userId?: number | string, email?: string): void {
   ttTrack("CompleteRegistration", {}, eventId);
   fbTrack("CompleteRegistration", {}, eventId);
   gaEvent("sign_up");
-  // Google Ads "Add domain / signup" conversion.
+  // Google Ads "Submit lead form" conversion — registration is our lead event.
   const label = process.env.NEXT_PUBLIC_GOOGLE_ADS_SIGNUP_LABEL
-    || "AW-18257861903/W4tKCIvSycocEI-6g4JE";
+    || "AW-18376010770/pxCWCOXOid4cEJLYrrpE";
   gaEvent("conversion", { send_to: label, value: 1.0, currency: "EGP" });
+}
+
+/**
+ * Paid subscription confirmed — Google Ads "Purchase" conversion.
+ * @param value in EGP (Paymob always charges EGP — see billing docs).
+ */
+export function trackPurchase(value: number, orderId?: string | number): void {
+  const label = process.env.NEXT_PUBLIC_GOOGLE_ADS_PURCHASE_LABEL
+    || "AW-18376010770/9KZ1COLOid4cEJLYrrpE";
+  gaEvent("conversion", {
+    send_to: label,
+    value,
+    currency: "EGP",
+    transaction_id: orderId != null ? String(orderId) : undefined,
+  });
 }
 
 /** Viewed a plan / pricing — top of funnel. */

@@ -99,7 +99,7 @@ const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||
 
 // ── Google Ads (gtag.js) ─────────────────────────────────────────────────────
 // Global site tag for Google Ads conversion tracking. ID is env-overridable.
-const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "AW-18257861903";
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "AW-18376010770";
 // NOTE: gtag.js must load eagerly, not deferred to requestIdleCallback/on-load.
 // It was deferred for a perf pass (commit 3eb00be) — but the *only* thing that
 // flushes queued dataLayer events (incl. the signup "conversion" event) to
