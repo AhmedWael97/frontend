@@ -445,6 +445,16 @@
       "5title": "Privacy by default",
       "5desc": "No cookies, no consent banners, no personal data stored. Works in every country, out of the box."
     },
+    "glance": {
+      "badge": "Full picture",
+      "headline": "See everything, at a glance.",
+      "description": "One dashboard instead of five browser tabs — where visitors click, where they drop off, and what to do about it.",
+      "item0": "Click and scroll heatmaps for every page",
+      "item1": "Session replay to watch real visits back",
+      "item2": "Step-by-step conversion funnels",
+      "item3": "A plain-English AI summary every morning",
+      "mockLabel": "heatmap preview"
+    },
     "howItWorks": {
       "badge": "Simple setup",
       "headline": "Up and running",

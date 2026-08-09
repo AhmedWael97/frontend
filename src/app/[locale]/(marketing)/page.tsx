@@ -341,17 +341,101 @@ export default async function HomePage({
             <RevealGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               {FEATURES.map((feature) => {
                 const Icon = feature.icon;
+                const highlighted = feature.idx === 4; // Daily digest — the flagship AI differentiator
                 return (
-                  <RevealItem key={feature.idx} className="rounded-2xl sm:rounded-3xl bg-surface-container/30 border border-outline-variant/15 p-6 hover:border-outline-variant/40 hover:bg-surface-container/50 hover:-translate-y-0.5 transition-all group">
-                    <div className={`w-12 h-12 rounded-2xl ${feature.iconBg} flex items-center justify-center mb-5 ${feature.iconColor} group-hover:scale-110 transition-transform`}>
+                  <RevealItem
+                    key={feature.idx}
+                    className={
+                      highlighted
+                        ? "rounded-2xl sm:rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-500 p-6 shadow-xl shadow-indigo-500/25 hover:-translate-y-0.5 transition-all group"
+                        : "rounded-2xl sm:rounded-3xl bg-surface-container/30 border border-outline-variant/15 p-6 hover:border-outline-variant/40 hover:bg-surface-container/50 hover:-translate-y-0.5 transition-all group"
+                    }
+                  >
+                    <div
+                      className={
+                        highlighted
+                          ? "w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-5 text-white group-hover:scale-110 transition-transform"
+                          : `w-12 h-12 rounded-2xl ${feature.iconBg} flex items-center justify-center mb-5 ${feature.iconColor} group-hover:scale-110 transition-transform`
+                      }
+                    >
                       <Icon className="w-6 h-6" />
                     </div>
-                    <h3 className="text-base font-bold text-on-surface mb-2">{t(`features.${feature.idx}title` as any)}</h3>
-                    <p className="text-sm text-on-surface-variant leading-relaxed">{t(`features.${feature.idx}desc` as any)}</p>
+                    <h3 className={highlighted ? "text-base font-bold text-white mb-2" : "text-base font-bold text-on-surface mb-2"}>
+                      {t(`features.${feature.idx}title` as any)}
+                    </h3>
+                    <p className={highlighted ? "text-sm text-white/85 leading-relaxed" : "text-sm text-on-surface-variant leading-relaxed"}>
+                      {t(`features.${feature.idx}desc` as any)}
+                    </p>
                   </RevealItem>
                 );
               })}
             </RevealGroup>
+          </div>
+        </section>
+
+        {/* ── At a glance: alternating copy + illustrative dashboard panel ───── */}
+        <section className="py-20 sm:py-28 bg-surface-container/15 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              <Reveal>
+                <Badge className="mb-4 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
+                  {t("glance.badge")}
+                </Badge>
+                <h2 className="text-3xl sm:text-4xl font-black text-on-surface tracking-tight mb-4">
+                  {t("glance.headline")}
+                </h2>
+                <p className="text-base text-on-surface-variant mb-7 leading-relaxed">
+                  {t("glance.description")}
+                </p>
+                <ul className="space-y-3">
+                  {[0, 1, 2, 3].map((i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center shrink-0 mt-0.5">
+                        <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                      </div>
+                      <span className="text-sm text-on-surface-variant">{t(`glance.item${i}` as any)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+
+              <Reveal delay={0.1} className="relative">
+                <div className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface overflow-hidden shadow-2xl shadow-black/10 dark:shadow-black/40 ring-1 ring-black/5 dark:ring-white/5">
+                  <div className="flex items-center gap-2 px-4 py-3 border-b border-outline-variant/20 bg-surface-container-high/60">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
+                    </div>
+                    <span className="text-[11px] text-on-surface-variant/70 font-mono ltr:ml-2 rtl:mr-2">{t("glance.mockLabel")}</span>
+                  </div>
+                  {/* Illustrative click-heatmap dot cluster — not real visitor data */}
+                  <div className="relative h-56 sm:h-64 bg-surface-container-high/30 m-4 rounded-xl border border-outline-variant/10 overflow-hidden">
+                    <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(130,130,170,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(130,130,170,0.08) 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+                    {[
+                      { top: "22%", left: "18%", size: 34, o: 0.55 }, { top: "30%", left: "24%", size: 22, o: 0.4 },
+                      { top: "48%", left: "62%", size: 46, o: 0.65 }, { top: "55%", left: "68%", size: 26, o: 0.4 },
+                      { top: "68%", left: "38%", size: 30, o: 0.5 }, { top: "20%", left: "72%", size: 20, o: 0.35 },
+                      { top: "40%", left: "42%", size: 18, o: 0.3 }, { top: "72%", left: "20%", size: 24, o: 0.4 },
+                    ].map((d, i) => (
+                      <div
+                        key={i}
+                        className="absolute rounded-full bg-rose-500 blur-md"
+                        style={{ top: d.top, left: d.left, width: d.size, height: d.size, opacity: d.o }}
+                      />
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2.5 p-4 pt-0">
+                    {MOCK_STATS.slice(0, 3).map((s) => (
+                      <div key={s.labelKey} className="rounded-xl bg-surface-container-high/50 border border-outline-variant/10 p-3 text-left rtl:text-right">
+                        <p className="text-[10px] text-on-surface-variant/70 mb-1 truncate">{t(`hero.${s.labelKey}` as any)}</p>
+                        <p className={`text-base font-black ${s.color}`}>{t(`hero.${s.valueKey}` as any)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Reveal>
+            </div>
           </div>
         </section>
 
