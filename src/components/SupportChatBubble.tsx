@@ -187,7 +187,12 @@ export default function SupportChatBubble() {
               </p>
             )}
             {messages.map((m) => (
-              <div key={m.id} className={cn("flex", m.is_admin ? "justify-start" : "justify-end")}>
+              <div key={m.id} className={cn("flex flex-col", m.is_admin ? "items-start" : "items-end")}>
+                {m.is_ai && (
+                  <span className="mb-0.5 px-1 text-[10px] font-semibold uppercase tracking-wide text-on-surface-variant/60">
+                    {ar ? "رد آلي" : "AI reply"}
+                  </span>
+                )}
                 <div
                   className={cn(
                     "max-w-[80%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm",

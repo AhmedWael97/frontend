@@ -146,6 +146,11 @@ export default function AdminSupportChatsPage() {
                         m.is_admin ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface"
                       )}
                     >
+                      {m.is_ai && (
+                        <span className="mb-1 block text-[10px] font-bold uppercase tracking-wide opacity-70">
+                          AI
+                        </span>
+                      )}
                       {m.body}
                       <span className="mt-1 block text-[10px] opacity-60">
                         {new Date(m.created_at).toLocaleString()}

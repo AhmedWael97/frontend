@@ -7,6 +7,7 @@ import client from "./client";
 export interface SupportMessage {
   id: number;
   is_admin: boolean;
+  is_ai?: boolean;
   body: string;
   created_at: string;
 }
