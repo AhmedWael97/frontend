@@ -22,7 +22,7 @@ const STEPS = [
     id: "domain",
     label: "Connect your website",
     desc: "Add your domain and paste the tracking snippet",
-    href: "/settings/domains",
+    href: "/connect",
     cta: "Add domain →",
   },
   {

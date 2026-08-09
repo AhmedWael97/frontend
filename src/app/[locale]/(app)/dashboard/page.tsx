@@ -112,7 +112,7 @@ function AnalyticsHub() {
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-2">
-            <Link href={`/${locale}/settings/domains?welcome=1`}>
+            <Link href={`/${locale}/connect`}>
               <Button size="lg" className="gap-2"><Plus className="w-4 h-4" />{th("addWebsite" as never)}</Button>
             </Link>
             <Link href={`/${locale}/dashboard/demo`}>
