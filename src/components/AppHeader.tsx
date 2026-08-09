@@ -3,12 +3,13 @@
 import { useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Globe, Sun, Moon, Monitor, LogOut, User, Settings } from "lucide-react";
+import { ChevronDown, Globe, FlaskConical, Sun, Moon, Monitor, LogOut, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/auth";
 import { authApi, domainsApi, profileApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { useDemoDomain } from "@/lib/useDemoDomain";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 
@@ -64,6 +65,8 @@ export function AppHeader() {
     setAppearance(saved);
   }, [user?.appearance]);
 
+  const demo = useDemoDomain();
+  const isDemoSelected = !!demo && selectedDomainId === demo.id;
   const selectedDomain = domains.find((d: any) => d.id === selectedDomainId);
 
   const handleLogout = async () => {
@@ -98,10 +101,15 @@ export function AppHeader() {
       {/* Domain Selector */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-sm font-medium text-on-surface transition-colors border border-outline-variant/20">
-            <Globe className="w-4 h-4 text-primary" />
+          <button className={cn(
+            "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border",
+            isDemoSelected
+              ? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400"
+              : "bg-surface-container hover:bg-surface-container-high text-on-surface border-outline-variant/20"
+          )}>
+            {isDemoSelected ? <FlaskConical className="w-4 h-4" /> : <Globe className="w-4 h-4 text-primary" />}
             <span className="max-w-[160px] truncate">
-              {selectedDomain?.domain || t("dashboard.selectDomain")}
+              {isDemoSelected ? "Demo Sandbox" : (selectedDomain?.domain || t("dashboard.selectDomain"))}
             </span>
             <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant" />
           </button>
@@ -124,6 +132,21 @@ export function AppHeader() {
               </span>
             </DropdownMenuItem>
           ))}
+          {demo && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => setSelectedDomainId(demo.id)}
+                className={cn("text-amber-600 dark:text-amber-400", isDemoSelected && "bg-amber-500/10")}
+              >
+                <FlaskConical className="w-3.5 h-3.5 shrink-0" />
+                <span className="flex flex-col min-w-0">
+                  <span className="truncate font-semibold">Demo Sandbox</span>
+                  <span className="text-[10px] text-on-surface-variant truncate">Real pages, seeded data — nothing&apos;s yours</span>
+                </span>
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

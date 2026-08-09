@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale } from "next-intl";
@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { analyticsApi } from "@/lib/api";
+import { analyticsApi, domainsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { formatNumber } from "@/lib/utils";
 import { toast } from "@/lib/use-toast";
@@ -79,8 +79,22 @@ function KpiCard({
 function AnalyticsHub() {
   const t  = useTranslations("dashboard");
   const th = useTranslations("hubs.analytics");
-  const { selectedDomainId } = useAuthStore();
+  const { selectedDomainId, setSelectedDomainId } = useAuthStore();
   const locale = useLocale();
+  const [enteringSandbox, setEnteringSandbox] = useState(false);
+
+  const enterSandbox = async () => {
+    setEnteringSandbox(true);
+    try {
+      const r = await domainsApi.demo();
+      const demo = (r.data?.data ?? r.data) as { id: number };
+      setSelectedDomainId(demo.id);
+    } catch {
+      toast.error("Couldn't load the demo sandbox — try again in a moment.");
+    } finally {
+      setEnteringSandbox(false);
+    }
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["overview", selectedDomainId],
@@ -115,9 +129,9 @@ function AnalyticsHub() {
             <Link href={`/${locale}/connect`}>
               <Button size="lg" className="gap-2"><Plus className="w-4 h-4" />{th("addWebsite" as never)}</Button>
             </Link>
-            <Link href={`/${locale}/dashboard/demo`}>
-              <Button size="lg" variant="outline" className="gap-2"><Sparkles className="w-4 h-4" /> Explore a live demo</Button>
-            </Link>
+            <Button size="lg" variant="outline" className="gap-2" onClick={enterSandbox} disabled={enteringSandbox}>
+              <Sparkles className="w-4 h-4" /> {enteringSandbox ? "Loading…" : "Explore the demo sandbox"}
+            </Button>
           </div>
         </div>
         {/* Guided steps — shown even before a domain exists, so new users have a clear path. */}

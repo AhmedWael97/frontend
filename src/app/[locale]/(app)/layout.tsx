@@ -10,13 +10,17 @@ import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { NpsWidget } from "@/components/NpsWidget";
 import { TourGuide } from "@/components/onboarding/TourGuide";
+import { SandboxBanner } from "@/components/SandboxBanner";
 import { useAuthStore } from "@/store/auth";
+import { useDemoDomain } from "@/lib/useDemoDomain";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const locale = useLocale();
   const pathname = usePathname();
-  const { token, user } = useAuthStore();
+  const { token, user, selectedDomainId } = useAuthStore();
+  const demo = useDemoDomain();
+  const isDemoSelected = !!demo && selectedDomainId === demo.id;
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -42,11 +46,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     // Only redirect when navigating away from settings pages so they can add a domain
     const isOnDomainsPage = pathname?.includes("/settings/domains");
     const isOnSettingsPage = pathname?.includes("/settings/");
-    if (user?.onboarding && !user.onboarding.domain_added && !isOnDomainsPage && !isOnSettingsPage) {
-      router.replace(`/${locale}/settings/domains?welcome=1`);
+    const isOnConnectPage = pathname?.includes("/connect");
+    if (
+      user?.onboarding && !user.onboarding.domain_added &&
+      !isOnDomainsPage && !isOnSettingsPage && !isOnConnectPage && !isDemoSelected
+    ) {
+      router.replace(`/${locale}/connect`);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, user, locale, hydrated, pathname]);
+  }, [token, user, locale, hydrated, pathname, isDemoSelected]);
 
   if (!hydrated || !token) return null;
 
@@ -57,6 +65,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="print:hidden">
           <ImpersonationBanner />
           <VerifyEmailBanner />
+          <SandboxBanner />
           <AppHeader />
         </div>
         <main className="flex-1 p-6 print:p-0">{children}</main>

@@ -11,6 +11,9 @@ export const domainsApi = {
   /** GET /domains */
   list: () => client.get(DOMAIN_ROUTES.list),
 
+  /** GET /demo/domain — the one shared, read-only sandbox domain. */
+  demo: () => client.get("/demo/domain"),
+
   /** POST /domains */
   create: (data: { domain: string; settings?: Record<string, unknown>; timezone?: string }) =>
     client.post(DOMAIN_ROUTES.create, data),
