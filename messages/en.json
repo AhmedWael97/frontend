@@ -418,6 +418,9 @@
       "uptime": "guaranteed uptime",
       "impact": "tracker script size"
     },
+    "brandStrip": {
+      "caption": "Built for site owners and marketers"
+    },
     "problem": {
       "badge": "Sound familiar?",
       "headline": "Tired of analytics that feel like homework?",
@@ -426,6 +429,16 @@
       "2": "Heatmaps are a separate, expensive subscription",
       "3": "Reports take an hour to set up and still don’t answer your question",
       "answer": "EYE gives you one clear dashboard with actual answers — not just data."
+    },
+    "oneDashboard": {
+      "badge": "One dashboard",
+      "headline": "Total visibility. One place.",
+      "description": "Live visitor tracking, heatmaps, funnels, campaign revenue, alerts, and SEO checks — all under one roof, instead of five separate tools that don't talk to each other.",
+      "mockLabel": "dashboard overview",
+      "row0": "Live visitor tracking",
+      "row1": "Campaign revenue & ROAS",
+      "row2": "Conversion funnels",
+      "row3": "Alerts & anomaly detection"
     },
     "features": {
       "badge": "What you can do",

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/marketing/Navbar";
 import MobileCtaBar from "@/components/marketing/MobileCtaBar";
 import LiveStatsStrip from "@/components/marketing/LiveStatsStrip";
+import PricingTeaser from "@/components/marketing/PricingTeaser";
 import GoogleOneTap from "@/components/auth/GoogleOneTap";
 import Footer from "@/components/marketing/Footer";
 import { getTranslations } from "next-intl/server";
@@ -295,6 +296,23 @@ export default async function HomePage({
 
         <LiveStatsStrip />
 
+        {/* ── Brand strip ──────────────────────────────────────────────────── */}
+        <div className="border-y border-outline-variant/10 bg-surface-container/10 py-8">
+          <p className="text-center text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant/50 mb-5">
+            {t("brandStrip.caption")}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 px-5 opacity-40 grayscale">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center">
+                  <Eye className="w-3.5 h-3.5 text-white" />
+                </div>
+                <span className="text-base font-black tracking-tighter text-on-surface">EYE</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* ── Problem ──────────────────────────────────────────────────────── */}
         <section className="py-20 sm:py-24 bg-surface-container/15">
           <div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
@@ -319,6 +337,57 @@ export default async function HomePage({
             <Reveal delay={0.1} className="rounded-2xl bg-indigo-500/8 dark:bg-indigo-500/12 border border-indigo-200 dark:border-indigo-500/25 p-5 text-center">
               <p className="text-base font-semibold text-on-surface">{t("problem.answer")}</p>
             </Reveal>
+          </div>
+        </section>
+
+        {/* ── One dashboard, total control ────────────────────────────────────── */}
+        <section className="py-20 sm:py-28 bg-surface overflow-hidden">
+          <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              <Reveal delay={0.05} className="order-2 lg:order-1 relative">
+                <div className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface-container/60 overflow-hidden shadow-2xl shadow-black/10 dark:shadow-black/40 ring-1 ring-black/5 dark:ring-white/5">
+                  <div className="flex items-center gap-2 px-4 py-3 border-b border-outline-variant/20 bg-surface-container-high/60">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
+                    </div>
+                    <span className="text-[11px] text-on-surface-variant/70 font-mono ltr:ml-2 rtl:mr-2">{t("oneDashboard.mockLabel")}</span>
+                  </div>
+                  <div className="p-4 sm:p-5 space-y-2.5">
+                    {[
+                      { icon: Radio, label: t("oneDashboard.row0"), tone: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-500/15" },
+                      { icon: TrendingUp, label: t("oneDashboard.row1"), tone: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-500/15" },
+                      { icon: GitMerge, label: t("oneDashboard.row2"), tone: "text-violet-600 dark:text-violet-400", bg: "bg-violet-100 dark:bg-violet-500/15" },
+                      { icon: ShieldCheck, label: t("oneDashboard.row3"), tone: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-500/15" },
+                    ].map((r, i) => {
+                      const RIcon = r.icon;
+                      return (
+                        <div key={i} className="flex items-center gap-3 rounded-xl bg-surface border border-outline-variant/10 p-3">
+                          <div className={`w-8 h-8 rounded-lg ${r.bg} flex items-center justify-center shrink-0 ${r.tone}`}>
+                            <RIcon className="w-4 h-4" />
+                          </div>
+                          <span className="text-sm font-medium text-on-surface">{r.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="absolute -bottom-6 -z-10 left-1/2 -translate-x-1/2 w-3/5 h-16 bg-violet-500/20 dark:bg-violet-500/15 blur-3xl rounded-full pointer-events-none" />
+              </Reveal>
+
+              <Reveal className="order-1 lg:order-2">
+                <Badge className="mb-4 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
+                  {t("oneDashboard.badge")}
+                </Badge>
+                <h2 className="text-3xl sm:text-4xl font-black text-on-surface tracking-tight mb-4">
+                  {t("oneDashboard.headline")}
+                </h2>
+                <p className="text-base text-on-surface-variant leading-relaxed">
+                  {t("oneDashboard.description")}
+                </p>
+              </Reveal>
+            </div>
           </div>
         </section>
 
@@ -512,17 +581,40 @@ export default async function HomePage({
         <section className="py-20 sm:py-28 bg-surface">
           <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
             <Reveal className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-8 sm:p-12">
-              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary mb-5">
-                <Sparkles className="w-3.5 h-3.5" /> {locale === "ar" ? "مدعوم بالذكاء الاصطناعي" : "AI-powered"}
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-10 items-center mb-8">
+                <div className="lg:col-span-3">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary mb-5">
+                    <Sparkles className="w-3.5 h-3.5" /> {locale === "ar" ? "مدعوم بالذكاء الاصطناعي" : "AI-powered"}
+                  </div>
+                  <h2 className="text-2xl sm:text-4xl font-black tracking-tight mb-4">
+                    {locale === "ar" ? "لا يُريك الأرقام فقط — يخبرك بما يجب إصلاحه." : "Not just charts — it tells you what to fix."}
+                  </h2>
+                  <p className="text-on-surface-variant text-lg max-w-2xl">
+                    {locale === "ar"
+                      ? "معظم أدوات التحليل تُغرقك بالرسوم البيانية. EYE يقرأ بياناتك ويكتب لك بلغة بسيطة: أين يغادر الزوّار، لماذا، وما الخطوة التالية بالضبط."
+                      : "Most analytics tools drown you in dashboards. EYE reads your data and writes it in plain language: where visitors drop off, why, and exactly what to do next."}
+                  </p>
+                </div>
+                <div className="lg:col-span-2 rounded-2xl border border-outline-variant/15 bg-surface p-4 shadow-lg shadow-black/5 dark:shadow-black/30">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70">
+                      {locale === "ar" ? "توصية اليوم" : "Today's recommendation"}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {(locale === "ar"
+                      ? ["أضف تسجيل جوجل لحقل البريد", "افحص روابط الصفحة المعطلة", "راجع صفحة التسجيل على الجوال"]
+                      : ["Add Google sign-in on the email field", "Check the broken link on /pricing", "Review mobile register-page friction"]
+                    ).map((line, i) => (
+                      <div key={i} className="flex items-center gap-2.5 rounded-lg bg-surface-container-high/50 px-3 py-2.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                        <span className="text-xs text-on-surface-variant">{line}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <h2 className="text-2xl sm:text-4xl font-black tracking-tight mb-4">
-                {locale === "ar" ? "لا يُريك الأرقام فقط — يخبرك بما يجب إصلاحه." : "Not just charts — it tells you what to fix."}
-              </h2>
-              <p className="text-on-surface-variant text-lg max-w-2xl mb-8">
-                {locale === "ar"
-                  ? "معظم أدوات التحليل تُغرقك بالرسوم البيانية. EYE يقرأ بياناتك ويكتب لك بلغة بسيطة: أين يغادر الزوّار، لماذا، وما الخطوة التالية بالضبط."
-                  : "Most analytics tools drown you in dashboards. EYE reads your data and writes it in plain language: where visitors drop off, why, and exactly what to do next."}
-              </p>
               <RevealGroup className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {(locale === "ar"
                   ? [
@@ -542,6 +634,31 @@ export default async function HomePage({
                   </RevealItem>
                 ))}
               </RevealGroup>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ── Pricing teaser ───────────────────────────────────────────────── */}
+        <section className="py-20 sm:py-28 bg-surface-container/15">
+          <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+            <Reveal className="text-center mb-12 sm:mb-14">
+              <Badge className="mb-4 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
+                {t("pricing.title")}
+              </Badge>
+              <h2 className="text-3xl sm:text-5xl font-black text-on-surface tracking-tight mb-4">
+                {t("pricing.headline")}
+              </h2>
+              <p className="text-base sm:text-lg text-on-surface-variant max-w-xl mx-auto">
+                {t("pricing.subhead")}
+              </p>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <PricingTeaser />
+            </Reveal>
+            <Reveal delay={0.14} className="text-center mt-8">
+              <Link href={`/${locale}/pricing`} className="text-sm font-semibold text-primary hover:underline">
+                {t("pricing.fullComparison")} →
+              </Link>
             </Reveal>
           </div>
         </section>
