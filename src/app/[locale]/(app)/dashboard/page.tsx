@@ -130,7 +130,10 @@ function AnalyticsHub() {
               <Button size="lg" className="gap-2"><Plus className="w-4 h-4" />{th("addWebsite" as never)}</Button>
             </Link>
             <Button size="lg" variant="outline" className="gap-2" onClick={enterSandbox} disabled={enteringSandbox}>
-              <Sparkles className="w-4 h-4" /> {enteringSandbox ? "Loading…" : "Explore the demo sandbox"}
+              <Sparkles className="w-4 h-4" />
+              {enteringSandbox
+                ? (locale === "ar" ? "جاري التحميل…" : "Loading…")
+                : (locale === "ar" ? "استكشف البيئة التجريبية" : "Explore the demo sandbox")}
             </Button>
           </div>
         </div>

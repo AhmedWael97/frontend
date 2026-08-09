@@ -109,7 +109,7 @@ export function AppHeader() {
           )}>
             {isDemoSelected ? <FlaskConical className="w-4 h-4" /> : <Globe className="w-4 h-4 text-primary" />}
             <span className="max-w-[160px] truncate">
-              {isDemoSelected ? "Demo Sandbox" : (selectedDomain?.domain || t("dashboard.selectDomain"))}
+              {isDemoSelected ? (locale === "ar" ? "بيئة تجريبية" : "Demo Sandbox") : (selectedDomain?.domain || t("dashboard.selectDomain"))}
             </span>
             <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant" />
           </button>
@@ -141,8 +141,10 @@ export function AppHeader() {
               >
                 <FlaskConical className="w-3.5 h-3.5 shrink-0" />
                 <span className="flex flex-col min-w-0">
-                  <span className="truncate font-semibold">Demo Sandbox</span>
-                  <span className="text-[10px] text-on-surface-variant truncate">Real pages, seeded data — nothing&apos;s yours</span>
+                  <span className="truncate font-semibold">{locale === "ar" ? "بيئة تجريبية" : "Demo Sandbox"}</span>
+                  <span className="text-[10px] text-on-surface-variant truncate">
+                    {locale === "ar" ? "صفحات حقيقية، بيانات وهمية — ليست ملكك" : "Real pages, seeded data — nothing's yours"}
+                  </span>
                 </span>
               </DropdownMenuItem>
             </>

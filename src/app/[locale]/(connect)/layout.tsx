@@ -46,7 +46,7 @@ export default function ConnectLayout({ children }: { children: React.ReactNode 
           href={`/${locale}/dashboard`}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant hover:text-on-surface"
         >
-          <X className="w-3.5 h-3.5" /> Skip for now
+          <X className="w-3.5 h-3.5" /> {locale === "ar" ? "تخطَّ الآن" : "Skip for now"}
         </Link>
       </header>
       <main className="flex-1 flex items-center justify-center px-4 pb-16">{children}</main>

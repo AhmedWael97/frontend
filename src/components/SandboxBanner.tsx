@@ -17,20 +17,23 @@ export function SandboxBanner() {
   const demo = useDemoDomain();
 
   if (!demo || selectedDomainId !== demo.id) return null;
+  const ar = locale === "ar";
 
   return (
     <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-2 bg-amber-500/10 border-b border-amber-500/20 text-amber-700 dark:text-amber-400">
       <div className="flex items-center gap-2 min-w-0">
         <FlaskConical className="w-4 h-4 shrink-0" />
         <p className="text-xs sm:text-sm font-semibold truncate">
-          Demo Sandbox — every page here is real, the data is seeded. Nothing you see is your own traffic.
+          {ar
+            ? "بيئة تجريبية — كل صفحة هنا حقيقية، لكن البيانات وهمية. ما تراه ليس زوّارك الحقيقيين."
+            : "Demo Sandbox — every page here is real, the data is seeded. Nothing you see is your own traffic."}
         </p>
       </div>
       <Link
         href={`/${locale}/connect`}
         className="inline-flex items-center gap-1 text-xs font-bold shrink-0 hover:underline"
       >
-        Add my website <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
+        {ar ? "أضف موقعي" : "Add my website"} <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
       </Link>
     </div>
   );

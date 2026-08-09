@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Radio, Map, GitMerge, Building2, FileText, ShieldCheck,
-  ArrowRight, Check, Eye, Layers, Lock, Gauge,
+  ArrowRight, Check, Eye, Layers, Lock, Gauge, ScanSearch,
   BarChart2, ChevronRight, X, TrendingUp, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -103,6 +103,8 @@ export default async function HomePage({
 }) {
   const { locale } = params;
   const t = await getTranslations("landing");
+  // Root namespace — "pricing" lives top-level in messages/*.json, not under "landing".
+  const tp = await getTranslations("pricing");
   // A/B Studio split_url experiment "hero-copy" redirects the variant bucket to ?hero=b.
   const heroVariantB = searchParams?.hero === "b";
 
@@ -577,6 +579,62 @@ export default async function HomePage({
           </div>
         </section>
 
+        {/* ── Free tools: no-signup lead magnets ──────────────────────────────── */}
+        <section className="py-20 sm:py-24 bg-surface">
+          <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
+            <Reveal className="text-center mb-10 sm:mb-12">
+              <Badge className="mb-4 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-200 dark:border-cyan-500/20 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
+                {locale === "ar" ? "بدون تسجيل" : "No signup required"}
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-black text-on-surface tracking-tight mb-4">
+                {locale === "ar" ? "أدوات مجانية لموقعك" : "Free tools for your website"}
+              </h2>
+              <p className="text-base text-on-surface-variant max-w-xl mx-auto">
+                {locale === "ar" ? "بدون تسجيل، بدون بطاقة، بدون حد. افحص أي موقع خلال ثوانٍ." : "No signup, no card, no limit. Check any site in seconds."}
+              </p>
+            </Reveal>
+            <RevealGroup className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+              {(locale === "ar"
+                ? [
+                    { href: "/free-tools/speed-checker", icon: Gauge, name: "فحص السرعة", desc: "وقت التحميل، الاستجابة، الضغط، السكربتات المُعيقة." },
+                    { href: "/free-tools/seo-checker", icon: ScanSearch, name: "فحص السيو", desc: "العنوان، العلامات الوصفية، العناوين، الصور، Open Graph، والمزيد." },
+                    { href: "/free-tools/sitemap-creator", icon: Layers, name: "منشئ خريطة الموقع", desc: "زحف لموقعك وإنشاء ملف sitemap.xml جاهز." },
+                  ]
+                : [
+                    { href: "/free-tools/speed-checker", icon: Gauge, name: "Speed Checker", desc: "Load time, TTFB, compression, render-blocking scripts." },
+                    { href: "/free-tools/seo-checker", icon: ScanSearch, name: "SEO Checker", desc: "Title, meta tags, headings, images, Open Graph, and more." },
+                    { href: "/free-tools/sitemap-creator", icon: Layers, name: "Sitemap Creator", desc: "Crawl your site and generate a ready-to-use sitemap.xml." },
+                  ]
+              ).map((tool) => {
+                const Icon = tool.icon;
+                return (
+                  <RevealItem key={tool.href}>
+                    <Link
+                      href={`/${locale}${tool.href}`}
+                      className="group flex flex-col h-full rounded-2xl border border-outline-variant/20 bg-surface-container/30 p-6 transition hover:border-cyan-500/40 hover:bg-surface-container/50 hover:-translate-y-0.5"
+                    >
+                      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <h3 className="mt-4 text-base font-bold text-on-surface">{tool.name}</h3>
+                      <p className="mt-1 text-sm text-on-surface-variant flex-1">{tool.desc}</p>
+                      <span className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-cyan-600 dark:text-cyan-400">
+                        {locale === "ar" ? "جرّبها" : "Try it"}
+                        <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180 transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
+                      </span>
+                    </Link>
+                  </RevealItem>
+                );
+              })}
+            </RevealGroup>
+            <Reveal delay={0.1} className="text-center mt-8">
+              <Link href={`/${locale}/free-tools`} className="text-sm font-semibold text-primary hover:underline">
+                {locale === "ar" ? "كل الأدوات المجانية" : "See all free tools"} →
+              </Link>
+            </Reveal>
+          </div>
+        </section>
+
         {/* ── AI differentiator: tells you what to fix ──────────────────────── */}
         <section className="py-20 sm:py-28 bg-surface">
           <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
@@ -643,13 +701,13 @@ export default async function HomePage({
           <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <Reveal className="text-center mb-12 sm:mb-14">
               <Badge className="mb-4 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
-                {t("pricing.title")}
+                {tp("title")}
               </Badge>
               <h2 className="text-3xl sm:text-5xl font-black text-on-surface tracking-tight mb-4">
-                {t("pricing.headline")}
+                {tp("headline")}
               </h2>
               <p className="text-base sm:text-lg text-on-surface-variant max-w-xl mx-auto">
-                {t("pricing.subhead")}
+                {tp("subhead")}
               </p>
             </Reveal>
             <Reveal delay={0.08}>
@@ -657,7 +715,7 @@ export default async function HomePage({
             </Reveal>
             <Reveal delay={0.14} className="text-center mt-8">
               <Link href={`/${locale}/pricing`} className="text-sm font-semibold text-primary hover:underline">
-                {t("pricing.fullComparison")} →
+                {tp("fullComparison")} →
               </Link>
             </Reveal>
           </div>

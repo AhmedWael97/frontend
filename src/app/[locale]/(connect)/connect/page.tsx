@@ -8,14 +8,66 @@ import { domainsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { eyeTrack } from "@/lib/track";
 
-const STEP_LABELS = ["Your website", "Install the tag", "Go live"];
-
-const INSTALL_PLATFORMS = [
-  { key: "html", label: "HTML", hint: "Paste this right before the closing </head> tag, on every page of your site." },
-  { key: "wordpress", label: "WordPress", hint: "Download our plugin below → WordPress admin → Plugins → Add New → Upload → Activate → paste your token." },
-  { key: "shopify", label: "Shopify", hint: "Online Store → Themes → ⋯ → Edit code → layout/theme.liquid → paste just before </head> → Save." },
-  { key: "gtm", label: "Tag Manager", hint: "New Tag → Custom HTML → paste the snippet → Trigger: All Pages → Submit & publish." },
-];
+const COPY = {
+  en: {
+    stepLabels: ["Your website", "Install the tag", "Go live"],
+    platforms: [
+      { key: "html", label: "HTML", hint: "Paste this right before the closing </head> tag, on every page of your site." },
+      { key: "wordpress", label: "WordPress", hint: "Download our plugin below → WordPress admin → Plugins → Add New → Upload → Activate → paste your token." },
+      { key: "shopify", label: "Shopify", hint: "Online Store → Themes → ⋯ → Edit code → layout/theme.liquid → paste just before </head> → Save." },
+      { key: "gtm", label: "Tag Manager", hint: "New Tag → Custom HTML → paste the snippet → Trigger: All Pages → Submit & publish." },
+    ],
+    invalidDomain: "Enter a valid domain like example.com — no http://, no paths.",
+    createError: "Could not add that domain.",
+    step0Title: "What's your website?",
+    step0Sub: "Just the domain — we'll give you a tracking tag on the next step.",
+    placeholder: "example.com",
+    continue: "Continue",
+    step1Title: (d: string) => `Add this tag to ${d}`,
+    step1Sub: "One line of code. Takes about 2 minutes.",
+    downloadPlugin: "Download WordPress plugin",
+    emailDev: "Email a developer",
+    whatsapp: "Send via WhatsApp",
+    addedIt: "I've added it",
+    listening: "Listening for events…",
+    listeningSub: (d: string) => `Open ${d} in another tab. The moment the tag fires, this page updates automatically — nothing to click.`,
+    connected: "You're connected! 🎉",
+    connectedSub: (d: string) => `EYE is now receiving data from ${d}.`,
+    redirecting: "Taking you to your dashboard…",
+    mailSubject: (d: string) => `Please install EYE tracking on ${d}`,
+    mailBody: (d: string, s: string) => `Hi,\n\nPlease add this tracking snippet to ${d}, just before the closing </head> tag on every page:\n\n${s}\n\nThanks!`,
+    waText: (d: string, s: string) => `Please add this tracking snippet to ${d}, just before </head> on every page:\n\n${s}`,
+  },
+  ar: {
+    stepLabels: ["موقعك", "تثبيت الكود", "التفعيل"],
+    platforms: [
+      { key: "html", label: "HTML", hint: "الصق هذا الكود قبل وسم </head> مباشرة، في كل صفحات موقعك." },
+      { key: "wordpress", label: "WordPress", hint: "نزّل الإضافة بالأسفل ← لوحة تحكم ووردبريس ← الإضافات ← إضافة جديد ← رفع ← تفعيل ← الصق رمزك." },
+      { key: "shopify", label: "Shopify", hint: "المتجر الإلكتروني ← القوالب ← ⋯ ← تعديل الكود ← layout/theme.liquid ← الصق قبل </head> ← حفظ." },
+      { key: "gtm", label: "Tag Manager", hint: "وسم جديد ← HTML مخصص ← الصق الكود ← المشغّل: كل الصفحات ← إرسال ونشر." },
+    ],
+    invalidDomain: "أدخل نطاقًا صحيحًا مثل example.com — بدون http://‎ وبدون مسارات.",
+    createError: "تعذّرت إضافة هذا النطاق.",
+    step0Title: "ما هو موقعك؟",
+    step0Sub: "النطاق فقط — سنعطيك كود التتبع في الخطوة التالية.",
+    placeholder: "example.com",
+    continue: "متابعة",
+    step1Title: (d: string) => `أضف هذا الكود إلى ${d}`,
+    step1Sub: "سطر واحد من الكود. يستغرق حوالي دقيقتين.",
+    downloadPlugin: "تنزيل إضافة ووردبريس",
+    emailDev: "أرسل للمطوّر بالبريد",
+    whatsapp: "أرسل عبر واتساب",
+    addedIt: "لقد أضفته",
+    listening: "بانتظار وصول الأحداث…",
+    listeningSub: (d: string) => `افتح ${d} في تبويب آخر. بمجرد أن يعمل الكود، ستتحدث هذه الصفحة تلقائيًا — لا حاجة للنقر على شيء.`,
+    connected: "تم الاتصال! 🎉",
+    connectedSub: (d: string) => `يستقبل EYE الآن بيانات من ${d}.`,
+    redirecting: "جاري نقلك إلى لوحة التحكم…",
+    mailSubject: (d: string) => `يرجى تثبيت كود تتبع EYE على ${d}`,
+    mailBody: (d: string, s: string) => `مرحبًا،\n\nيرجى إضافة كود التتبع هذا إلى ${d}، قبل وسم </head> مباشرة في كل صفحة:\n\n${s}\n\nشكرًا!`,
+    waText: (d: string, s: string) => `يرجى إضافة كود التتبع هذا إلى ${d}، قبل </head> في كل صفحة:\n\n${s}`,
+  },
+};
 
 // Mirrors StoreDomainRequest server-side validation.
 const normalizeDomain = (raw: string) =>
@@ -26,10 +78,10 @@ const normalizeDomain = (raw: string) =>
     .replace(/\.+$/, "");
 const HOSTNAME_RE = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
 
-function StepDots({ step }: { step: number }) {
+function StepDots({ step, labels }: { step: number; labels: string[] }) {
   return (
     <div className="flex items-center justify-center gap-2 mb-8">
-      {STEP_LABELS.map((label, i) => (
+      {labels.map((label, i) => (
         <div key={label} className="flex items-center gap-2">
           <div
             className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
@@ -39,7 +91,7 @@ function StepDots({ step }: { step: number }) {
             {i < step ? <Check className="w-3 h-3" /> : <span>{i + 1}</span>}
             <span className="hidden sm:inline">{label}</span>
           </div>
-          {i < STEP_LABELS.length - 1 && <div className="w-6 h-px bg-outline-variant/40" />}
+          {i < labels.length - 1 && <div className="w-6 h-px bg-outline-variant/40" />}
         </div>
       ))}
     </div>
@@ -48,6 +100,7 @@ function StepDots({ step }: { step: number }) {
 
 export default function ConnectWizardPage() {
   const locale = useLocale();
+  const c = locale === "ar" ? COPY.ar : COPY.en;
   const router = useRouter();
   const { setSelectedDomainId } = useAuthStore();
 
@@ -67,13 +120,13 @@ export default function ConnectWizardPage() {
   const snippet = domain
     ? `<script src="${appUrl}/tracker/eye.js" data-token="${domain.script_token}" data-api="${appUrl}/api/collect" async></script>`
     : "";
-  const platform = INSTALL_PLATFORMS.find((p) => p.key === tab) ?? INSTALL_PLATFORMS[0];
+  const platform = c.platforms.find((p) => p.key === tab) ?? c.platforms[0];
 
   // ── Step 1: register the domain ──────────────────────────────────────────
   const submitDomain = async () => {
     const name = normalizeDomain(domainInput);
     if (!HOSTNAME_RE.test(name) || name.length > 253) {
-      setError("Enter a valid domain like example.com — no http://, no paths.");
+      setError(c.invalidDomain);
       return;
     }
     setError(""); setSubmitting(true);
@@ -86,7 +139,7 @@ export default function ConnectWizardPage() {
       setStep(1);
     } catch (e: any) {
       const fieldErrors = e?.errors?.domain?.[0] || (e?.errors ? Object.values(e.errors).flat().join(" ") : null);
-      setError(fieldErrors || e?.message || "Could not add that domain.");
+      setError(fieldErrors || e?.message || c.createError);
     } finally {
       setSubmitting(false);
     }
@@ -127,17 +180,15 @@ export default function ConnectWizardPage() {
   };
 
   const mailto = domain
-    ? `mailto:?subject=${encodeURIComponent(`Please install EYE tracking on ${domain.domain}`)}&body=${encodeURIComponent(
-        `Hi,\n\nPlease add this tracking snippet to ${domain.domain}, just before the closing </head> tag on every page:\n\n${snippet}\n\nThanks!`
-      )}`
+    ? `mailto:?subject=${encodeURIComponent(c.mailSubject(domain.domain))}&body=${encodeURIComponent(c.mailBody(domain.domain, snippet))}`
     : "#";
   const whatsappUrl = domain
-    ? `https://wa.me/?text=${encodeURIComponent(`Please add this tracking snippet to ${domain.domain}, just before </head> on every page:\n\n${snippet}`)}`
+    ? `https://wa.me/?text=${encodeURIComponent(c.waText(domain.domain, snippet))}`
     : "#";
 
   return (
     <div className="w-full max-w-xl">
-      <StepDots step={step} />
+      <StepDots step={step} labels={c.stepLabels} />
 
       {/* ── Step 0: domain only ──────────────────────────────────────────── */}
       {step === 0 && (
@@ -145,15 +196,16 @@ export default function ConnectWizardPage() {
           <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
             <Globe className="w-7 h-7 text-primary" />
           </div>
-          <h1 className="text-2xl font-black text-on-surface">What&apos;s your website?</h1>
-          <p className="text-sm text-on-surface-variant mt-2 mb-6">Just the domain — we&apos;ll give you a tracking tag on the next step.</p>
+          <h1 className="text-2xl font-black text-on-surface">{c.step0Title}</h1>
+          <p className="text-sm text-on-surface-variant mt-2 mb-6">{c.step0Sub}</p>
           <div className="flex flex-col gap-3 items-center">
             <input
               autoFocus
               value={domainInput}
               onChange={(e) => { setDomainInput(e.target.value); setError(""); }}
               onKeyDown={(e) => e.key === "Enter" && submitDomain()}
-              placeholder="example.com"
+              placeholder={c.placeholder}
+              dir="ltr"
               className="w-full h-12 rounded-xl border border-outline-variant/30 bg-surface px-4 text-base text-center text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
             {error && <p className="text-sm text-error">{error}</p>}
@@ -162,7 +214,7 @@ export default function ConnectWizardPage() {
               disabled={!domainInput || submitting}
               className="w-full h-12 rounded-xl bg-primary text-on-primary font-bold flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Continue <ArrowRight className="w-4 h-4 rtl:rotate-180" /></>}
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <>{c.continue} <ArrowRight className="w-4 h-4 rtl:rotate-180" /></>}
             </button>
           </div>
         </div>
@@ -171,11 +223,11 @@ export default function ConnectWizardPage() {
       {/* ── Step 1: install the tag ──────────────────────────────────────── */}
       {step === 1 && domain && (
         <div>
-          <h1 className="text-2xl font-black text-on-surface text-center">Add this tag to {domain.domain}</h1>
-          <p className="text-sm text-on-surface-variant mt-2 mb-6 text-center">One line of code. Takes about 2 minutes.</p>
+          <h1 className="text-2xl font-black text-on-surface text-center">{c.step1Title(domain.domain)}</h1>
+          <p className="text-sm text-on-surface-variant mt-2 mb-6 text-center">{c.step1Sub}</p>
 
           <div className="flex flex-wrap gap-1.5 justify-center mb-3">
-            {INSTALL_PLATFORMS.map((p) => (
+            {c.platforms.map((p) => (
               <button
                 key={p.key}
                 onClick={() => setTab(p.key)}
@@ -191,24 +243,24 @@ export default function ConnectWizardPage() {
           {tab === "wordpress" && (
             <div className="flex justify-center mb-3">
               <a href="/downloads/eye-analytics.zip" download className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 text-primary px-3 py-1.5 text-xs font-bold hover:bg-primary/15">
-                <Download className="w-3.5 h-3.5" /> Download WordPress plugin
+                <Download className="w-3.5 h-3.5" /> {c.downloadPlugin}
               </a>
             </div>
           )}
 
           <div className="relative mb-4">
-            <pre className="bg-surface-container-lowest rounded-xl p-4 text-xs text-on-surface-variant overflow-x-auto border border-outline-variant/20 font-mono">{snippet}</pre>
-            <button onClick={copySnippet} className="absolute top-2.5 right-2.5 p-2 bg-surface-container rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors">
+            <pre dir="ltr" className="bg-surface-container-lowest rounded-xl p-4 text-xs text-on-surface-variant overflow-x-auto border border-outline-variant/20 font-mono text-left">{snippet}</pre>
+            <button onClick={copySnippet} className="absolute top-2.5 end-2.5 p-2 bg-surface-container rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors">
               {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
 
           <div className="flex items-center justify-center gap-4 mb-6">
             <a href={mailto} className="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-primary">
-              <Mail className="w-3.5 h-3.5" /> Email a developer
+              <Mail className="w-3.5 h-3.5" /> {c.emailDev}
             </a>
             <a href={whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-emerald-500">
-              <MessageCircle className="w-3.5 h-3.5" /> Send via WhatsApp
+              <MessageCircle className="w-3.5 h-3.5" /> {c.whatsapp}
             </a>
           </div>
 
@@ -216,7 +268,7 @@ export default function ConnectWizardPage() {
             onClick={() => setStep(2)}
             className="w-full h-12 rounded-xl bg-primary text-on-primary font-bold flex items-center justify-center gap-2"
           >
-            I&apos;ve added it <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+            {c.addedIt} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </button>
         </div>
       )}
@@ -232,9 +284,9 @@ export default function ConnectWizardPage() {
                   <Loader2 className="w-7 h-7 text-primary animate-spin" />
                 </div>
               </div>
-              <h1 className="text-2xl font-black text-on-surface">Listening for events…</h1>
+              <h1 className="text-2xl font-black text-on-surface">{c.listening}</h1>
               <p className="text-sm text-on-surface-variant mt-2 max-w-sm mx-auto">
-                Open <span className="font-semibold text-on-surface">{domain.domain}</span> in another tab. The moment the tag fires, this page updates automatically — nothing to click.
+                {c.listeningSub(domain.domain)}
               </p>
             </>
           ) : (
@@ -242,11 +294,11 @@ export default function ConnectWizardPage() {
               <div className="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-6">
                 <PartyPopper className="w-8 h-8 text-emerald-500" />
               </div>
-              <h1 className="text-2xl font-black text-on-surface">You&apos;re connected! 🎉</h1>
+              <h1 className="text-2xl font-black text-on-surface">{c.connected}</h1>
               <p className="text-sm text-on-surface-variant mt-2">
-                EYE is now receiving data from <span className="font-semibold text-on-surface">{domain.domain}</span>.
+                {c.connectedSub(domain.domain)}
               </p>
-              <p className="text-xs text-on-surface-variant/70 mt-4">Taking you to your dashboard…</p>
+              <p className="text-xs text-on-surface-variant/70 mt-4">{c.redirecting}</p>
             </>
           )}
         </div>
