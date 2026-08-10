@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { domainsApi, billingApi } from "@/lib/api";
 import { eyeTrack } from "@/lib/track";
-import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X, Loader2, Mail, CheckCircle2, PartyPopper, MessageCircle, ArrowRight, Download } from "lucide-react";
+import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X, Loader2, Mail, CheckCircle2, PartyPopper, MessageCircle, ArrowRight, Download, Link2 } from "lucide-react";
 
 const INSTALL_PLATFORMS = [
   { key: "html", label: "HTML", hint: "Paste this right before the closing </head> tag, on every page of your site." },
@@ -27,8 +27,10 @@ function InstallGuide({ token, domainId, domainName }: { token: string; domainId
   const locale = useLocale();
   const [tab, setTab] = useState("html");
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState<null | boolean>(null);
+  const shareUrl = `${appUrl}/${locale}/install/${token}`;
 
   const platform = INSTALL_PLATFORMS.find((p) => p.key === tab) ?? INSTALL_PLATFORMS[0];
 
@@ -128,6 +130,13 @@ function InstallGuide({ token, domainId, domainName }: { token: string; domainId
         <a href={whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-emerald-500 px-2 py-1.5 rounded-lg hover:bg-surface-container">
           <MessageCircle className="w-3.5 h-3.5" /> Send via WhatsApp
         </a>
+        <button
+          onClick={() => { navigator.clipboard.writeText(shareUrl); setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000); }}
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-primary px-2 py-1.5 rounded-lg hover:bg-surface-container"
+          title="A no-login link anyone (like your developer) can open to install it"
+        >
+          {linkCopied ? <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> : <Link2 className="w-3.5 h-3.5" />} Copy shareable link
+        </button>
         {verified === false && <span className="text-xs text-amber-500">Not detected yet. Publish the change, then open your site.</span>}
       </div>
       <p className="flex items-center gap-1.5 text-[11px] text-on-surface-variant/80 mt-1">

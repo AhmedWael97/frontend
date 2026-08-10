@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { Globe, ArrowRight, Copy, Check, Loader2, PartyPopper, Download, Mail, MessageCircle } from "lucide-react";
+import { Globe, ArrowRight, Copy, Check, Loader2, PartyPopper, Download, Mail, MessageCircle, Link2 } from "lucide-react";
 import { domainsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { eyeTrack } from "@/lib/track";
@@ -112,6 +112,7 @@ export default function ConnectWizardPage() {
   const [domain, setDomain] = useState<{ id: number; domain: string; script_token: string } | null>(null);
   const [tab, setTab] = useState("html");
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const [verified, setVerified] = useState(false);
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -185,6 +186,7 @@ export default function ConnectWizardPage() {
   const whatsappUrl = domain
     ? `https://wa.me/?text=${encodeURIComponent(c.waText(domain.domain, snippet))}`
     : "#";
+  const shareUrl = domain ? `${appUrl}/${locale}/install/${domain.script_token}` : "";
 
   return (
     <div className="w-full max-w-xl">
@@ -262,6 +264,12 @@ export default function ConnectWizardPage() {
             <a href={whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-emerald-500">
               <MessageCircle className="w-3.5 h-3.5" /> {c.whatsapp}
             </a>
+            <button
+              onClick={() => { navigator.clipboard.writeText(shareUrl); setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000); }}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-primary"
+            >
+              {linkCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Link2 className="w-3.5 h-3.5" />} {locale === "ar" ? "انسخ رابط المشاركة" : "Copy shareable link"}
+            </button>
           </div>
 
           <button
