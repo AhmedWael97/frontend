@@ -241,7 +241,7 @@ function Content() {
               ["Timezone", user?.timezone || "UTC"],
               ["Email Verified", user?.email_verified_at ? formatDate(user.email_verified_at) : "Not verified"],
               ["2FA", user?.totp_enabled ? "Enabled" : "Disabled"],
-              ["Last Login", user?.last_login_at ? formatDate(user.last_login_at) : "â€”"],
+              ["Last Login", user?.last_login_at ? formatDate(user.last_login_at) : "—"],
             ] as [string, string][]).map(([label, value]) => (
               <div key={label} className="flex justify-between py-2.5">
                 <span className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">{label}</span>
@@ -307,8 +307,8 @@ function Content() {
                   <Badge variant={statusVariant(sub.status) as any}>{sub.status}</Badge>
                 </div>
                 <div className="text-xs text-on-surface-variant space-y-1">
-                  <p>Start: {sub.current_period_start ? formatDate(sub.current_period_start) : "â€”"}</p>
-                  <p>Renewal: {sub.current_period_end ? formatDate(sub.current_period_end) : "â€”"}</p>
+                  <p>Start: {sub.current_period_start ? formatDate(sub.current_period_start) : "—"}</p>
+                  <p>Renewal: {sub.current_period_end ? formatDate(sub.current_period_end) : "—"}</p>
                   {sub.notes && <p className="italic">Note: {sub.notes}</p>}
                 </div>
                 <div className="flex flex-wrap gap-2 pt-1">
@@ -354,7 +354,7 @@ function Content() {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-on-surface-variant">Free tier â€” no active subscription.</p>
+              <p className="text-sm text-on-surface-variant">Free tier — no active subscription.</p>
             )}
           </CardContent>
         </Card>
@@ -435,7 +435,7 @@ function Content() {
             </FieldRow>
             {formError && <p className="text-xs text-error">{formError}</p>}
             <Button className="w-full" disabled={updateMut.isPending} onClick={() => updateMut.mutate()}>
-              {updateMut.isPending ? "Savingâ€¦" : "Save Changes"}
+              {updateMut.isPending ? "Saving…" : "Save Changes"}
             </Button>
           </div>
         </Modal>
@@ -451,18 +451,18 @@ function Content() {
                 onChange={(e) => setAssignPlanId(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl border border-outline-variant/30 bg-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
-                <option value="">Select a planâ€¦</option>
+                <option value="">Select a plan…</option>
                 {plans.map((p: any) => (
-                  <option key={p.id} value={p.id}>{p.name} â€” ${Number(p.price_monthly || 0).toFixed(2)}/mo</option>
+                  <option key={p.id} value={p.id}>{p.name} — ${Number(p.price_monthly || 0).toFixed(2)}/mo</option>
                 ))}
               </select>
             </FieldRow>
             <FieldRow label="Notes (optional)">
-              <Input placeholder="e.g. Promo, free trialâ€¦" value={assignNotes} onChange={(e) => setAssignNotes(e.target.value)} />
+              <Input placeholder="e.g. Promo, free trial…" value={assignNotes} onChange={(e) => setAssignNotes(e.target.value)} />
             </FieldRow>
             {formError && <p className="text-xs text-error">{formError}</p>}
             <Button className="w-full" disabled={!assignPlanId || assignSubMut.isPending} onClick={() => assignSubMut.mutate()}>
-              {assignSubMut.isPending ? "Assigningâ€¦" : "Assign Plan"}
+              {assignSubMut.isPending ? "Assigning…" : "Assign Plan"}
             </Button>
           </div>
         </Modal>
@@ -478,15 +478,15 @@ function Content() {
                 onChange={(e) => setChangePlanId(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl border border-outline-variant/30 bg-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
-                <option value="">Select a planâ€¦</option>
+                <option value="">Select a plan…</option>
                 {plans.map((p: any) => (
-                  <option key={p.id} value={p.id}>{p.name} â€” ${Number(p.price_monthly || 0).toFixed(2)}/mo</option>
+                  <option key={p.id} value={p.id}>{p.name} — ${Number(p.price_monthly || 0).toFixed(2)}/mo</option>
                 ))}
               </select>
             </FieldRow>
             {formError && <p className="text-xs text-error">{formError}</p>}
             <Button className="w-full" disabled={!changePlanId || changePlanMut.isPending} onClick={() => changePlanMut.mutate()}>
-              {changePlanMut.isPending ? "Savingâ€¦" : "Update Plan"}
+              {changePlanMut.isPending ? "Saving…" : "Update Plan"}
             </Button>
           </div>
         </Modal>
@@ -519,7 +519,7 @@ function Content() {
               disabled={!extendDays || Number(extendDays) < 1 || extendMut.isPending}
               onClick={() => extendMut.mutate()}
             >
-              {extendMut.isPending ? "Savingâ€¦" : `Extend by ${extendDays} days`}
+              {extendMut.isPending ? "Saving…" : `Extend by ${extendDays} days`}
             </Button>
           </div>
         </Modal>

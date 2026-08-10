@@ -64,7 +64,7 @@ function Content() {
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
         <Input
-          placeholder="Search by domain or owner emailâ€¦"
+          placeholder="Search by domain or owner email…"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           className="pl-9"
@@ -109,18 +109,18 @@ function Content() {
                           {d.user.name || d.user.email}
                           <p className="text-xs text-on-surface-variant font-normal">{d.user.email}</p>
                         </button>
-                      ) : "â€”"}
+                      ) : "—"}
                     </td>
                     <td className="px-4 py-3">
                       <Badge variant={d.active ? "success" : "secondary"}>{d.active ? "Active" : "Inactive"}</Badge>
                     </td>
                     <td className="px-4 py-3 text-on-surface-variant">
-                      {d.events_30d != null ? d.events_30d.toLocaleString() : "â€”"}
+                      {d.events_30d != null ? d.events_30d.toLocaleString() : "—"}
                     </td>
                     <td className="px-4 py-3 text-on-surface-variant text-xs">{formatDate(d.created_at)}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
-                        {/* View Analytics â€” impersonate the owner then go to dashboard */}
+                        {/* View Analytics — impersonate the owner then go to dashboard */}
                         {d.user && (
                           <button
                             title="View analytics as domain owner"

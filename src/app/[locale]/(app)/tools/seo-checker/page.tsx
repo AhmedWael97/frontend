@@ -379,7 +379,7 @@ export default function SeoCheckerPage() {
           </div>
           {mode === "crawl" && (
             <p className="text-xs text-on-surface-variant bg-surface-container rounded-lg px-3 py-2">
-              Crawls up to 20 internal pages starting from the URL you enter, following all public links. May take up to 2â€“3 minutes.
+              Crawls up to 20 internal pages starting from the URL you enter, following all public links. May take up to 2–3 minutes.
             </p>
           )}
           <div className="flex gap-3">
@@ -392,7 +392,7 @@ export default function SeoCheckerPage() {
             />
             <Button onClick={runCheck} disabled={!url.trim() || loading} className="gap-2 shrink-0">
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : mode === "crawl" ? <ScanSearch className="w-4 h-4" /> : <Search className="w-4 h-4" />}
-              {loading ? (mode === "crawl" ? "Crawlingâ€¦" : "Analysingâ€¦") : (mode === "crawl" ? "Crawl Site" : "Check SEO")}
+              {loading ? (mode === "crawl" ? "Crawling…" : "Analysing…") : (mode === "crawl" ? "Crawl Site" : "Check SEO")}
             </Button>
           </div>
           {error && <p className="mt-1 text-sm text-error">{error}</p>}
