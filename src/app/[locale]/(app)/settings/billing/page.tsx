@@ -26,7 +26,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-import { trackInitiateCheckout } from "@/lib/track";
+import { trackInitiateCheckout, trackPurchase } from "@/lib/track";
 import { useCurrency } from "@/lib/useCurrency";
 import { billingApi } from "@/lib/api";
 
@@ -311,7 +311,20 @@ function Content() {
       await loadPaddleJs();
       const Paddle = (window as any).Paddle;
       Paddle.Environment.set(environment === "production" ? "production" : "sandbox");
-      Paddle.Initialize({ token: client_token });
+      // The overlay checkout never leaves this page, so its own completion
+      // event *is* our order-confirmation moment — no redirect/return page
+      // needed (unlike Paymob, which opens in a new tab with no way back).
+      // Value comes from our own selectedPlan (already known, real), not
+      // parsed off Paddle's callback payload — one less thing that can drift.
+      Paddle.Initialize({
+        token: client_token,
+        eventCallback: (event: any) => {
+          if (event?.name !== "checkout.completed" || !selectedPlan) return;
+          const orderId = event?.data?.transaction_id || reference;
+          window.EYE?.purchase?.(Number(selectedPlan.price_monthly), "USD", orderId);
+          trackPurchase(Number(selectedPlan.price_monthly), orderId);
+        },
+      });
       Paddle.Checkout.open({
         items: [{ priceId: price_id, quantity: 1 }],
         customer: { email: customer_email },
