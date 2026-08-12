@@ -97,9 +97,11 @@ const EYE_TOKEN = process.env.NEXT_PUBLIC_EYE_TOKEN || "9d9c35ffcf7fa952ead43411
 // tracked, because they finished before the deferred loader even ran.
 const EYE_LOADER = `(function(){try{var h=location.hostname;if(h==='localhost'||h==='127.0.0.1'||h.endsWith('.local'))return;var o=location.origin;window.EYE_TOKEN=${JSON.stringify(EYE_TOKEN)};window.EYE_API=o+'/api/collect';window.EYE=window.EYE||{q:[]};['track','identify','purchase'].forEach(function(m){window.EYE[m]=window.EYE[m]||function(){window.EYE.q.push([m,arguments]);};});function go(){var e=document.createElement('script');e.src=o+'/tracker/eye.js';e.async=true;e.setAttribute('data-replay','true');document.head.appendChild(e);}if('requestIdleCallback' in window){requestIdleCallback(go,{timeout:3000});}else{window.addEventListener('load',go);}}catch(e){}})();`;
 
-// ── Google Ads (gtag.js) ─────────────────────────────────────────────────────
-// Global site tag for Google Ads conversion tracking. ID is env-overridable.
+// ── Google Ads + GA4 (gtag.js) ────────────────────────────────────────────────
+// One shared gtag.js loader, two properties configured on it: the Google Ads
+// conversion tag and the GA4 measurement tag. Both IDs are env-overridable.
 const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "AW-18376010770";
+const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID || "G-TJG3VC7GTT";
 // NOTE: gtag.js must load eagerly, not deferred to requestIdleCallback/on-load.
 // It was deferred for a perf pass (commit 3eb00be) — but the *only* thing that
 // flushes queued dataLayer events (incl. the signup "conversion" event) to
@@ -107,7 +109,7 @@ const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "AW-18376010770";
 // then closes the tab / backgrounds an ad-network in-app browser before the
 // idle callback fires never sends the beacon — conversions silently undercount.
 // The script tag itself is `async`, so it doesn't block first paint anyway.
-const GTAG_INIT = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',${JSON.stringify(GOOGLE_ADS_ID)});`;
+const GTAG_INIT = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',${JSON.stringify(GOOGLE_ADS_ID)});gtag('config',${JSON.stringify(GA4_ID)});`;
 
 // ── TikTok Pixel ─────────────────────────────────────────────────────────────
 // NOTE: was wrapped in an idle-defer helper — worse than the gtag bug above,
