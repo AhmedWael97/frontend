@@ -14,7 +14,7 @@ import { onboardingApi, type QuizDomain } from "@/api/onboarding";
 import { toolsApi } from "@/api/tools";
 import { useAuthStore } from "@/store/auth";
 import { localePath } from "@/lib/seo";
-import { trackSignup, eyeTrack } from "@/lib/track";
+import { trackSignup, trackDomainAdded, eyeTrack } from "@/lib/track";
 
 /** Minimal header: logo + Home on the start side, language + theme toggle on
  * the end side. No full nav — same reasoning as the see-why ad page, every
@@ -215,6 +215,9 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
         trackSignup(data.user?.id, email.trim());
       }
       eyeTrack("quiz_completed", { role, domains: domains.length, plan: data.plan?.slug });
+      // One domain_added per REAL domain the server actually created — not
+      // per domain the visitor typed, only the ones that survived validation.
+      (data.domains ?? []).forEach((d: { domain: string }) => trackDomainAdded(d.domain));
       setResult({ domains: data.domains, plan: data.plan, trial_ends_at: data.trial_ends_at });
       setStep(7);
     } catch (e: any) {

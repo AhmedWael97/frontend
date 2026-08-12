@@ -6,7 +6,7 @@ import { useLocale } from "next-intl";
 import { Globe, ArrowRight, Copy, Check, Loader2, PartyPopper, Download, Mail, MessageCircle, Link2 } from "lucide-react";
 import { domainsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
-import { eyeTrack } from "@/lib/track";
+import { eyeTrack, trackDomainAdded } from "@/lib/track";
 
 const COPY = {
   en: {
@@ -137,6 +137,7 @@ export default function ConnectWizardPage() {
       setDomain(created);
       setSelectedDomainId(created.id);
       eyeTrack("connect_wizard_domain_added", { domain: name });
+      trackDomainAdded(name); // Google Ads/GA4 domain_added — confirmed success only
       setStep(1);
     } catch (e: any) {
       const fieldErrors = e?.errors?.domain?.[0] || (e?.errors ? Object.values(e.errors).flat().join(" ") : null);

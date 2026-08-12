@@ -114,6 +114,16 @@ export function trackPurchase(value: number, orderId?: string | number): void {
   });
 }
 
+/**
+ * A domain was actually created (server confirmed it, not a button click or
+ * page load) — the real activation signal, per Google Ads' own guidance:
+ * fire on success only, so bidding optimizes toward people who finish
+ * setup, not everyone who glances at the form.
+ */
+export function trackDomainAdded(domain?: string): void {
+  gaEvent("domain_added", domain ? { domain } : {});
+}
+
 /** Viewed a plan / pricing — top of funnel. */
 export function trackViewPlans(): void {
   ttTrack("ViewContent", { content_type: "product", content_name: "plans" });

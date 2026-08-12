@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { domainsApi, billingApi } from "@/lib/api";
-import { eyeTrack } from "@/lib/track";
+import { eyeTrack, trackDomainAdded } from "@/lib/track";
 import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X, Loader2, Mail, CheckCircle2, PartyPopper, MessageCircle, ArrowRight, Download, Link2 } from "lucide-react";
 
 const INSTALL_PLATFORMS = [
@@ -223,6 +223,7 @@ function Content() {
     onSuccess: (_data, name) => {
       // Dogfooding: our own activation funnel. `first` marks the very first domain.
       eyeTrack("domain_store", { domain: name, first: (domains?.length ?? 0) === 0 });
+      trackDomainAdded(name); // Google Ads/GA4 domain_added — fires on confirmed success only
       queryClient.invalidateQueries({ queryKey: ["domains"] });
       setNewDomain("");
       setAdding(false);
