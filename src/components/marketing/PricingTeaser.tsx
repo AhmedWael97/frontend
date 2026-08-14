@@ -28,48 +28,44 @@ export default function PricingTeaser() {
   const priceOf = (slug: string, fallback: number) => dbPlans?.find((p) => p.slug === slug)?.price_monthly ?? fallback;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 max-w-5xl mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[#262626] max-w-5xl mx-auto border border-[#262626]">
       {PLANS.map((plan) => {
         const monthly = priceOf(plan.slug, plan.price_monthly);
         return (
           <div
             key={plan.slug}
-            className={
-              plan.popular
-                ? "relative rounded-2xl sm:rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-500 p-6 sm:p-7 shadow-xl shadow-indigo-500/25 flex flex-col"
-                : "relative rounded-2xl sm:rounded-3xl bg-surface-container/30 border border-outline-variant/15 p-6 sm:p-7 flex flex-col"
-            }
+            className={plan.popular ? "relative bg-[#0A0A0A] p-6 sm:p-7 flex flex-col" : "relative bg-black p-6 sm:p-7 flex flex-col"}
           >
             {plan.popular && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[11px] font-black tracking-wider uppercase bg-surface text-primary shadow-md">
+              <span className="absolute top-0 left-0 px-3 py-1 text-[10px] font-semibold tracking-wider uppercase bg-[#00E5FF] text-black" style={{ fontFamily: "var(--font-mono-marketing)" }}>
                 {t("pricing.mostPopular")}
               </span>
             )}
-            <h3 className={plan.popular ? "text-base font-bold text-white mb-1" : "text-base font-bold text-on-surface mb-1"}>
+            <h3 className={plan.popular ? "text-base font-semibold text-white mb-1 mt-4" : "text-base font-semibold text-white mb-1"}>
               {t(plan.nameKey as any)}
             </h3>
-            <p className={plan.popular ? "text-xs text-white/80 mb-5 leading-relaxed" : "text-xs text-on-surface-variant mb-5 leading-relaxed"}>
+            <p className="text-xs text-neutral-500 mb-5 leading-relaxed">
               {t(plan.descKey as any)}
             </p>
             <div className="mb-6">
-              <span className={plan.popular ? "text-3xl font-black text-white" : "text-3xl font-black text-on-surface"}>
+              <span className="text-3xl font-semibold text-white" style={{ fontFamily: "var(--font-mono-marketing)" }}>
                 {monthly === 0 ? (locale === "ar" ? "مجانًا" : "Free") : format(monthly)}
               </span>
               {monthly > 0 && (
-                <span className={plan.popular ? "text-xs text-white/70" : "text-xs text-on-surface-variant"}>{t("pricing.perMonth")}</span>
+                <span className="text-xs text-neutral-500">{t("pricing.perMonth")}</span>
               )}
             </div>
             <ul className="space-y-2.5 mb-7 flex-1">
               {plan.featureKeys.map((fk) => (
                 <li key={fk} className="flex items-start gap-2">
-                  <Check className={plan.popular ? "w-4 h-4 text-white/90 shrink-0 mt-0.5" : "w-4 h-4 text-emerald-500 shrink-0 mt-0.5"} />
-                  <span className={plan.popular ? "text-xs text-white/90" : "text-xs text-on-surface-variant"}>{t(fk as any)}</span>
+                  <Check className={plan.popular ? "w-4 h-4 text-[#00E5FF] shrink-0 mt-0.5" : "w-4 h-4 text-neutral-600 shrink-0 mt-0.5"} />
+                  <span className="text-xs text-neutral-400">{t(fk as any)}</span>
                 </li>
               ))}
             </ul>
             <Link href={`/${locale}/auth/register`}>
               <Button
-                className={plan.popular ? "w-full bg-white text-indigo-600 hover:bg-white/90" : "w-full"}
+                className={plan.popular ? "w-full rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none" : "w-full rounded-none border-[#262626] text-white hover:bg-[#171717]"}
                 variant={plan.popular ? undefined : "outline"}
               >
                 {t("pricing.startPlan", { plan: t(plan.nameKey as any) })}

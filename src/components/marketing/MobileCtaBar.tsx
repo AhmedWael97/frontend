@@ -30,9 +30,9 @@ export default function MobileCtaBar() {
       }`}
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >
-      <div className="rounded-2xl bg-surface/90 backdrop-blur-xl border border-outline-variant/20 shadow-lg shadow-black/20 p-2">
+      <div className="rounded-none bg-black border border-[#262626] p-2">
         <Link href={`/${locale}/auth/register`}>
-          <span className="flex items-center justify-center gap-2 w-full h-12 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-semibold text-base">
+          <span className="flex items-center justify-center gap-2 w-full h-12 rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black font-semibold text-base">
             {t("nav.startFree")} — {t("hero.trustFree")}
             <ArrowRight className="w-4 h-4" />
           </span>

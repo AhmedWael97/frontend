@@ -45,27 +45,27 @@ export default function Footer({ locale }: FooterProps) {
   };
 
   return (
-    <footer className="border-t border-outline-variant/20 bg-surface-container/30">
+    <footer className="border-t border-[#262626] bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           {/* Brand */}
           <div className="col-span-2">
-            <Link href={`/${locale}`} className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center">
-                <Eye className="w-4 h-4 text-white" />
+            <Link href={`/${locale}`} className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-none border border-[#262626] bg-[#0A0A0A] flex items-center justify-center">
+                <Eye className="w-4 h-4 text-[#00E5FF]" />
               </div>
-              <span className="text-lg font-black tracking-tight text-on-surface">
-                EYE<span className="text-indigo-500 dark:text-indigo-400">.</span>
+              <span className="text-lg font-bold tracking-tight text-white">
+                EYE<span className="text-[#00E5FF]">.</span>
               </span>
             </Link>
-            <p className="text-sm text-on-surface-variant leading-relaxed max-w-xs">
+            <p className="text-sm text-neutral-500 leading-relaxed max-w-xs">
               {t("tagline")}
             </p>
             <div className="flex items-center gap-3 mt-6">
               {([
                 { Icon: Instagram, label: "Instagram", href: "https://instagram.com/eye_analysis" },
               ] as const).map(({ Icon, label, href }) => (
-                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={`EYE on ${label}`} title={label} className="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
+                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={`EYE on ${label}`} title={label} className="w-9 h-9 rounded-none border border-[#262626] flex items-center justify-center text-neutral-500 hover:text-[#00E5FF] hover:border-[#00E5FF] transition-colors">
                   <Icon className="w-4 h-4" aria-hidden="true" />
                 </a>
               ))}
@@ -75,16 +75,16 @@ export default function Footer({ locale }: FooterProps) {
           {/* Link columns */}
           {Object.entries(FOOTER_LINKS).map(([section, links]) => (
             <div key={section}>
-              <h3 className="text-xs font-black uppercase tracking-widest text-on-surface mb-4">{section}</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-widest text-neutral-600 mb-4" style={{ fontFamily: "var(--font-mono-marketing)" }}>{section}</h3>
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link.label}>
                     {link.href.startsWith("#") ? (
-                      <a href={link.href} className="text-sm text-on-surface-variant hover:text-on-surface transition-colors">
+                      <a href={link.href} className="text-sm text-neutral-400 hover:text-white transition-colors">
                         {link.label}
                       </a>
                     ) : (
-                      <Link href={`/${locale}${link.href}`} className="text-sm text-on-surface-variant hover:text-on-surface transition-colors">
+                      <Link href={`/${locale}${link.href}`} className="text-sm text-neutral-400 hover:text-white transition-colors">
                         {link.label}
                       </Link>
                     )}
@@ -96,11 +96,11 @@ export default function Footer({ locale }: FooterProps) {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-8 border-t border-outline-variant/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-on-surface-variant">
+        <div className="mt-12 pt-8 border-t border-[#262626] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-neutral-600" style={{ fontFamily: "var(--font-mono-marketing)" }}>
             © {CURRENT_YEAR} {t("copyright")}
           </p>
-          <p className="text-xs text-on-surface-variant">
+          <p className="text-xs text-neutral-600" style={{ fontFamily: "var(--font-mono-marketing)" }}>
             {t("privacyFirst")}
           </p>
         </div>

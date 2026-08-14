@@ -47,11 +47,11 @@ export default function LiveStatsStrip() {
   ];
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 py-8 text-center">
+    <div className="flex flex-wrap items-center justify-center gap-x-0 divide-x divide-[#262626] border-y border-[#262626] py-8 text-center">
       {items.map((it) => (
-        <div key={it.label}>
-          <p className="text-2xl sm:text-3xl font-black text-on-surface">{it.value}</p>
-          <p className="text-xs text-on-surface-variant">{it.label}</p>
+        <div key={it.label} className="px-8">
+          <p className="text-2xl sm:text-3xl font-semibold text-[#00E5FF]" style={{ fontFamily: "var(--font-mono-marketing)" }}>{it.value}</p>
+          <p className="text-xs text-neutral-500 mt-1">{it.label}</p>
         </div>
       ))}
     </div>
