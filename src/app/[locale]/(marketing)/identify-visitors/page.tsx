@@ -110,47 +110,48 @@ export default function IdentifyVisitorsLanding({ params }: Props) {
   const t = C[ar ? "ar" : "en"];
   const reg = `/${params.locale}/auth/register`;
   const faqLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: t.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) };
+  const mono = { fontFamily: "var(--font-mono-marketing)" };
   const CTA = ({ label }: { label: string }) => (
-    <Link href={reg} className="inline-flex items-center justify-center rounded-xl bg-amber-500 hover:bg-amber-400 text-white shadow-lg shadow-amber-500/30 px-7 py-3.5 text-base font-bold transition-colors">{label}</Link>
+    <Link href={reg} className="inline-flex items-center justify-center rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none px-7 py-3.5 text-base font-bold transition-colors">{label}</Link>
   );
   const Badge = ({ label }: { label: string }) => (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-6">
+    <span className="inline-flex items-center gap-1.5 rounded-none border border-green-500/30 bg-green-500/10 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-green-400 mb-6" style={mono}>
       <ShieldCheck className="w-3.5 h-3.5" /> {label}
     </span>
   );
 
   return (
-    <div dir={t.dir} className="min-h-screen bg-background text-on-surface">
+    <div dir={t.dir} className="min-h-screen bg-black">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
       <Navbar />
 
       <main className="overflow-hidden">
-        <section className="relative isolate overflow-hidden text-center pt-28 sm:pt-36 pb-16 sm:pb-24 bg-surface">
+        <section className="relative isolate overflow-hidden text-center pt-16 sm:pt-20 pb-16 sm:pb-24 bg-black">
           <GradientBlobs />
-          <div className="relative max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="relative max-w-5xl mx-auto px-5 sm:px-6 lg:px-8 pt-8">
             {/* Above-the-fold hero: renders at full opacity immediately, no
                 scroll-triggered Reveal — whileInView wasn't reliably firing
                 for content already in the viewport on cold load, leaving a
                 washed-out ~30%-opacity hero until the visitor scrolled. */}
             <Badge label={t.badge} />
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] mb-5">{t.heroH}</h1>
-            <p className="text-lg sm:text-xl text-on-surface-variant max-w-2xl mx-auto mb-8">{t.heroSub}</p>
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-5 text-white">{t.heroH}</h1>
+            <p className="text-lg sm:text-xl text-neutral-400 max-w-2xl mx-auto mb-8">{t.heroSub}</p>
             <CTA label={t.cta} />
 
             <div className="mt-14 sm:mt-16 max-w-2xl mx-auto">
               <BrowserFrame url="dashboard.eye-analysis.online/leads">
-                <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">{t.previewH}</p>
-                <div className="rounded-xl border border-outline-variant/15 overflow-hidden">
+                <p className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-3" style={mono}>{t.previewH}</p>
+                <div className="border border-[#262626] overflow-hidden">
                   {t.previewRows.map(([name, pages, visits], i) => (
-                    <div key={name} className={`flex items-center justify-between gap-3 px-4 py-3 ${i !== t.previewRows.length - 1 ? "border-b border-outline-variant/10" : ""}`}>
+                    <div key={name} className={`flex items-center justify-between gap-3 px-4 py-3 ${i !== t.previewRows.length - 1 ? "border-b border-[#262626]" : ""}`}>
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="w-8 h-8 rounded-lg bg-amber-500/12 flex items-center justify-center shrink-0"><Building2 className="w-4 h-4 text-amber-500 dark:text-amber-400" /></span>
+                        <span className="w-8 h-8 rounded-none bg-[#171717] border border-[#262626] flex items-center justify-center shrink-0"><Building2 className="w-4 h-4 text-[#00E5FF]" /></span>
                         <div className="min-w-0 text-left rtl:text-right">
-                          <p className="text-sm font-bold text-on-surface truncate">{name}</p>
-                          <p className="text-[11px] text-on-surface-variant truncate">{pages}</p>
+                          <p className="text-sm font-bold text-white truncate">{name}</p>
+                          <p className="text-[11px] text-neutral-500 truncate">{pages}</p>
                         </div>
                       </div>
-                      <span className="text-xs font-bold text-amber-500 dark:text-amber-400 shrink-0">{visits}</span>
+                      <span className="text-xs font-bold text-[#00E5FF] shrink-0" style={mono}>{visits}</span>
                     </div>
                   ))}
                 </div>
@@ -159,74 +160,74 @@ export default function IdentifyVisitorsLanding({ params }: Props) {
           </div>
         </section>
 
-        <section className="py-16 sm:py-20 bg-surface-container/15">
+        <section className="py-16 sm:py-20 bg-[#0A0A0A] border-y border-[#262626]">
           <Reveal className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
-            <h2 className="text-2xl sm:text-3xl font-black mb-4">{t.probH}</h2>
-            <p className="text-lg text-on-surface-variant max-w-3xl">{t.probP}</p>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-white">{t.probH}</h2>
+            <p className="text-lg text-neutral-400 max-w-3xl">{t.probP}</p>
           </Reveal>
         </section>
 
-        <section className="py-16 sm:py-20 bg-surface">
-          <RevealGroup className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <section className="py-16 sm:py-20 bg-black">
+          <RevealGroup className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-px bg-[#262626] border border-[#262626]">
             {t.benefits.map((b) => (
-              <RevealItem key={b.h} className="rounded-2xl border border-outline-variant/15 p-6 hover:border-amber-500/30 hover:-translate-y-1 transition-all duration-300 bg-surface-container/20">
-                <span className="w-11 h-11 rounded-xl bg-amber-500/12 flex items-center justify-center mb-4"><b.icon className="w-5 h-5 text-amber-500 dark:text-amber-400" /></span>
-                <h3 className="font-black text-lg mb-2">{b.h}</h3>
-                <p className="text-sm text-on-surface-variant leading-relaxed">{b.p}</p>
+              <RevealItem key={b.h} className="bg-black p-6 hover:bg-[#0A0A0A] transition-colors">
+                <span className="w-11 h-11 rounded-none border border-[#262626] bg-[#171717] flex items-center justify-center mb-4"><b.icon className="w-5 h-5 text-[#00E5FF]" /></span>
+                <h3 className="font-bold text-lg mb-2 text-white">{b.h}</h3>
+                <p className="text-sm text-neutral-400 leading-relaxed">{b.p}</p>
               </RevealItem>
             ))}
           </RevealGroup>
         </section>
 
-        <section className="py-16 sm:py-20 bg-surface-container/15">
+        <section className="py-16 sm:py-20 bg-[#0A0A0A] border-y border-[#262626]">
           <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
-            <Reveal><h2 className="text-2xl sm:text-3xl font-black mb-6">{t.stepsH}</h2></Reveal>
-            <RevealGroup className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Reveal><h2 className="text-2xl sm:text-3xl font-bold mb-6 text-white">{t.stepsH}</h2></Reveal>
+            <RevealGroup className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[#262626] border border-[#262626]">
               {t.steps.map(([h, p], i) => (
-                <RevealItem key={h} className="rounded-xl border border-outline-variant/15 p-5 hover:border-amber-500/30 hover:-translate-y-1 transition-all duration-300 bg-surface">
-                  <span className="inline-flex w-7 h-7 rounded-full bg-amber-500/12 text-amber-500 dark:text-amber-400 text-sm font-black items-center justify-center mb-2">{i + 1}</span>
-                  <p className="font-bold text-on-surface mb-1">{h}</p>
-                  <p className="text-sm text-on-surface-variant">{p}</p>
+                <RevealItem key={h} className="bg-black p-5 hover:bg-[#171717] transition-colors">
+                  <span className="inline-flex w-7 h-7 border border-[#00E5FF]/30 bg-[#00E5FF]/10 text-[#00E5FF] text-sm font-bold items-center justify-center mb-2" style={mono}>{i + 1}</span>
+                  <p className="font-bold text-white mb-1">{h}</p>
+                  <p className="text-sm text-neutral-400">{p}</p>
                 </RevealItem>
               ))}
             </RevealGroup>
           </div>
         </section>
 
-        <section className="py-16 sm:py-20 bg-surface">
-          <Reveal className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6">
-            <h2 className="text-xl sm:text-2xl font-black mb-2 flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-emerald-500" />{t.privH}</h2>
-            <p className="text-on-surface-variant max-w-3xl">{t.privP}</p>
+        <section className="py-16 sm:py-20 bg-black">
+          <Reveal className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 border border-green-500/25 bg-green-500/5 p-6">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2 text-white"><ShieldCheck className="w-5 h-5 text-green-400" />{t.privH}</h2>
+            <p className="text-neutral-400 max-w-3xl">{t.privP}</p>
           </Reveal>
         </section>
 
-        <section className="py-16 sm:py-20 bg-surface-container/15">
+        <section className="py-16 sm:py-20 bg-[#0A0A0A] border-y border-[#262626]">
           <Reveal className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
-            <h2 className="text-2xl sm:text-3xl font-black mb-3">{t.cmpH}</h2>
-            <p className="text-lg text-on-surface-variant max-w-3xl">{t.cmpP}</p>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-white">{t.cmpH}</h2>
+            <p className="text-lg text-neutral-400 max-w-3xl">{t.cmpP}</p>
           </Reveal>
         </section>
 
-        <section className="py-16 sm:py-20 bg-surface">
+        <section className="py-16 sm:py-20 bg-black">
           <div className="max-w-3xl mx-auto px-5 sm:px-6 lg:px-8">
-            <Reveal><h2 className="text-2xl sm:text-3xl font-black mb-6">{t.faqH}</h2></Reveal>
-            <RevealGroup className="space-y-4">
+            <Reveal><h2 className="text-2xl sm:text-3xl font-bold mb-6 text-white">{t.faqH}</h2></Reveal>
+            <RevealGroup className="border border-[#262626] bg-[#0A0A0A]">
               {t.faq.map(([q, a]) => (
-                <RevealItem key={q} className="rounded-xl border border-outline-variant/15 p-5">
-                  <p className="font-bold text-on-surface mb-1">{q}</p>
-                  <p className="text-on-surface-variant">{a}</p>
+                <RevealItem key={q} className="p-5 border-b border-[#262626] last:border-b-0">
+                  <p className="font-bold text-white mb-1">{q}</p>
+                  <p className="text-neutral-400">{a}</p>
                 </RevealItem>
               ))}
             </RevealGroup>
           </div>
         </section>
 
-        <section className="relative isolate overflow-hidden py-20 sm:py-24 text-center bg-surface-container/15">
+        <section className="relative isolate overflow-hidden py-20 sm:py-24 text-center bg-[#0A0A0A] border-t border-[#262626]">
           <GradientBlobs variant="compact" />
           <div className="relative max-w-2xl mx-auto px-5 sm:px-6 lg:px-8">
-            <Reveal><h2 className="text-3xl sm:text-5xl font-black mb-6 leading-[1.08]">{t.finalH}</h2></Reveal>
+            <Reveal><h2 className="text-3xl sm:text-5xl font-bold mb-6 leading-[1.08] text-white">{t.finalH}</h2></Reveal>
             <Reveal delay={0.1}><CTA label={t.ctaFinal} /></Reveal>
-            <Reveal delay={0.18}><p className="text-sm text-on-surface-variant/80 mt-4">{t.finalNote}</p></Reveal>
+            <Reveal delay={0.18}><p className="text-sm text-neutral-500 mt-4">{t.finalNote}</p></Reveal>
           </div>
         </section>
       </main>
