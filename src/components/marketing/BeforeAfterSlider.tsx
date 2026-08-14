@@ -37,7 +37,7 @@ export default function BeforeAfterSlider() {
       </div>
 
       <div className="relative w-full aspect-[1920/806]">
-        <Image src="/hp.PNG" alt="EYE dashboard heatmap surface" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover object-top" priority={false} />
+        <Image src="/hp.PNG" alt="EYE dashboard heatmap surface" fill unoptimized className="object-cover object-top" priority={false} />
         <div className="absolute inset-0 bg-black/35" />
 
         {/* BEFORE layer — clustered near the edge (raw viewport-pixel bug) */}
