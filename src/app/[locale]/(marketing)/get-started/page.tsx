@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import {
-  ArrowRight, ArrowLeft, Check, X, Loader2, User, Megaphone, Globe,
+  ArrowRight, ArrowLeft, Check, X, Loader2, Megaphone, Globe,
   ScanSearch, Gauge, Layers, PartyPopper, Sparkles, Eye, Sun, Moon, Languages,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ import { toolsApi } from "@/api/tools";
 import { useAuthStore } from "@/store/auth";
 import { localePath } from "@/lib/seo";
 import { trackSignup, trackDomainAdded, eyeTrack } from "@/lib/track";
+
+const mono = { fontFamily: "var(--font-mono-marketing)" };
 
 /** Minimal header: logo + Home on the start side, language + theme toggle on
  * the end side. No full nav — same reasoning as the see-why ad page, every
@@ -38,24 +40,24 @@ function MinimalHeader({ locale }: { locale: string }) {
   const switchLocale = () => router.push(`/${ar ? "en" : "ar"}/get-started`);
 
   return (
-    <header className="py-4 border-b border-outline-variant/10">
+    <header className="py-4 border-b border-[#262626]">
       <div className="max-w-2xl mx-auto px-5 sm:px-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href={localePath(locale)} className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <Eye className="w-4 h-4 text-white" />
+            <span className="w-8 h-8 rounded-none border border-[#262626] bg-[#0A0A0A] flex items-center justify-center">
+              <Eye className="w-4 h-4 text-[#00E5FF]" />
             </span>
-            <span className="text-lg font-black tracking-tight text-on-surface">EYE<span className="text-indigo-500 dark:text-indigo-400">.</span></span>
+            <span className="text-lg font-bold tracking-tight text-white">EYE<span className="text-[#00E5FF]">.</span></span>
           </Link>
-          <Link href={localePath(locale)} className="text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
+          <Link href={localePath(locale)} className="text-sm font-semibold text-neutral-400 hover:text-white transition-colors">
             {ar ? "الرئيسية" : "Home"}
           </Link>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={switchLocale} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+          <button onClick={switchLocale} className="inline-flex items-center gap-1.5 rounded-none px-2.5 py-2 text-xs font-bold text-neutral-400 hover:bg-[#171717] hover:text-white transition-colors">
             <Languages className="w-4 h-4" /> {ar ? "EN" : "عربي"}
           </button>
-          <button onClick={toggleTheme} aria-label="Toggle theme" className="rounded-lg p-2 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+          <button onClick={toggleTheme} aria-label="Toggle theme" className="rounded-none p-2 text-neutral-400 hover:bg-[#171717] hover:text-white transition-colors">
             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
         </div>
@@ -236,29 +238,33 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
   };
 
   const progress = Math.round(((step > TOTAL_STEPS ? TOTAL_STEPS : step) / TOTAL_STEPS) * 100);
+  const optionCls = (active: boolean) =>
+    active
+      ? "border-[#00E5FF] bg-[#00E5FF]/10"
+      : "border-[#262626] hover:border-neutral-600";
 
   return (
-    <div dir={ar ? "rtl" : "ltr"} className="min-h-screen bg-background text-on-surface flex flex-col">
+    <div dir={ar ? "rtl" : "ltr"} className="min-h-screen bg-black flex flex-col">
       <MinimalHeader locale={locale} />
-      <main className="flex-1 bg-surface">
+      <main className="flex-1">
         <section className="py-10 sm:py-16">
           <div className="max-w-2xl mx-auto px-5 sm:px-6">
             {step <= TOTAL_STEPS && (
               <div className="mb-8">
-                <div className="flex items-center justify-between text-xs text-on-surface-variant mb-2">
+                <div className="flex items-center justify-between text-xs text-neutral-500 mb-2" style={mono}>
                   <span>{t("Get started", "ابدأ الآن")}</span>
                   <span>{step}/{TOTAL_STEPS}</span>
                 </div>
-                <div className="h-1.5 rounded-full bg-surface-container-high overflow-hidden">
-                  <div className="h-full bg-indigo-500 transition-all duration-300" style={{ width: `${progress}%` }} />
+                <div className="h-1.5 bg-[#171717] overflow-hidden">
+                  <div className="h-full bg-[#00E5FF] transition-all duration-300" style={{ width: `${progress}%` }} />
                 </div>
               </div>
             )}
 
-            <div className="rounded-2xl border border-outline-variant/15 bg-surface-container/20 p-6 sm:p-9">
+            <div className="border border-[#262626] bg-[#0A0A0A] p-6 sm:p-9">
               {step === 1 && (
                 <div>
-                  <h1 className="text-2xl font-black mb-6">{t("Who are you?", "من أنت؟")}</h1>
+                  <h1 className="text-2xl font-bold text-white mb-6">{t("Who are you?", "من أنت؟")}</h1>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
                       { key: "site_owner" as const, icon: Globe, label: t("Site Owner", "صاحب موقع") },
@@ -267,10 +273,10 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
                       <button
                         key={o.key}
                         onClick={() => setRole(o.key)}
-                        className={`rounded-2xl border-2 p-6 text-center transition-all ${role === o.key ? "border-indigo-500 bg-indigo-500/10" : "border-outline-variant/20 hover:border-indigo-500/40"}`}
+                        className={`rounded-none border-2 p-6 text-center transition-all ${optionCls(role === o.key)}`}
                       >
-                        <o.icon className="w-8 h-8 mx-auto mb-3 text-indigo-500 dark:text-indigo-400" />
-                        <p className="font-bold">{o.label}</p>
+                        <o.icon className="w-8 h-8 mx-auto mb-3 text-[#00E5FF]" />
+                        <p className="font-bold text-white">{o.label}</p>
                       </button>
                     ))}
                   </div>
@@ -279,27 +285,27 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
 
               {step === 2 && (
                 <div>
-                  <h1 className="text-2xl font-black mb-6">{t("How many sites do you manage?", "كم عدد المواقع التي تديرها؟")}</h1>
+                  <h1 className="text-2xl font-bold text-white mb-6">{t("How many sites do you manage?", "كم عدد المواقع التي تديرها؟")}</h1>
                   <Input
                     type="number"
                     min={0}
                     value={sitesManaged}
                     onChange={(e) => setSitesManaged(e.target.value)}
                     placeholder="1"
-                    className="h-14 text-2xl text-center font-black max-w-[160px] mx-auto"
+                    className="h-14 text-2xl text-center font-bold max-w-[160px] mx-auto rounded-none bg-black border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50"
                   />
                 </div>
               )}
 
               {step === 3 && (
                 <div>
-                  <h1 className="text-2xl font-black mb-6">{t("What are your sites mostly built with?", "بماذا مبنية مواقعك غالباً؟")}</h1>
+                  <h1 className="text-2xl font-bold text-white mb-6">{t("What are your sites mostly built with?", "بماذا مبنية مواقعك غالباً؟")}</h1>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {LANGUAGES.map((lang) => (
                       <button
                         key={lang}
                         onClick={() => toggle(languages, setLanguages, lang)}
-                        className={`rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all ${languages.includes(lang) ? "border-indigo-500 bg-indigo-500/10" : "border-outline-variant/20 hover:border-indigo-500/40"}`}
+                        className={`rounded-none border-2 px-4 py-3 text-sm font-semibold text-white transition-all ${optionCls(languages.includes(lang))}`}
                       >
                         {lang}
                       </button>
@@ -310,8 +316,8 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
 
               {step === 4 && (
                 <div>
-                  <h1 className="text-2xl font-black mb-2">{t("Enter your domain(s)", "أدخل موقعك أو مواقعك")}</h1>
-                  <p className="text-sm text-on-surface-variant mb-5">{t("Add up to 5, then test them — SEO, speed, and sitemap, in one shot.", "أضف حتى 5 مواقع، ثم افحصها — سيو، سرعة، وخريطة الموقع دفعة واحدة.")}</p>
+                  <h1 className="text-2xl font-bold text-white mb-2">{t("Enter your domain(s)", "أدخل موقعك أو مواقعك")}</h1>
+                  <p className="text-sm text-neutral-400 mb-5">{t("Add up to 5, then test them — SEO, speed, and sitemap, in one shot.", "أضف حتى 5 مواقع، ثم افحصها — سيو، سرعة، وخريطة الموقع دفعة واحدة.")}</p>
 
                   <div className="flex gap-2 mb-4">
                     <Input
@@ -319,35 +325,35 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
                       onChange={(e) => setDomainInput(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addDomain(); } }}
                       placeholder="yoursite.com"
-                      className="h-12 flex-1"
+                      className="h-12 flex-1 rounded-none bg-black border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50"
                     />
-                    <Button type="button" onClick={addDomain} disabled={domains.length >= 5} className="h-12 px-5">{t("Add", "إضافة")}</Button>
+                    <Button type="button" onClick={addDomain} disabled={domains.length >= 5} className="h-12 px-5 rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none">{t("Add", "إضافة")}</Button>
                   </div>
 
                   {domains.length > 0 && (
                     <div className="space-y-3 mb-5">
                       {domains.map((d) => (
-                        <div key={d.domain} className="rounded-xl border border-outline-variant/15 px-4 py-3">
+                        <div key={d.domain} className="border border-[#262626] px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <span className="font-mono text-sm flex-1 truncate">{d.domain}</span>
-                            {d.testing && <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />}
-                            <button onClick={() => removeDomain(d.domain)} aria-label="remove"><X className="w-4 h-4 text-on-surface-variant/60 hover:text-error" /></button>
+                            <span className="text-sm flex-1 truncate text-white" style={mono}>{d.domain}</span>
+                            {d.testing && <Loader2 className="w-4 h-4 animate-spin text-[#00E5FF]" />}
+                            <button onClick={() => removeDomain(d.domain)} aria-label="remove"><X className="w-4 h-4 text-neutral-500 hover:text-red-400" /></button>
                           </div>
-                          {d.testError && <p className="text-xs text-error mt-2">{d.testError}</p>}
+                          {d.testError && <p className="text-xs text-red-400 mt-2">{d.testError}</p>}
                           {!d.testing && (d.seo_score != null || d.speed_score != null || d.pages_found != null) && (
                             <div className="flex flex-wrap items-center gap-2 mt-2.5">
                               {d.seo_score != null && (
-                                <span className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500/10 px-2.5 py-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                                <span className="inline-flex items-center gap-1.5 rounded-none border border-[#00E5FF]/25 bg-[#00E5FF]/10 px-2.5 py-1.5 text-xs font-bold text-[#00E5FF]" style={mono}>
                                   <ScanSearch className="w-3.5 h-3.5" /> {t("SEO score", "درجة السيو")}: {d.seo_score}/100
                                 </span>
                               )}
                               {d.speed_score != null && (
-                                <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                <span className="inline-flex items-center gap-1.5 rounded-none border border-green-500/25 bg-green-500/10 px-2.5 py-1.5 text-xs font-bold text-green-400" style={mono}>
                                   <Gauge className="w-3.5 h-3.5" /> {t("Speed score", "درجة السرعة")}: {d.speed_score}/100
                                 </span>
                               )}
                               {d.pages_found != null && (
-                                <span className="inline-flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-2.5 py-1.5 text-xs font-bold text-violet-600 dark:text-violet-400">
+                                <span className="inline-flex items-center gap-1.5 rounded-none border border-[#262626] bg-[#171717] px-2.5 py-1.5 text-xs font-bold text-neutral-300" style={mono}>
                                   <Layers className="w-3.5 h-3.5" /> {t("Pages found", "عدد الصفحات")}: {d.pages_found}
                                 </span>
                               )}
@@ -355,7 +361,7 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
                           )}
                         </div>
                       ))}
-                      <Button type="button" variant="outline" onClick={runTests} className="w-full h-11 gap-2">
+                      <Button type="button" variant="outline" onClick={runTests} className="w-full h-11 gap-2 rounded-none border-[#262626] text-white hover:bg-[#171717]">
                         <ScanSearch className="w-4 h-4" /> {t("Test my site(s)", "افحص موقعي/مواقعي")}
                       </Button>
                     </div>
@@ -365,17 +371,17 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
 
               {step === 5 && (
                 <div>
-                  <h1 className="text-2xl font-black mb-2">{t("Which features interest you most?", "ما الميزات التي تهمك أكثر؟")}</h1>
-                  <p className="text-sm text-on-surface-variant mb-5">{t("Pick as many as you like.", "اختر ما تريد، بلا حد.")}</p>
+                  <h1 className="text-2xl font-bold text-white mb-2">{t("Which features interest you most?", "ما الميزات التي تهمك أكثر؟")}</h1>
+                  <p className="text-sm text-neutral-400 mb-5">{t("Pick as many as you like.", "اختر ما تريد، بلا حد.")}</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {FEATURES.map((f) => (
                       <button
                         key={f}
                         onClick={() => toggle(features, setFeatures, f)}
-                        className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-sm font-semibold text-start transition-all ${features.includes(f) ? "border-indigo-500 bg-indigo-500/10" : "border-outline-variant/20 hover:border-indigo-500/40"}`}
+                        className={`flex items-center gap-2.5 rounded-none border-2 px-4 py-3 text-sm font-semibold text-white text-start transition-all ${optionCls(features.includes(f))}`}
                       >
-                        <span className={`w-4 h-4 rounded shrink-0 border-2 flex items-center justify-center ${features.includes(f) ? "border-indigo-500 bg-indigo-500" : "border-outline-variant/40"}`}>
-                          {features.includes(f) && <Check className="w-3 h-3 text-white" />}
+                        <span className={`w-4 h-4 shrink-0 border-2 flex items-center justify-center ${features.includes(f) ? "border-[#00E5FF] bg-[#00E5FF]" : "border-[#262626]"}`}>
+                          {features.includes(f) && <Check className="w-3 h-3 text-black" />}
                         </span>
                         {f}
                       </button>
@@ -386,38 +392,38 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
 
               {step === 6 && (
                 <div>
-                  <h1 className="text-2xl font-black mb-2">{t("Last step — create your account", "الخطوة الأخيرة — أنشئ حسابك")}</h1>
-                  <p className="text-sm text-on-surface-variant mb-5">{t("This is a real account — you'll use it to log in.", "هذا حساب حقيقي — ستستخدمه لتسجيل الدخول.")}</p>
+                  <h1 className="text-2xl font-bold text-white mb-2">{t("Last step — create your account", "الخطوة الأخيرة — أنشئ حسابك")}</h1>
+                  <p className="text-sm text-neutral-400 mb-5">{t("This is a real account — you'll use it to log in.", "هذا حساب حقيقي — ستستخدمه لتسجيل الدخول.")}</p>
 
-                  {submitError && <div className="rounded-lg bg-error-container/30 border border-error/20 px-4 py-3 text-sm text-error mb-4">{submitError}</div>}
+                  {submitError && <div className="rounded-none bg-red-500/10 border border-red-500/25 px-4 py-3 text-sm text-red-400 mb-4">{submitError}</div>}
 
                   <a
                     href="#"
                     onClick={(e) => { e.preventDefault(); continueWithGoogle(); }}
-                    className="inline-flex w-full items-center justify-center gap-2.5 rounded-xl border-2 border-primary/30 bg-surface h-12 text-base font-bold text-on-surface shadow-md transition hover:bg-surface-container hover:border-primary/50 mb-4"
+                    className="inline-flex w-full items-center justify-center gap-2.5 rounded-none border border-[#262626] bg-black h-12 text-base font-bold text-white transition hover:bg-[#171717] hover:border-neutral-600 mb-4"
                   >
                     <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M21.35 11.1H12v2.8h5.35c-.2 1.35-1.4 3.95-5.35 3.95-3.2 0-5.8-2.65-5.8-5.9s2.6-5.9 5.8-5.9c1.85 0 3.1.8 3.8 1.5l2.55-2.45C17.3 3.1 15.05 2 12 2 6.48 2 2 6.48 2 12s4.48 10 10 10c5.8 0 9.7-4.05 9.7-9.75 0-.65-.05-1.15-.35-1.45Z" fill="#4285F4"/>
                     </svg>
                     {t("Continue with Google", "المتابعة بحساب Google")}
                   </a>
-                  <div className="flex items-center gap-3 text-xs text-on-surface-variant/70 mb-4">
-                    <span className="h-px flex-1 bg-outline-variant/50" />
+                  <div className="flex items-center gap-3 text-xs text-neutral-500 mb-4" style={mono}>
+                    <span className="h-px flex-1 bg-[#262626]" />
                     {t("or register with email", "أو سجّل بالبريد")}
-                    <span className="h-px flex-1 bg-outline-variant/50" />
+                    <span className="h-px flex-1 bg-[#262626]" />
                   </div>
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
-                      <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={t("First name", "الاسم الأول")} className="h-12" />
-                      <Input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t("Last name", "اسم العائلة")} className="h-12" />
+                      <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={t("First name", "الاسم الأول")} className="h-12 rounded-none bg-black border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50" />
+                      <Input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t("Last name", "اسم العائلة")} className="h-12 rounded-none bg-black border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50" />
                     </div>
-                    <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("Email address", "بريدك الإلكتروني")} className="h-12" />
-                    <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("Password (min. 8 characters)", "كلمة المرور (8 أحرف على الأقل)")} className="h-12" autoComplete="new-password" />
-                    <Input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder={t("Confirm password", "تأكيد كلمة المرور")} className="h-12" autoComplete="new-password" />
+                    <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("Email address", "بريدك الإلكتروني")} className="h-12 rounded-none bg-black border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50" />
+                    <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("Password (min. 8 characters)", "كلمة المرور (8 أحرف على الأقل)")} className="h-12 rounded-none bg-black border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50" autoComplete="new-password" />
+                    <Input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder={t("Confirm password", "تأكيد كلمة المرور")} className="h-12 rounded-none bg-black border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50" autoComplete="new-password" />
                     <Button
                       onClick={submitWithEmail}
                       disabled={submitting || !firstName.trim() || !lastName.trim() || !email.trim() || password.length < 8 || !passwordConfirm}
-                      className="w-full h-14 text-lg font-bold gap-2"
+                      className="w-full h-14 text-lg font-bold gap-2 rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none"
                     >
                       {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowRight className="w-5 h-5 rtl:rotate-180" />}
                       {t("Finish", "إنهاء")}
@@ -428,22 +434,22 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
 
               {step === 7 && result && (
                 <div className="text-center">
-                  <PartyPopper className="w-12 h-12 mx-auto mb-4 text-indigo-500" />
-                  <h1 className="text-2xl sm:text-3xl font-black mb-2">{t("Congratulations!", "مبروك!")}</h1>
-                  <p className="text-on-surface-variant mb-6">
+                  <PartyPopper className="w-12 h-12 mx-auto mb-4 text-[#00E5FF]" />
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{t("Congratulations!", "مبروك!")}</h1>
+                  <p className="text-neutral-400 mb-6">
                     {t("You got 1 month free", "حصلت على شهر مجاني")}
                     {result.plan ? ` — ${result.plan.name}` : ""}. {t("$1/mo after that — no credit card needed right now.", "دولار واحد شهرياً بعدها — بدون بطاقة ائتمان الآن.")}
                   </p>
-                  <div className="rounded-xl border border-outline-variant/15 divide-y divide-outline-variant/10 mb-6 text-start">
+                  <div className="border border-[#262626] divide-y divide-[#262626] mb-6 text-start">
                     {result.domains.map((d) => (
                       <div key={d.domain} className="px-4 py-3 flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
-                        <span className="font-mono text-sm">{d.domain}</span>
+                        <Sparkles className="w-4 h-4 text-[#00E5FF] shrink-0" />
+                        <span className="text-sm text-white" style={mono}>{d.domain}</span>
                       </div>
                     ))}
                   </div>
                   <Link href={localePath(locale, "/dashboard")}>
-                    <Button size="lg" className="w-full sm:w-auto h-14 px-10 text-lg font-bold gap-2">
+                    <Button size="lg" className="w-full sm:w-auto h-14 px-10 text-lg font-bold gap-2 rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none">
                       {t("Go to my dashboard", "اذهب إلى لوحتي")} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
                     </Button>
                   </Link>
@@ -451,17 +457,17 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
               )}
 
               {step <= TOTAL_STEPS && (
-                <div className="flex items-center justify-between mt-8 pt-6 border-t border-outline-variant/15">
+                <div className="flex items-center justify-between mt-8 pt-6 border-t border-[#262626]">
                   <Button
                     type="button"
                     variant="ghost"
                     onClick={() => setStep(Math.max(1, step - 1))}
-                    className={step === 1 ? "invisible" : ""}
+                    className={step === 1 ? "invisible" : "text-neutral-400 hover:text-white hover:bg-[#171717]"}
                   >
                     <ArrowLeft className="w-4 h-4 rtl:rotate-180 me-1" /> {t("Back", "رجوع")}
                   </Button>
                   {step < TOTAL_STEPS ? (
-                    <Button type="button" disabled={!canNext} onClick={() => setStep(step + 1)} className="gap-2">
+                    <Button type="button" disabled={!canNext} onClick={() => setStep(step + 1)} className="gap-2 rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none">
                       {t("Next", "التالي")} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                     </Button>
                   ) : null}
