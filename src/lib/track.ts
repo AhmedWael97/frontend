@@ -97,6 +97,9 @@ export function trackSignup(userId?: number | string, email?: string): void {
   const label = process.env.NEXT_PUBLIC_GOOGLE_ADS_SIGNUP_LABEL
     || "AW-18376010770/pxCWCOXOid4cEJLYrrpE";
   gaEvent("conversion", { send_to: label, value: 1.0, currency: "EGP" });
+  // Named Google Ads conversion action (event-based, tied to the AW-18376010770
+  // tag already loaded site-wide — no send_to label needed for this one).
+  gaEvent("ads_conversion_Sign_Up_1");
 }
 
 /**
