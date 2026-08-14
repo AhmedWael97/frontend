@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { toolsApi, type SpeedCheck } from "@/api/tools";
 import { trackViewPlans, eyeTrack } from "@/lib/track";
 
+const mono = { fontFamily: "var(--font-mono-marketing)" };
 const STATUS: Record<string, { Icon: typeof CheckCircle2; cls: string }> = {
-  pass: { Icon: CheckCircle2, cls: "text-emerald-500" },
-  warn: { Icon: AlertTriangle, cls: "text-amber-500" },
-  fail: { Icon: XCircle, cls: "text-error" },
+  pass: { Icon: CheckCircle2, cls: "text-green-400" },
+  warn: { Icon: AlertTriangle, cls: "text-amber-400" },
+  fail: { Icon: XCircle, cls: "text-red-400" },
 };
 
 export default function SpeedCheckerTool({ locale }: { locale: string }) {
@@ -39,7 +40,7 @@ export default function SpeedCheckerTool({ locale }: { locale: string }) {
     }
   };
 
-  const scoreColor = (s: number) => (s >= 80 ? "text-emerald-500" : s >= 50 ? "text-amber-500" : "text-error");
+  const scoreColor = (s: number) => (s >= 80 ? "text-green-400" : s >= 50 ? "text-amber-400" : "text-red-400");
 
   return (
     <div className="not-prose space-y-6">
@@ -48,40 +49,40 @@ export default function SpeedCheckerTool({ locale }: { locale: string }) {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="example.com"
-          className="flex-1 h-12 text-base"
+          className="flex-1 h-12 text-base rounded-none bg-[#0A0A0A] border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50"
         />
-        <Button type="submit" disabled={loading} className="h-12 gap-2 sm:px-8">
+        <Button type="submit" disabled={loading} className="h-12 gap-2 sm:px-8 rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Gauge className="h-4 w-4" />}
           {ar ? "افحص السرعة" : "Check speed"}
         </Button>
       </form>
 
-      {error && <div className="rounded-lg bg-error-container/30 border border-error/20 px-4 py-3 text-sm text-error">{error}</div>}
+      {error && <div className="rounded-none bg-red-500/10 border border-red-500/25 px-4 py-3 text-sm text-red-400">{error}</div>}
 
       {result && (
-        <div className="rounded-2xl border border-outline-variant/20 overflow-hidden">
-          <div className="flex flex-wrap items-center gap-6 border-b border-outline-variant/15 bg-surface-container/40 px-5 py-4">
+        <div className="border border-[#262626] overflow-hidden">
+          <div className="flex flex-wrap items-center gap-6 border-b border-[#262626] bg-[#0A0A0A] px-5 py-4">
             <div className="text-center">
-              <p className={`text-4xl font-black ${scoreColor(result.score)}`}>{result.score}</p>
-              <p className="text-[11px] uppercase tracking-widest text-on-surface-variant">{ar ? "الدرجة" : "Score"}</p>
+              <p className={`text-4xl font-bold ${scoreColor(result.score)}`} style={mono}>{result.score}</p>
+              <p className="text-[11px] uppercase tracking-widest text-neutral-500" style={mono}>{ar ? "الدرجة" : "Score"}</p>
             </div>
             <div className="flex gap-6 text-sm">
               <div>
-                <p className="font-bold text-on-surface">{result.ttfb_ms}ms</p>
-                <p className="text-xs text-on-surface-variant">TTFB</p>
+                <p className="font-bold text-white" style={mono}>{result.ttfb_ms}ms</p>
+                <p className="text-xs text-neutral-500">TTFB</p>
               </div>
               <div>
-                <p className="font-bold text-on-surface">{result.total_ms}ms</p>
-                <p className="text-xs text-on-surface-variant">{ar ? "التحميل الكامل" : "Total load"}</p>
+                <p className="font-bold text-white" style={mono}>{result.total_ms}ms</p>
+                <p className="text-xs text-neutral-500">{ar ? "التحميل الكامل" : "Total load"}</p>
               </div>
               <div>
-                <p className="font-bold text-on-surface">{result.size_kb} KB</p>
-                <p className="text-xs text-on-surface-variant">HTML</p>
+                <p className="font-bold text-white" style={mono}>{result.size_kb} KB</p>
+                <p className="text-xs text-neutral-500">HTML</p>
               </div>
             </div>
           </div>
 
-          <div className="divide-y divide-outline-variant/10">
+          <div className="divide-y divide-[#262626]">
             {result.checks.map((c) => {
               const s = STATUS[c.status] ?? STATUS.warn;
               const { Icon } = s;
@@ -89,16 +90,16 @@ export default function SpeedCheckerTool({ locale }: { locale: string }) {
                 <div key={c.id} className="flex gap-3 p-4">
                   <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${s.cls}`} />
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-on-surface">{c.label}</p>
-                    <p className="text-sm text-on-surface-variant">{c.detail}</p>
+                    <p className="text-sm font-bold text-white">{c.label}</p>
+                    <p className="text-sm text-neutral-400">{c.detail}</p>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          <div className="border-t border-outline-variant/15 bg-primary/[0.04] px-5 py-4 text-center">
-            <p className="text-sm text-on-surface-variant mb-2">
+          <div className="border-t border-[#262626] bg-[#00E5FF]/5 px-5 py-4 text-center">
+            <p className="text-sm text-neutral-400 mb-2">
               {ar
                 ? "أراد رؤية سرعة موقعك أسبوعياً وليس مرة واحدة فقط؟"
                 : "Want to see this trend over time, not just once?"}
@@ -106,7 +107,7 @@ export default function SpeedCheckerTool({ locale }: { locale: string }) {
             <a
               href={`/${locale}/auth/register`}
               onClick={() => trackViewPlans()}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-on-primary hover:opacity-90"
+              className="inline-flex items-center gap-1.5 rounded-none bg-[#00E5FF] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#33EAFF]"
             >
               {ar ? "ابدأ مجاناً مع EYE" : "Start free with EYE"}
             </a>

@@ -55,25 +55,27 @@ export default function FreeToolsPage({ params }: Props) {
   return (
     <>
       <Navbar />
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-on-surface text-center">{t.title}</h1>
-        <p className="mt-3 text-center text-on-surface-variant">{t.subtitle}</p>
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20 bg-black min-h-screen">
+        <div className="pt-8">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white text-center">{t.title}</h1>
+          <p className="mt-3 text-center text-neutral-400">{t.subtitle}</p>
+        </div>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-3">
+        <div className="mt-12 grid gap-px sm:grid-cols-3 bg-[#262626] border border-[#262626]">
           {t.tools.map((tool) => {
             const Icon = tool.icon;
             return (
               <Link
                 key={tool.href}
                 href={`/${params.locale}${tool.href}`}
-                className="group rounded-2xl border border-outline-variant/20 bg-surface/60 p-6 transition hover:border-primary/40 hover:shadow-lg"
+                className="group bg-black p-6 transition hover:bg-[#0A0A0A]"
               >
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <span className="flex h-11 w-11 items-center justify-center rounded-none border border-[#262626] bg-[#171717] text-[#00E5FF]">
                   <Icon className="h-5 w-5" />
                 </span>
-                <h2 className="mt-4 text-lg font-bold text-on-surface">{tool.name}</h2>
-                <p className="mt-1 text-sm text-on-surface-variant">{tool.desc}</p>
-                <span className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-primary">
+                <h2 className="mt-4 text-lg font-bold text-white">{tool.name}</h2>
+                <p className="mt-1 text-sm text-neutral-400">{tool.desc}</p>
+                <span className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-[#00E5FF]">
                   {t.cta} <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180 transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
                 </span>
               </Link>

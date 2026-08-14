@@ -58,25 +58,25 @@ export default function SitemapCreatorTool({ locale }: { locale: string }) {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="example.com"
-          className="flex-1 h-12 text-base"
+          className="flex-1 h-12 text-base rounded-none bg-[#0A0A0A] border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50"
         />
-        <Button type="submit" disabled={loading} className="h-12 gap-2 sm:px-8">
+        <Button type="submit" disabled={loading} className="h-12 gap-2 sm:px-8 rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Layers className="h-4 w-4" />}
           {ar ? "أنشئ خريطة الموقع" : "Generate sitemap"}
         </Button>
       </form>
       {loading && (
-        <p className="text-xs text-on-surface-variant">
+        <p className="text-xs text-neutral-500">
           {ar ? "قد يستغرق هذا حتى 30 ثانية لموقع كبير…" : "This can take up to 30 seconds for a larger site…"}
         </p>
       )}
 
-      {error && <div className="rounded-lg bg-error-container/30 border border-error/20 px-4 py-3 text-sm text-error">{error}</div>}
+      {error && <div className="rounded-none bg-red-500/10 border border-red-500/25 px-4 py-3 text-sm text-red-400">{error}</div>}
 
       {result && (
-        <div className="rounded-2xl border border-outline-variant/20 overflow-hidden">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/15 bg-surface-container/40 px-5 py-4">
-            <p className="text-sm text-on-surface-variant">
+        <div className="border border-[#262626] overflow-hidden">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#262626] bg-[#0A0A0A] px-5 py-4">
+            <p className="text-sm text-neutral-400">
               {ar
                 ? `تم العثور على ${result.pages_crawled} صفحة${result.truncated ? " (توقفنا عند الحد الأقصى)" : ""}`
                 : `Found ${result.pages_crawled} page${result.pages_crawled === 1 ? "" : "s"}${result.truncated ? " (stopped at the free limit)" : ""}`}
@@ -84,14 +84,14 @@ export default function SitemapCreatorTool({ locale }: { locale: string }) {
             <div className="flex gap-2">
               <button
                 onClick={copy}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant/30 px-3 py-1.5 text-xs font-bold text-on-surface hover:bg-surface-container"
+                className="inline-flex items-center gap-1.5 rounded-none border border-[#262626] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#171717]"
               >
                 {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                 {ar ? "نسخ XML" : "Copy XML"}
               </button>
               <button
                 onClick={download}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-on-primary hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-none bg-[#00E5FF] px-3 py-1.5 text-xs font-bold text-black hover:bg-[#33EAFF]"
               >
                 <Download className="h-3.5 w-3.5" />
                 {ar ? "تحميل sitemap.xml" : "Download sitemap.xml"}
@@ -99,18 +99,18 @@ export default function SitemapCreatorTool({ locale }: { locale: string }) {
             </div>
           </div>
 
-          <div className="divide-y divide-outline-variant/10 max-h-72 overflow-y-auto">
+          <div className="divide-y divide-[#262626] max-h-72 overflow-y-auto">
             {result.pages.map((p) => (
               <div key={p.url} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
-                <span className="truncate text-on-surface">{p.url}</span>
-                <span className="shrink-0 text-xs text-on-surface-variant">{p.priority}</span>
+                <span className="truncate text-white">{p.url}</span>
+                <span className="shrink-0 text-xs text-neutral-500">{p.priority}</span>
               </div>
             ))}
           </div>
 
           {result.truncated && (
-            <div className="border-t border-outline-variant/15 bg-primary/[0.04] px-5 py-4 text-center">
-              <p className="text-sm text-on-surface-variant mb-2">
+            <div className="border-t border-[#262626] bg-[#00E5FF]/5 px-5 py-4 text-center">
+              <p className="text-sm text-neutral-400 mb-2">
                 {ar
                   ? "لموقع أكبر، خريطة الموقع في EYE تدعم حتى 200 صفحة مع تحليلات الأولوية."
                   : "For a bigger site, EYE's sitemap tool supports up to 200 pages with analytics-based priority."}
@@ -118,7 +118,7 @@ export default function SitemapCreatorTool({ locale }: { locale: string }) {
               <a
                 href={`/${locale}/auth/register`}
                 onClick={() => trackViewPlans()}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-on-primary hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-none bg-[#00E5FF] px-5 py-2.5 text-sm font-bold text-black hover:bg-[#33EAFF]"
               >
                 {ar ? "ابدأ مجاناً مع EYE" : "Start free with EYE"}
               </a>
