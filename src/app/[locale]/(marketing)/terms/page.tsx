@@ -140,25 +140,25 @@ export default function TermsPage({ params }: { params: { locale: string } }) {
   return (
     <>
       <Navbar />
-      <main className="bg-surface min-h-screen pt-28 sm:pt-32 pb-20">
-        <div className="max-w-3xl mx-auto px-5 sm:px-6 lg:px-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-500/25 bg-indigo-500/10 px-3.5 py-1.5 mb-6">
-            <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-            <span className="text-[11px] sm:text-xs font-semibold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">
+      <main className="bg-black min-h-screen pt-16 sm:pt-20 pb-20">
+        <div className="max-w-3xl mx-auto px-5 sm:px-6 lg:px-8 pt-8">
+          <div className="inline-flex items-center gap-2 rounded-none border border-[#00E5FF]/30 bg-[#00E5FF]/10 px-3.5 py-1.5 mb-6">
+            <FileText className="w-4 h-4 text-[#00E5FF]" />
+            <span className="text-[11px] sm:text-xs font-semibold tracking-widest uppercase text-[#00E5FF]" style={{ fontFamily: "var(--font-mono-marketing)" }}>
               {c.title}
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-on-surface mb-2">{c.title}</h1>
-          <p className="text-sm text-on-surface-variant mb-8">{c.updated}</p>
-          <p className="text-base text-on-surface-variant leading-relaxed mb-10">{c.intro}</p>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-2">{c.title}</h1>
+          <p className="text-sm text-neutral-500 mb-8">{c.updated}</p>
+          <p className="text-base text-neutral-400 leading-relaxed mb-10">{c.intro}</p>
 
           <div className="space-y-8">
             {c.sections.map((s) => (
               <section key={s.h}>
-                <h2 className="text-lg font-bold text-on-surface mb-3">{s.h}</h2>
+                <h2 className="text-lg font-bold text-white mb-3">{s.h}</h2>
                 <div className="space-y-3">
                   {s.p.map((para, i) => (
-                    <p key={i} className="text-sm sm:text-[15px] text-on-surface-variant leading-relaxed">{para}</p>
+                    <p key={i} className="text-sm sm:text-[15px] text-neutral-400 leading-relaxed">{para}</p>
                   ))}
                 </div>
               </section>
