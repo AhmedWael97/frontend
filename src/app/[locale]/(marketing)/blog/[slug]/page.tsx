@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { SITE_URL, localePath } from "@/lib/seo";
@@ -8,6 +10,7 @@ type Post = {
   slug: string; title_en: string; title_ar?: string;
   excerpt_en?: string; excerpt_ar?: string; body_en?: string; body_ar?: string;
   cover_image_url?: string | null; published_at?: string;
+  related_url?: string | null; related_label?: string | null; related_label_ar?: string | null;
 };
 
 async function getPost(slug: string): Promise<Post | null> {
@@ -66,6 +69,15 @@ export default async function BlogPostPage({ params }: { params: { locale: strin
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">{title}</h1>
         {post.cover_image_url && <img src={post.cover_image_url} alt="" className="w-full border border-[#262626] mb-8" />}
         <div className="text-neutral-400 leading-relaxed whitespace-pre-wrap text-[15px]">{body}</div>
+        {post.related_url && (
+          <Link
+            href={`/${params.locale}${post.related_url}`}
+            className="mt-10 inline-flex items-center gap-2 rounded-none border border-[#00E5FF]/30 bg-[#00E5FF]/10 text-[#00E5FF] px-5 py-3 text-sm font-bold hover:bg-[#00E5FF]/20"
+          >
+            {(ar ? post.related_label_ar : post.related_label) || (ar ? "جرّب EYE مجانًا" : "Try EYE free")}
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+          </Link>
+        )}
       </article>
       <Footer locale={params.locale} />
     </div>
