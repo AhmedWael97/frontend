@@ -1,21 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { SITE_URL, localePath } from "@/lib/seo";
-
-// This route lives outside the (marketing) group, so it needs its own copy of
-// the marketing type system (same fonts/vars as (marketing)/layout.tsx).
-const grotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-grotesk",
-  display: "swap",
-});
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-mono-marketing",
-  display: "swap",
-});
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const isAr = params.locale === "ar";
@@ -41,9 +25,5 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 }
 
 export default function PricingLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className={`${grotesk.variable} ${mono.variable}`} style={{ fontFamily: "var(--font-grotesk)" }}>
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 }
