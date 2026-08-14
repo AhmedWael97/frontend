@@ -327,7 +327,26 @@ export default async function HomePage({
               </div>
             </Reveal>
 
-            <CapabilityRail items={CAPABILITIES} />
+            <CapabilityRail>
+              {CAPABILITIES.map((item, i) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={i}
+                    className="snap-start shrink-0 w-[78%] sm:w-[42%] lg:w-[30%] bg-black p-6 flex flex-col"
+                  >
+                    <span className="text-[11px] text-neutral-600 mb-4" style={mono}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className="w-11 h-11 rounded-none bg-[#171717] border border-[#262626] flex items-center justify-center mb-5 text-[#00E5FF]">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-base font-bold text-white mb-2">{item.title}</h3>
+                    <p className="text-sm text-neutral-400 leading-relaxed">{item.desc}</p>
+                  </div>
+                );
+              })}
+            </CapabilityRail>
           </div>
         </section>
 
