@@ -59,13 +59,13 @@ export default async function BlogPostPage({ params }: { params: { locale: strin
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-surface">
+    <div className="min-h-screen bg-black">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
       <article className="max-w-3xl mx-auto px-4 py-16 sm:py-20" dir={ar ? "rtl" : "ltr"}>
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight mb-6">{title}</h1>
-        {post.cover_image_url && <img src={post.cover_image_url} alt="" className="w-full rounded-2xl mb-8" />}
-        <div className="text-on-surface-variant leading-relaxed whitespace-pre-wrap text-[15px]">{body}</div>
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">{title}</h1>
+        {post.cover_image_url && <img src={post.cover_image_url} alt="" className="w-full border border-[#262626] mb-8" />}
+        <div className="text-neutral-400 leading-relaxed whitespace-pre-wrap text-[15px]">{body}</div>
       </article>
       <Footer locale={params.locale} />
     </div>
