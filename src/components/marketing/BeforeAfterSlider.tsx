@@ -1,19 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
+// Real bug: dots clustered near the right edge regardless of actual click position (see CLAUDE.md §5).
 const BEFORE_DOTS = [
-  { top: "20%", left: "92%" }, { top: "35%", left: "96%" }, { top: "50%", left: "90%" },
-  { top: "62%", left: "97%" }, { top: "28%", left: "88%" }, { top: "70%", left: "94%" },
-  { top: "45%", left: "99%" }, { top: "80%", left: "91%" },
+  { top: "5%", left: "97%" }, { top: "20%", left: "94%" }, { top: "38%", left: "99%" },
+  { top: "55%", left: "96%" }, { top: "70%", left: "93%" }, { top: "72%", left: "98%" },
+  { top: "44%", left: "91%" }, { top: "8%", left: "89%" },
 ];
+// Real fix: dots land on the actual elements clicked — nav links + both hero CTAs.
 const AFTER_DOTS = [
-  { top: "18%", left: "22%" }, { top: "34%", left: "58%" }, { top: "48%", left: "14%" },
-  { top: "60%", left: "70%" }, { top: "26%", left: "84%" }, { top: "68%", left: "38%" },
-  { top: "42%", left: "46%" }, { top: "78%", left: "62%" },
+  { top: "4%", left: "3%" },     // logo
+  { top: "5%", left: "65%" },    // Pricing nav link
+  { top: "5%", left: "81%" },    // Sign in
+  { top: "71%", left: "17%" },   // Get started free
+  { top: "71%", left: "32%" },   // Watch live demo
+  { top: "5%", left: "37%" },    // How It Works nav link
 ];
 
-/** Drag slider comparing the pre-fix (raw viewport pixels) vs post-fix (% of document) heatmap coordinate systems — real bug, real fix, see CLAUDE.md §5. */
+/** Drag slider comparing the pre-fix (raw viewport pixels) vs post-fix (% of document) heatmap coordinate systems — real bug, real fix, see CLAUDE.md §5. Backdrop is a real screenshot of this page. */
 export default function BeforeAfterSlider() {
   const [pct, setPct] = useState(50);
 
@@ -30,20 +36,21 @@ export default function BeforeAfterSlider() {
         </span>
       </div>
 
-      <div className="relative h-64 sm:h-72">
-        <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+      <div className="relative w-full aspect-[1920/806]">
+        <Image src="/hp.PNG" alt="EYE dashboard heatmap surface" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover object-top" priority={false} />
+        <div className="absolute inset-0 bg-black/35" />
 
         {/* BEFORE layer — clustered near the edge (raw viewport-pixel bug) */}
         <div className="absolute inset-0">
           {BEFORE_DOTS.map((d, i) => (
-            <div key={i} className="absolute w-8 h-8 rounded-full bg-red-500 blur-md opacity-60" style={{ top: d.top, left: d.left }} />
+            <div key={i} className="absolute w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-red-500 blur-md opacity-70" style={{ top: d.top, left: d.left }} />
           ))}
         </div>
 
-        {/* AFTER layer — spread across the page (% of scrollWidth), revealed left of the handle */}
+        {/* AFTER layer — lands on the real clicked elements, revealed left of the handle */}
         <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${pct}%)` }}>
           {AFTER_DOTS.map((d, i) => (
-            <div key={i} className="absolute w-8 h-8 rounded-full bg-[#00E5FF] blur-md opacity-60" style={{ top: d.top, left: d.left }} />
+            <div key={i} className="absolute w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#00E5FF] blur-md opacity-70" style={{ top: d.top, left: d.left }} />
           ))}
         </div>
 
