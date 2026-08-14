@@ -359,6 +359,8 @@ export const ADMIN_ROUTES = {
   // Domains
   domainsList: "/admin/domains",
   domainsDelete: (id: number) => `/admin/domains/${id}`,
+  // SEO Rankings
+  seoRankingsList: "/admin/seo-rankings",
   // Theme
   themeShow: "/admin/theme",
   themeUpdate: "/admin/theme",

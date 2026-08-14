@@ -193,6 +193,11 @@ export const adminApi = {
   /** DELETE /admin/domains/{id} */
   deleteDomain: (id: number) => client.delete(ADMIN_ROUTES.domainsDelete(id)),
 
+  // ── SEO Rankings ──────────────────────────────────────────────────────────────
+  /** GET /admin/seo-rankings */
+  listSeoRankings: (params?: { domain_id?: number }) =>
+    client.get(ADMIN_ROUTES.seoRankingsList, { params }),
+
   // ── Audit Log ─────────────────────────────────────────────────────────────────
   /** GET /admin/audit-log */
   auditLog: (params?: {
