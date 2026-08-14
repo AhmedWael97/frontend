@@ -145,6 +145,8 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   };
 }
 
+const mono = { fontFamily: "var(--font-mono-marketing)" };
+
 export default function DocsPage({ params }: { params: { locale: string } }) {
   const locale = params.locale;
   const content = locale === "ar" ? AR : EN;
@@ -152,21 +154,21 @@ export default function DocsPage({ params }: { params: { locale: string } }) {
   return (
     <>
       <Navbar />
-      <main className="pt-24 pb-20">
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-outline-variant/20 bg-surface-container/40 p-8 sm:p-10">
-            <Badge className="mb-4 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-300/20">
+      <main className="pt-16 pb-20 bg-black">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+          <div className="border border-[#262626] bg-[#0A0A0A] p-8 sm:p-10">
+            <Badge className="mb-4 rounded-none bg-green-500/10 text-green-400 border-green-500/25" style={mono}>
               <BookOpen className="w-3.5 h-3.5 ltr:mr-2 rtl:ml-2" />
               {content.heroBadge}
             </Badge>
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-on-surface">{content.heroTitle}</h1>
-            <p className="mt-4 text-on-surface-variant max-w-3xl text-base sm:text-lg">{content.heroSubtitle}</p>
-            <div className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 px-3 py-2 text-sm">
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-white">{content.heroTitle}</h1>
+            <p className="mt-4 text-neutral-400 max-w-3xl text-base sm:text-lg">{content.heroSubtitle}</p>
+            <div className="mt-5 inline-flex items-center gap-2 rounded-none border border-green-500/25 bg-green-500/10 text-green-400 px-3 py-2 text-sm" style={mono}>
               <ShieldCheck className="w-4 h-4" />
               {content.noAuth}
             </div>
             <div className="mt-4">
-              <Link href={`/${locale}/help`} className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+              <Link href={`/${locale}/help`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#00E5FF] hover:underline">
                 {locale === "ar" ? "تبحث عن أدلة خطوة بخطوة؟ افتح مركز المساعدة" : "Looking for step-by-step guides? Open the Help Center"}
                 <ArrowRight className="w-4 h-4 ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
               </Link>
@@ -174,31 +176,31 @@ export default function DocsPage({ params }: { params: { locale: string } }) {
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 rounded-2xl border border-outline-variant/20 bg-surface-container/30 p-6">
-            <h2 className="text-2xl font-black text-on-surface flex items-center gap-2">
-              <Radar className="w-5 h-5 text-indigo-500" />
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 grid grid-cols-1 lg:grid-cols-3 gap-px bg-[#262626] border border-[#262626]">
+          <div className="lg:col-span-2 bg-black p-6">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+              <Radar className="w-5 h-5 text-[#00E5FF]" />
               {content.quickStartTitle}
             </h2>
             <ol className="mt-4 space-y-3">
               {content.quickStart.map((step, index) => (
-                <li key={index} className="flex items-start gap-3 text-sm text-on-surface-variant">
-                  <span className="w-6 h-6 shrink-0 rounded-full bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 text-xs font-bold flex items-center justify-center mt-0.5">{index + 1}</span>
+                <li key={index} className="flex items-start gap-3 text-sm text-neutral-400">
+                  <span className="w-6 h-6 shrink-0 border border-[#00E5FF]/30 bg-[#00E5FF]/10 text-[#00E5FF] text-xs font-bold flex items-center justify-center mt-0.5" style={mono}>{index + 1}</span>
                   <span>{step}</span>
                 </li>
               ))}
             </ol>
           </div>
 
-          <div className="rounded-2xl border border-outline-variant/20 bg-surface-container/30 p-6">
-            <h2 className="text-xl font-black text-on-surface flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-amber-500" />
+          <div className="bg-black p-6">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-amber-400" />
               {content.tipsTitle}
             </h2>
-            <ul className="mt-4 space-y-3 text-sm text-on-surface-variant">
+            <ul className="mt-4 space-y-3 text-sm text-neutral-400">
               {content.tips.map((tip, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 shrink-0" />
                   <span>{tip}</span>
                 </li>
               ))}
@@ -207,14 +209,14 @@ export default function DocsPage({ params }: { params: { locale: string } }) {
         </section>
 
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
-          <h2 className="text-3xl font-black tracking-tight text-on-surface mb-5">{content.featuresTitle}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <h2 className="text-3xl font-bold tracking-tight text-white mb-5">{content.featuresTitle}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#262626] border border-[#262626]">
             {content.features.map((feature) => (
-              <article key={feature.id} className="rounded-2xl border border-outline-variant/20 bg-surface-container/30 p-5">
-                <h3 className="text-lg font-black text-on-surface">{feature.title}</h3>
-                <p className="mt-2 text-sm text-on-surface-variant">{feature.desc}</p>
-                <div className="mt-3 rounded-lg bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 p-3 text-sm">
-                  <span className="font-semibold">{content.adviceLabel}:</span> {feature.advice}
+              <article key={feature.id} className="bg-black p-5">
+                <h3 className="text-lg font-bold text-white">{feature.title}</h3>
+                <p className="mt-2 text-sm text-neutral-400">{feature.desc}</p>
+                <div className="mt-3 border border-[#00E5FF]/20 bg-[#00E5FF]/5 text-neutral-300 p-3 text-sm">
+                  <span className="font-semibold text-[#00E5FF]">{content.adviceLabel}:</span> {feature.advice}
                 </div>
               </article>
             ))}
@@ -222,34 +224,34 @@ export default function DocsPage({ params }: { params: { locale: string } }) {
         </section>
 
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-          <h2 className="text-3xl font-black tracking-tight text-on-surface mb-5 flex items-center gap-2">
-            <Gauge className="w-6 h-6 text-violet-500" />
+          <h2 className="text-3xl font-bold tracking-tight text-white mb-5 flex items-center gap-2">
+            <Gauge className="w-6 h-6 text-[#00E5FF]" />
             {content.metricsTitle}
           </h2>
-          <div className="overflow-hidden rounded-2xl border border-outline-variant/20 bg-surface-container/30">
-            <div className="grid grid-cols-1 md:grid-cols-3 bg-surface-container-high/40 text-sm font-bold text-on-surface px-4 py-3">
+          <div className="overflow-hidden border border-[#262626]">
+            <div className="grid grid-cols-1 md:grid-cols-3 bg-[#171717] text-sm font-bold text-white px-4 py-3" style={mono}>
               <div>{content.metricNameLabel}</div>
               <div>{content.metricMeaningLabel}</div>
               <div>{content.metricAdviceLabel}</div>
             </div>
-            {content.metrics.map((metric, index) => (
-              <div key={metric.name} className={`grid grid-cols-1 md:grid-cols-3 gap-3 px-4 py-4 text-sm ${index % 2 === 0 ? "bg-transparent" : "bg-surface-container-high/20"}`}>
-                <div className="font-semibold text-on-surface">{metric.name}</div>
-                <div className="text-on-surface-variant">{metric.meaning}</div>
-                <div className="text-on-surface-variant">{metric.advice}</div>
+            {content.metrics.map((metric) => (
+              <div key={metric.name} className="grid grid-cols-1 md:grid-cols-3 gap-3 px-4 py-4 text-sm bg-black border-t border-[#262626]">
+                <div className="font-semibold text-white">{metric.name}</div>
+                <div className="text-neutral-400">{metric.meaning}</div>
+                <div className="text-neutral-400">{metric.advice}</div>
               </div>
             ))}
           </div>
         </section>
 
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-          <div className="rounded-2xl border border-outline-variant/20 bg-surface-container/30 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="border border-[#262626] bg-[#0A0A0A] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-black text-on-surface">{content.ctaTitle}</h2>
-              <p className="text-sm text-on-surface-variant mt-1">{content.ctaText}</p>
+              <h2 className="text-2xl font-bold text-white">{content.ctaTitle}</h2>
+              <p className="text-sm text-neutral-400 mt-1">{content.ctaText}</p>
             </div>
             <Link href={`/${locale}/auth/register`}>
-              <Button className="bg-indigo-500 hover:bg-indigo-400 text-white">
+              <Button className="rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none">
                 {content.ctaButton}
                 <ArrowRight className="w-4 h-4 ltr:ml-2 rtl:mr-2" />
               </Button>
