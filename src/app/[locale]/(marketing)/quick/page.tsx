@@ -60,31 +60,39 @@ export default function QuickHomeVariant({ params }: Props) {
   const t = C[ar ? "ar" : "en"];
   const locale = params.locale;
 
+  const mono = { fontFamily: "var(--font-mono-marketing)" };
+
   return (
-    <div dir={ar ? "rtl" : "ltr"} className="min-h-screen bg-background text-on-surface">
+    <div dir={ar ? "rtl" : "ltr"} className="min-h-screen bg-black">
       <Navbar />
       <main className="overflow-hidden">
         {/* Hero */}
-        <section className="relative isolate overflow-hidden text-center pt-24 sm:pt-32 pb-12 sm:pb-16 bg-surface">
-          <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-            <div className="absolute top-[-10%] ltr:left-[10%] rtl:right-[10%] w-[520px] h-[520px] max-w-[110vw] rounded-full bg-indigo-500/30 dark:bg-indigo-500/25 blur-[100px]" />
-            <div className="absolute top-[15%] ltr:right-[4%] rtl:left-[4%] w-[380px] h-[380px] max-w-[100vw] rounded-full bg-violet-500/25 dark:bg-violet-500/20 blur-[90px]" />
-          </div>
-          <div className="relative max-w-2xl mx-auto px-5 sm:px-6">
+        <section className="relative isolate overflow-hidden text-center pt-16 sm:pt-20 pb-12 sm:pb-16 bg-black">
+          <div
+            className="absolute inset-0 pointer-events-none"
+            aria-hidden
+            style={{
+              backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)",
+              backgroundSize: "44px 44px",
+              maskImage: "radial-gradient(ellipse 75% 65% at 50% 0%, #000 55%, transparent 100%)",
+              WebkitMaskImage: "radial-gradient(ellipse 75% 65% at 50% 0%, #000 55%, transparent 100%)",
+            }}
+          />
+          <div className="relative max-w-2xl mx-auto px-5 sm:px-6 pt-8">
             {/* Above-the-fold hero: renders at full opacity immediately, no
                 scroll-triggered Reveal — whileInView wasn't reliably firing
                 for content already in the viewport on cold load, leaving a
                 washed-out ~30%-opacity hero until the visitor scrolled. */}
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-6">
+            <span className="inline-flex items-center gap-1.5 rounded-none border border-green-500/30 bg-green-500/10 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-green-400 mb-6" style={mono}>
               <Check className="w-3.5 h-3.5" /> {t.badge}
             </span>
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.05] mb-4">
+            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight leading-[1.05] mb-4 text-white">
               {t.h1a}<br />
-              <span className="bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 bg-clip-text text-transparent">{t.h1b}</span>
+              <span className="text-[#00E5FF]">{t.h1b}</span>
             </h1>
-            <p className="text-base sm:text-lg text-on-surface-variant max-w-xl mx-auto mb-8">{t.sub}</p>
+            <p className="text-base sm:text-lg text-neutral-400 max-w-xl mx-auto mb-8">{t.sub}</p>
             <Link href={`/${locale}/auth/register`}>
-              <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-8 h-13 text-base font-bold gap-2">
+              <Button size="lg" className="w-full sm:w-auto rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none px-8 h-13 text-base font-bold gap-2">
                 {t.cta} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
               </Button>
             </Link>
@@ -95,36 +103,33 @@ export default function QuickHomeVariant({ params }: Props) {
         <RevealGroup className="max-w-2xl mx-auto px-5 sm:px-6 py-10 sm:py-14 space-y-6">
           {t.benefits.map((b) => (
             <RevealItem key={b.t} className="flex items-start gap-4">
-              <span className="w-11 h-11 rounded-xl bg-indigo-500/12 flex items-center justify-center shrink-0">
-                <b.icon className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+              <span className="w-11 h-11 rounded-none border border-[#262626] bg-[#171717] flex items-center justify-center shrink-0">
+                <b.icon className="w-5 h-5 text-[#00E5FF]" />
               </span>
               <div>
-                <h3 className="font-black text-on-surface mb-0.5">{b.t}</h3>
-                <p className="text-sm text-on-surface-variant leading-relaxed">{b.d}</p>
+                <h3 className="font-bold text-white mb-0.5">{b.t}</h3>
+                <p className="text-sm text-neutral-400 leading-relaxed">{b.d}</p>
               </div>
             </RevealItem>
           ))}
         </RevealGroup>
 
         {/* Trust bar */}
-        <Reveal className="border-y border-outline-variant/15 bg-surface-container/15 py-6">
-          <div className="max-w-2xl mx-auto px-5 sm:px-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-on-surface-variant">
+        <Reveal className="border-y border-[#262626] bg-[#0A0A0A] py-6">
+          <div className="max-w-2xl mx-auto px-5 sm:px-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-neutral-500">
             {t.trust.map((item) => (
-              <span key={item} className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> {item}</span>
+              <span key={item} className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> {item}</span>
             ))}
           </div>
         </Reveal>
 
         {/* Final CTA */}
-        <section className="relative isolate overflow-hidden py-16 sm:py-20 text-center bg-surface">
-          <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] max-w-[120vw] rounded-full bg-indigo-500/25 dark:bg-indigo-500/20 blur-[110px]" />
-          </div>
+        <section className="relative isolate overflow-hidden py-16 sm:py-20 text-center bg-black">
           <div className="relative max-w-xl mx-auto px-5 sm:px-6">
-            <Reveal><h2 className="text-2xl sm:text-4xl font-black mb-6 leading-[1.1]">{t.finalH}</h2></Reveal>
+            <Reveal><h2 className="text-2xl sm:text-4xl font-bold mb-6 leading-[1.1] text-white">{t.finalH}</h2></Reveal>
             <Reveal delay={0.08}>
               <Link href={`/${locale}/auth/register`}>
-                <Button size="lg" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/30 px-8 h-13 text-base font-bold gap-2">
+                <Button size="lg" className="w-full sm:w-auto rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none px-8 h-13 text-base font-bold gap-2">
                   {t.finalCta} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                 </Button>
               </Link>
