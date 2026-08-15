@@ -127,6 +127,11 @@ const TIKTOK_PIXEL = `!function (w, d, t) {w.TiktokAnalyticsObject=t;var ttq=w[t
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1080968574489749";
 const META_PIXEL = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',${JSON.stringify(META_PIXEL_ID)});fbq('track','PageView');`;
 
+// ── Google Tag Manager ───────────────────────────────────────────────────────
+// Container ID is env-overridable (NEXT_PUBLIC_GTM_ID).
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-KTC5WWHN";
+const GTM_INIT = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',${JSON.stringify(GTM_ID)});`;
+
 export default async function LocaleLayout({
   children,
   params,
@@ -152,6 +157,8 @@ export default async function LocaleLayout({
     >
       {/* Runs synchronously before hydration to apply saved theme, avoiding flash */}
       <head>
+        {/* Google Tag Manager — first in <head>, per Google's own placement guidance */}
+        <script dangerouslySetInnerHTML={{ __html: GTM_INIT }} />
         <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('eye-appearance');if(t==='light')document.documentElement.classList.remove('dark');else if(t==='system'&&!window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.remove('dark');}catch(e){}` }} />
         {/* EYE self-tracking: loads our own tracker + replay (skips localhost) */}
         <script dangerouslySetInnerHTML={{ __html: EYE_LOADER }} />
@@ -167,6 +174,10 @@ export default async function LocaleLayout({
         </noscript>
       </head>
       <body className={`${inter.variable} ${readexPro.variable} ${isArabic ? "font-arabic" : "font-sans"} antialiased`} suppressHydrationWarning>
+        {/* Google Tag Manager (noscript) — immediately after <body>, per Google's own placement guidance */}
+        <noscript>
+          <iframe src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`} height="0" width="0" style={{ display: "none", visibility: "hidden" }} />
+        </noscript>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <NavigationProgress />
