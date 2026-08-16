@@ -49,12 +49,15 @@ function captureAttribution(request: NextRequest, response: NextResponse): void 
   const clickId = sp.get("gclid") || sp.get("ttclid") || sp.get("fbclid") || "";
   if (!utmSource && !clickId) return;
 
-  const value = encodeURIComponent(JSON.stringify({
+  // NextResponse's cookie serializer already URI-encodes the value, so this
+  // is stored as one layer of encoding — matching the single decodeURIComponent
+  // in readAcquisitionCookie() (double-encoding here broke that parse).
+  const value = JSON.stringify({
     s: utmSource,
     m: sp.get("utm_medium") || "",
     c: sp.get("utm_campaign") || "",
     cid: clickId,
-  }));
+  });
   response.cookies.set(ACQ_COOKIE, value, {
     maxAge: 60 * 60 * 24 * 30,
     path: "/",
