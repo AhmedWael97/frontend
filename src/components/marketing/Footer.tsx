@@ -1,12 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { Eye, Instagram } from "lucide-react";
+import { Eye, Instagram, Linkedin, Facebook } from "lucide-react";
 
 import { useTranslations } from "next-intl";
 
 interface FooterProps {
   locale: string;
+}
+
+// No TikTok glyph in lucide-react (brand icons were deprecated from that
+// package) — same 24x24/currentColor convention as the lucide icons above.
+function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M16.6 5.82c-.9-.86-1.4-2.03-1.4-3.32h-3.15v13.87a2.83 2.83 0 1 1-2-2.7v-3.19a6 6 0 1 0 5.15 5.95V9.4a8.3 8.3 0 0 0 4.8 1.53V7.8a4.85 4.85 0 0 1-3.4-1.98z" />
+    </svg>
+  );
 }
 
 // Computed once at module load (same value on server + client) so the year is
@@ -63,7 +73,10 @@ export default function Footer({ locale }: FooterProps) {
             </p>
             <div className="flex items-center gap-3 mt-6">
               {([
-                { Icon: Instagram, label: "Instagram", href: "https://instagram.com/eye_analysis" },
+                { Icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/eye-analysis-117595421/" },
+                { Icon: TikTokIcon, label: "TikTok", href: "https://www.tiktok.com/@eye.analysis" },
+                { Icon: Facebook, label: "Facebook", href: "https://www.facebook.com/profile.php?id=61592158749623" },
+                { Icon: Instagram, label: "Instagram", href: "https://www.instagram.com/eye_analysis/" },
               ] as const).map(({ Icon, label, href }) => (
                 <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={`EYE on ${label}`} title={label} className="w-9 h-9 rounded-none border border-[#262626] flex items-center justify-center text-neutral-500 hover:text-[#00E5FF] hover:border-[#00E5FF] transition-colors">
                   <Icon className="w-4 h-4" aria-hidden="true" />
