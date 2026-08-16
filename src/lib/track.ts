@@ -127,6 +127,18 @@ export function trackDomainAdded(domain?: string): void {
   gaEvent("domain_added", domain ? { domain } : {});
 }
 
+/**
+ * First tracking event ever received for the account — the "aha moment"
+ * proving the snippet actually works. Google Ads conversion action (manual,
+ * not a send_to label because it has none set — fires as a plain named event
+ * like ads_conversion_Sign_Up_1).
+ */
+export function trackFirstVisitor(): void {
+  const label = process.env.NEXT_PUBLIC_GOOGLE_ADS_FIRST_VISITOR_LABEL
+    || "AW-18376010770/eCvCCJ-3wuIcEJLYrrpE";
+  gaEvent("conversion", { send_to: label, value: 1.0, currency: "EGP" });
+}
+
 /** Viewed a plan / pricing — top of funnel. */
 export function trackViewPlans(): void {
   ttTrack("ViewContent", { content_type: "product", content_name: "plans" });

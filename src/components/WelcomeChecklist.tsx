@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { onboardingApi } from "@/lib/api";
-import { eyeTrack } from "@/lib/track";
+import { eyeTrack, trackFirstVisitor } from "@/lib/track";
 
 // Backend step → frontend step id mapping
 const BACKEND_TO_FRONTEND: Record<string, string> = {
@@ -114,6 +114,7 @@ export default function WelcomeChecklist({ domainId, onDismiss }: Props) {
       localStorage.setItem("eye_first_event_tracked", "1");
     } catch {}
     eyeTrack("get_first_event", {});
+    trackFirstVisitor(); // GA4/Google Ads "First Visit Received" conversion
   }, [backendStatus]);
 
   const markDone = (id: string) => {
