@@ -6,6 +6,7 @@ import { useLocale } from "next-intl";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
 import { onboardingApi } from "@/api/onboarding";
+import { domainsApi } from "@/api/domains";
 
 const QUIZ_PENDING_KEY = "eye_quiz_pending";
 
@@ -25,6 +26,14 @@ export default function GoogleCallbackPage() {
 
     setToken(token);
 
+    // OAuth (Google/Facebook) skips the register form entirely, so a fresh
+    // OAuth account has no domain yet — send them to the mandatory wizard
+    // instead of the dashboard. Existing users with a domain already go
+    // straight through.
+    const goHome = (hasDomain: boolean) => {
+      router.replace(hasDomain ? `/${locale}/dashboard` : `/${locale}/connect`);
+    };
+
     // If they arrived here from the "get started" questionnaire (Continue
     // with Google), finish it now that we have an authenticated user — this
     // is the only way to attach the wizard's domains/plan to a Google-created
@@ -38,17 +47,17 @@ export default function GoogleCallbackPage() {
           const data = r.data?.data ?? r.data;
           setUser(data.user);
           toast.success(`Signed in — ${data.plan?.name ?? "your plan"} activated, 1 month free!`);
-          router.replace(`/${locale}/dashboard`);
+          goHome((data.domains ?? []).length > 0);
         })
         .catch(() => {
           toast.success("Signed in with Google. Redirecting...");
-          router.replace(`/${locale}/dashboard`);
+          domainsApi.list().then((r) => goHome((r.data?.data ?? r.data ?? []).length > 0)).catch(() => goHome(false));
         });
       return;
     }
 
     toast.success("Signed in with Google. Redirecting...");
-    router.replace(`/${locale}/dashboard`);
+    domainsApi.list().then((r) => goHome((r.data?.data ?? r.data ?? []).length > 0)).catch(() => goHome(false));
   }, [locale, params, router, setToken, setUser]);
 
   return (
