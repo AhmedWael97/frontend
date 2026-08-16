@@ -10,12 +10,8 @@ export const authApi = {
   /** POST /auth/register */
   register: (data: {
     name?: string;
-    first_name: string;
-    last_name: string;
-    phone: string;
     email: string;
     password: string;
-    domain: string;
     locale?: string;
     timezone?: string;
     referral_code?: string;

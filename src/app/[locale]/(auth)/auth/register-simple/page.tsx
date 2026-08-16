@@ -4,15 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Eye, EyeOff, Loader2, ArrowRight, Check, ShieldCheck, Globe } from "lucide-react";
-import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
+import { Eye, EyeOff, Loader2, ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
-import { trackSignup, trackDomainAdded, eyeTrack } from "@/lib/track";
+import { trackSignup, eyeTrack } from "@/lib/track";
 import GoogleOneTap from "@/components/auth/GoogleOneTap";
 
 export default function RegisterSimpleVariant() {
@@ -26,8 +24,6 @@ export default function RegisterSimpleVariant() {
   const [loading, setLoading] = useState(false);
   const [emailErr, setEmailErr] = useState("");
   const [pwErr, setPwErr] = useState("");
-  const [phone, setPhone] = useState<string | undefined>();
-  const [phoneErr, setPhoneErr] = useState("");
   const [emailTaken, setEmailTaken] = useState(false);
   const focused = useRef<Record<string, boolean>>({});
 
@@ -66,44 +62,23 @@ export default function RegisterSimpleVariant() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const data = {
-      first_name: String(fd.get("first_name") || "").trim(),
-      last_name: String(fd.get("last_name") || "").trim(),
-      phone: phone || "",
       email: String(fd.get("email") || "").trim(),
       password: String(fd.get("password") || ""),
-      domain: String(fd.get("domain") || "").trim(),
       ...(ref ? { referral_code: ref } : {}),
     };
     eyeTrack("register_submit", { variant: "simple" });
-    if (!data.first_name || !data.last_name) {
-      setError("Enter your first and last name.");
-      eyeTrack("register_error", { reason: "validation", variant: "simple" });
-      return;
-    }
-    if (!phone) {
-      setPhoneErr("Phone number is required.");
-      eyeTrack("register_error", { reason: "validation", variant: "simple" });
-      return;
-    }
     if (!/^\S+@\S+\.\S+$/.test(data.email) || data.password.length < 8) {
       setError("Enter a valid email and an 8+ character password.");
       eyeTrack("register_error", { reason: "validation", variant: "simple" });
       return;
     }
-    if (!data.domain) {
-      setError("Enter your website's domain.");
-      eyeTrack("register_error", { reason: "validation", variant: "simple" });
-      return;
-    }
     setError("");
-    setPhoneErr("");
     setLoading(true);
     try {
       const res = await authApi.register(data);
       setToken(res.data.token);
       setUser(res.data.user);
       trackSignup(res.data.user?.id, data.email);
-      trackDomainAdded(data.domain);
       eyeTrack("register_complete", { email: data.email, variant: "simple" });
       if (res.data.user?.email_verified_at) {
         toast.success("Account created! Let's set up your first website.");
@@ -191,23 +166,6 @@ export default function RegisterSimpleVariant() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-2">
-            <Input name="first_name" type="text" placeholder={locale === "ar" ? "الاسم الأول" : "First name"} autoComplete="given-name" required onFocus={() => onFieldFocus("first_name")} />
-            <Input name="last_name" type="text" placeholder={locale === "ar" ? "اسم العائلة" : "Last name"} autoComplete="family-name" required onFocus={() => onFieldFocus("last_name")} />
-          </div>
-
-          <PhoneInput
-            international
-            defaultCountry="EG"
-            value={phone}
-            onChange={setPhone}
-            onFocus={() => onFieldFocus("phone")}
-            placeholder={locale === "ar" ? "رقم هاتفك" : "Phone number"}
-            className="eye-phone-input"
-            numberInputProps={{ className: "PhoneInputInput" }}
-          />
-          {phoneErr && <p className="text-xs text-error ml-1">{phoneErr}</p>}
-
           <Input name="email" type="email" placeholder={locale === "ar" ? "بريدك الإلكتروني" : "Email address"} autoComplete="email" required onFocus={() => onFieldFocus("email")} onChange={(e) => validateEmail(e.target.value)} onBlur={(e) => validateEmail(e.target.value)} aria-invalid={!!emailErr} />
           {emailErr && <p className="text-xs text-error ml-1">{emailErr}</p>}
 
@@ -218,11 +176,6 @@ export default function RegisterSimpleVariant() {
             </button>
           </div>
           {pwErr && <p className="text-xs text-error ml-1">{pwErr}</p>}
-
-          <div className="relative">
-            <Globe className="absolute inset-y-0 left-3 rtl:left-auto rtl:right-3 my-auto w-4 h-4 text-on-surface-variant" />
-            <Input name="domain" type="text" placeholder="yoursite.com" autoComplete="off" required onFocus={() => onFieldFocus("domain")} className="pl-9 rtl:pl-4 rtl:pr-9" />
-          </div>
 
           <Button type="submit" disabled={loading} className="w-full h-12 mt-1 gap-2">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4 rtl:rotate-180" />}

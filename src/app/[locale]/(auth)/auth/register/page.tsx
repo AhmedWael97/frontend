@@ -4,15 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Eye, EyeOff, Loader2, ArrowRight, Check, ShieldCheck, Globe } from "lucide-react";
-import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
+import { Eye, EyeOff, Loader2, ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
-import { trackSignup, trackDomainAdded, eyeTrack } from "@/lib/track";
+import { trackSignup, eyeTrack } from "@/lib/track";
 import { AuthShowcase, MobileFeatureStrip } from "@/components/auth/AuthShowcase";
 import GoogleOneTap from "@/components/auth/GoogleOneTap";
 
@@ -27,8 +25,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [emailErr, setEmailErr] = useState("");
   const [pwErr, setPwErr] = useState("");
-  const [phone, setPhone] = useState<string | undefined>();
-  const [phoneErr, setPhoneErr] = useState("");
   const [emailTaken, setEmailTaken] = useState(false);
   const focused = useRef<Record<string, boolean>>({});
 
@@ -71,52 +67,30 @@ export default function RegisterPage() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const data = {
-      first_name: String(fd.get("first_name") || "").trim(),
-      last_name: String(fd.get("last_name") || "").trim(),
-      phone: phone || "",
       email: String(fd.get("email") || "").trim(),
       password: String(fd.get("password") || ""),
-      domain: String(fd.get("domain") || "").trim(),
       ...(ref ? { referral_code: ref } : {}),
     };
     eyeTrack("register_submit", {});
-
-    if (!data.first_name || !data.last_name) {
-      setError(locale === "ar" ? "أدخل الاسم الأول واسم العائلة." : "Enter your first and last name.");
-      eyeTrack("register_error", { reason: "validation" });
-      return;
-    }
-    if (!phone) {
-      setPhoneErr(locale === "ar" ? "رقم الهاتف مطلوب." : "Phone number is required.");
-      eyeTrack("register_error", { reason: "validation" });
-      return;
-    }
     if (!/^\S+@\S+\.\S+$/.test(data.email) || data.password.length < 8) {
-      setError(locale === "ar" ? "أدخل بريدًا صحيحًا وكلمة مرور 8 أحرف على الأقل." : "Enter a valid email and an 8+ character password.");
-      eyeTrack("register_error", { reason: "validation" });
-      return;
-    }
-    if (!data.domain) {
-      setError(locale === "ar" ? "أدخل نطاق موقعك." : "Enter your website's domain.");
+      setError("Enter a valid email and an 8+ character password.");
       eyeTrack("register_error", { reason: "validation" });
       return;
     }
     setError("");
-    setPhoneErr("");
     setLoading(true);
     try {
       const res = await authApi.register(data);
       setToken(res.data.token);
       setUser(res.data.user);
       trackSignup(res.data.user?.id, data.email); // TikTok CompleteRegistration + Google Ads sign_up (+ enhanced conversions)
-      trackDomainAdded(data.domain); // real domain created as part of registration
       // Dogfooding: measure our own activation funnel via EYE's tracker.
       eyeTrack("register_complete", { email: data.email });
       if (res.data.user?.email_verified_at) {
-        toast.success(locale === "ar" ? "تم إنشاء الحساب! جاري تجهيز موقعك." : "Account created! Setting up your site.");
+        toast.success("Account created! Let's set up your first website.");
         router.push(`/${locale}/settings/domains?welcome=1`);
       } else {
-        toast.success(locale === "ar" ? "تم إنشاء الحساب! تحقق من بريدك لتفعيله." : "Account created! Check your inbox to verify your email.");
+        toast.success("Account created! Check your inbox to verify your email.");
         router.push(`/${locale}/auth/verify-email`);
       }
     } catch (e: any) {
@@ -183,9 +157,7 @@ export default function RegisterPage() {
               </svg>
               {locale === "ar" ? "التسجيل بحساب Facebook" : "Sign up with Facebook"}
             </a>
-            <p className="text-center text-[11px] text-neutral-500">
-              {locale === "ar" ? "الأسرع — لكن ستحتاج لإضافة موقعك بعد الدخول" : "Fastest — but you'll add your website right after signing in"}
-            </p>
+            <p className="text-center text-[11px] text-neutral-500">{locale === "ar" ? "الأسرع — بدون كلمة مرور، وبدون تأكيد بريد" : "Fastest — no password, no email to verify"}</p>
             <div className="flex items-center gap-3 text-xs text-neutral-500" style={mono}>
               <span className="h-px flex-1 bg-[#262626]" />
               {locale === "ar" ? "أو بالبريد" : "or use email"}
@@ -207,38 +179,6 @@ export default function RegisterPage() {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-widest text-neutral-500 ml-1" style={mono}>
-                  {locale === "ar" ? "الاسم الأول" : "First name"}
-                </label>
-                <Input name="first_name" type="text" placeholder={locale === "ar" ? "أحمد" : "Alex"} autoComplete="given-name" required onFocus={() => onFieldFocus("first_name")} className="rounded-none bg-[#0A0A0A] border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50" />
-              </div>
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-widest text-neutral-500 ml-1" style={mono}>
-                  {locale === "ar" ? "اسم العائلة" : "Last name"}
-                </label>
-                <Input name="last_name" type="text" placeholder={locale === "ar" ? "محمد" : "Carter"} autoComplete="family-name" required onFocus={() => onFieldFocus("last_name")} className="rounded-none bg-[#0A0A0A] border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50" />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-widest text-neutral-500 ml-1" style={mono}>
-                {locale === "ar" ? "رقم الهاتف" : "Phone number"}
-              </label>
-              <PhoneInput
-                international
-                defaultCountry="EG"
-                value={phone}
-                onChange={setPhone}
-                onFocus={() => onFieldFocus("phone")}
-                placeholder={locale === "ar" ? "رقم هاتفك" : "Your phone number"}
-                className="eye-phone-input"
-                numberInputProps={{ className: "PhoneInputInput" }}
-              />
-              {phoneErr && <p className="text-xs text-red-400 ml-1">{phoneErr}</p>}
-            </div>
-
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-widest text-neutral-500 ml-1" style={mono}>{t("email")}</label>
               <Input name="email" type="email" placeholder="alex@company.com" autoComplete="email" required onFocus={() => onFieldFocus("email")} onChange={(e) => validateEmail(e.target.value)} onBlur={(e) => validateEmail(e.target.value)} aria-invalid={!!emailErr} className="rounded-none bg-[#0A0A0A] border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50" />
@@ -254,19 +194,6 @@ export default function RegisterPage() {
                 </button>
               </div>
               {pwErr ? <p className="text-xs text-red-400 ml-1">{pwErr}</p> : <p className="text-[11px] text-neutral-500 ml-1">{locale === "ar" ? "8 أحرف على الأقل" : "8+ characters"}</p>}
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-widest text-neutral-500 ml-1" style={mono}>
-                {locale === "ar" ? "نطاق موقعك" : "Your website's domain"}
-              </label>
-              <div className="relative">
-                <Globe className="absolute inset-y-0 left-3 rtl:left-auto rtl:right-3 my-auto w-4 h-4 text-neutral-500" />
-                <Input name="domain" type="text" placeholder="yoursite.com" autoComplete="off" required onFocus={() => onFieldFocus("domain")} className="pl-9 rtl:pl-4 rtl:pr-9 rounded-none bg-[#0A0A0A] border border-[#262626] text-white focus:ring-[#00E5FF]/40 focus:border-[#00E5FF]/50" />
-              </div>
-              <p className="text-[11px] text-neutral-500 ml-1">
-                {locale === "ar" ? "يجب أن يكون موقعًا حقيقيًا وموجودًا بالفعل." : "Must be a real, already-live website."}
-              </p>
             </div>
 
             <Button type="submit" disabled={loading} className="w-full h-12 mt-2 gap-2 rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none font-bold">
