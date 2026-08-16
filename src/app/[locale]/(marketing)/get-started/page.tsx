@@ -14,7 +14,7 @@ import { onboardingApi, type QuizDomain } from "@/api/onboarding";
 import { toolsApi } from "@/api/tools";
 import { useAuthStore } from "@/store/auth";
 import { localePath } from "@/lib/seo";
-import { trackSignup, trackDomainAdded, eyeTrack } from "@/lib/track";
+import { trackSignup, trackDomainAdded, eyeTrack, readAcquisitionCookie } from "@/lib/track";
 
 const mono = { fontFamily: "var(--font-mono-marketing)" };
 
@@ -172,6 +172,7 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
     languages,
     features,
     domains: domains.map(({ domain, seo_score, speed_score, pages_found }) => ({ domain, seo_score, speed_score, pages_found })),
+    ...readAcquisitionCookie(),
   });
 
   // Autosave on every step change so an abandoned attempt still shows up for

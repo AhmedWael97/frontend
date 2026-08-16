@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
-import { trackSignup, eyeTrack } from "@/lib/track";
+import { trackSignup, eyeTrack, readAcquisitionCookie } from "@/lib/track";
 import { AuthShowcase, MobileFeatureStrip } from "@/components/auth/AuthShowcase";
 import GoogleOneTap from "@/components/auth/GoogleOneTap";
 
@@ -70,6 +70,7 @@ export default function RegisterPage() {
       email: String(fd.get("email") || "").trim(),
       password: String(fd.get("password") || ""),
       ...(ref ? { referral_code: ref } : {}),
+      ...readAcquisitionCookie(),
     };
     eyeTrack("register_submit", {});
     if (!/^\S+@\S+\.\S+$/.test(data.email) || data.password.length < 8) {

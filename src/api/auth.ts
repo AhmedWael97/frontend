@@ -15,6 +15,10 @@ export const authApi = {
     locale?: string;
     timezone?: string;
     referral_code?: string;
+    utm_source?: string;
+    utm_medium?: string;
+    utm_campaign?: string;
+    click_id?: string;
   }) => client.post(AUTH_ROUTES.register, data),
 
   /** POST /auth/login → { user, token } or { two_factor_required, two_factor_token } */

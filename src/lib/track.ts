@@ -21,6 +21,30 @@ declare global {
 }
 
 /**
+ * Read the first-touch ad-attribution cookie set by middleware.ts on
+ * landing (utm_source/medium/campaign + gclid/ttclid/fbclid). Register
+ * forms spread this into the POST /auth/register body so a signup can be
+ * traced back to the ad session that brought it — see
+ * signup_utm_source/signup_click_id on the users table.
+ */
+export function readAcquisitionCookie(): { utm_source?: string; utm_medium?: string; utm_campaign?: string; click_id?: string } {
+  if (typeof document === "undefined") return {};
+  const match = document.cookie.match(/(?:^|; )eye_acq=([^;]+)/);
+  if (!match) return {};
+  try {
+    const parsed = JSON.parse(decodeURIComponent(match[1])) as { s?: string; m?: string; c?: string; cid?: string };
+    return {
+      ...(parsed.s ? { utm_source: parsed.s } : {}),
+      ...(parsed.m ? { utm_medium: parsed.m } : {}),
+      ...(parsed.c ? { utm_campaign: parsed.c } : {}),
+      ...(parsed.cid ? { click_id: parsed.cid } : {}),
+    };
+  } catch {
+    return {};
+  }
+}
+
+/**
  * Fire a custom event into EYE's OWN tracker (dogfooding). No-ops if the tracker
  * hasn't loaded. Used to measure our own activation funnel.
  */

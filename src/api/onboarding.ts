@@ -31,6 +31,10 @@ export type QuizPayload = {
   last_name?: string;
   password?: string;
   password_confirmation?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  click_id?: string;
 };
 
 export type QuizProgressPayload = Partial<Omit<QuizPayload, "visitor_id">> & {
