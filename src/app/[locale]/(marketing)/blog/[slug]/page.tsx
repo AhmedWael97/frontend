@@ -9,6 +9,7 @@ import { SITE_URL, localePath } from "@/lib/seo";
 type Post = {
   slug: string; title_en: string; title_ar?: string;
   excerpt_en?: string; excerpt_ar?: string; body_en?: string; body_ar?: string;
+  keywords_en?: string | null; keywords_ar?: string | null;
   cover_image_url?: string | null; published_at?: string;
   related_url?: string | null; related_label?: string | null; related_label_ar?: string | null;
 };
@@ -30,9 +31,14 @@ export async function generateMetadata({ params }: { params: { locale: string; s
   const ar = params.locale === "ar";
   const title = ar ? (post.title_ar || post.title_en) : post.title_en;
   const desc = ar ? (post.excerpt_ar || post.excerpt_en) : post.excerpt_en;
+  // Per-post keywords, not the site-wide default list — every post inheriting
+  // the same generic keywords diluted topical relevance instead of helping it.
+  const keywordsRaw = ar ? post.keywords_ar : post.keywords_en;
+  const keywords = keywordsRaw ? keywordsRaw.split(",").map((k) => k.trim()).filter(Boolean) : undefined;
   return {
     title,
     description: desc || undefined,
+    keywords,
     openGraph: { title, description: desc || undefined, images: post.cover_image_url ? [post.cover_image_url] : undefined },
     alternates: { canonical: `${SITE_URL}${localePath(params.locale, `/blog/${post.slug}`)}` },
   };
