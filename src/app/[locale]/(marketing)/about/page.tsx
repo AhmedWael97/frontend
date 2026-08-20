@@ -1,7 +1,26 @@
 import type { Metadata } from "next";
 import { MarketingDoc } from "@/components/marketing/MarketingDoc";
+import { SITE_URL, localePath } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "About" };
+export function generateMetadata({ params }: { params: { locale: string } }): Metadata {
+  const isAr = params.locale === "ar";
+  const title = isAr ? "من نحن — EYE Analytics" : "About Us — EYE Analytics";
+  const description = isAr
+    ? "EYE منصة تحليلات مواقع تحترم الخصوصية ومدعومة بالذكاء الاصطناعي — زوّار مباشرون، خرائط حرارية، قمع التحويل، وملخصات ذكاء اصطناعي بدون كوكيز."
+    : "EYE is a privacy-first, AI-powered visitor analytics platform — live visitors, heatmaps, funnels, and AI summaries, with no advertising cookies.";
+  const url = `${SITE_URL}${localePath(params.locale, "/about")}`;
+  const images = [`${SITE_URL}${localePath(params.locale, "/opengraph-image")}`];
+
+  return {
+    title, description,
+    alternates: {
+      canonical: url,
+      languages: { en: `${SITE_URL}${localePath("en", "/about")}`, ar: `${SITE_URL}${localePath("ar", "/about")}` },
+    },
+    openGraph: { title, description, url, type: "website", images },
+    twitter: { title, description, images },
+  };
+}
 
 export default function AboutPage({ params }: { params: { locale: string } }) {
   const ar = params.locale === "ar";
