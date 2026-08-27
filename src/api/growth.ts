@@ -6,8 +6,11 @@ import client from "./client";
 import { GROWTH_ROUTES } from "./routes";
 
 export const growthApi = {
-  leads: (params?: { status?: string; source?: string; q?: string }) =>
+  /** Paginated — response data is { data, page, per_page, total, last_page }. */
+  leads: (params?: { status?: string; source?: string; q?: string; page?: number; per_page?: number }) =>
     client.get(GROWTH_ROUTES.leads, { params }),
+  /** Pipeline counts for the header tiles — unaffected by the list's filters. */
+  leadsStats: () => client.get(GROWTH_ROUTES.leadsStats),
   createLead: (data: { company?: string; website?: string; contact_name?: string; email?: string; notes?: string }) =>
     client.post(GROWTH_ROUTES.leads, data),
   updateLead: (id: number, data: Record<string, unknown>) =>

@@ -17,7 +17,33 @@ type Lead = {
   last_contacted_at: string | null;
 };
 
+type LeadStats = {
+  total: number; new: number; contacted: number; replied: number;
+  won: number; lost: number; with_email: number; drafts_pending: number; reply_rate: number;
+};
+
 const STATUSES = ["new", "contacted", "replied", "won", "lost"];
+const PER_PAGE = 25;
+
+/** One number from the pipeline. Clicking filters the table to that slice. */
+function StatTile({ label, value, hint, tone, active, onClick }: {
+  label: string; value: string | number; hint?: string; tone?: string; active?: boolean; onClick?: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={!onClick}
+      className={`text-left rounded-xl border p-3.5 transition-colors ${
+        active ? "border-primary bg-primary/5" : "border-outline-variant/30 bg-surface-container-lowest"
+      } ${onClick ? "hover:border-primary/60 cursor-pointer" : "cursor-default"}`}
+    >
+      <div className={`text-2xl font-black tabular-nums ${tone ?? "text-on-surface"}`}>{value}</div>
+      <div className="text-xs font-semibold text-on-surface-variant mt-0.5">{label}</div>
+      {hint ? <div className="text-[11px] text-on-surface-variant/70 mt-0.5">{hint}</div> : null}
+    </button>
+  );
+}
 const STATUS_CLS: Record<string, string> = {
   new: "bg-sky-500/15 text-sky-400", contacted: "bg-amber-500/15 text-amber-400",
   replied: "bg-indigo-500/15 text-indigo-400", won: "bg-emerald-500/15 text-emerald-400", lost: "bg-rose-500/15 text-rose-400",
@@ -66,17 +92,35 @@ function OutreachDialog({ lead, onClose }: { lead: Lead; onClose: () => void }) 
 function Content() {
   const qc = useQueryClient();
   const [status, setStatus] = useState("");
+  const [page, setPage] = useState(1);
   const [form, setForm] = useState({ company: "", website: "", email: "" });
   const [showImport, setShowImport] = useState(false);
   const [csv, setCsv] = useState("");
   const [outreach, setOutreach] = useState<Lead | null>(null);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["leads", status],
-    queryFn: () => growthApi.leads(status ? { status } : undefined).then((r) => (r.data?.data ?? r.data) as Lead[]),
+    queryKey: ["leads", status, page],
+    queryFn: () => growthApi
+      .leads({ page, per_page: PER_PAGE, ...(status ? { status } : {}) })
+      .then((r) => (r.data?.data ?? r.data) as { data: Lead[]; total: number; last_page: number; page: number }),
   });
-  const leads: Lead[] = data ?? [];
-  const invalidate = () => qc.invalidateQueries({ queryKey: ["leads"] });
+  const leads: Lead[] = data?.data ?? [];
+  const lastPage = data?.last_page ?? 1;
+  const total = data?.total ?? 0;
+
+  const { data: stats } = useQuery({
+    queryKey: ["lead-stats"],
+    queryFn: () => growthApi.leadsStats().then((r) => (r.data?.data ?? r.data) as LeadStats),
+  });
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["leads"] });
+    qc.invalidateQueries({ queryKey: ["lead-stats"] });
+  };
+
+  // A filter change reshuffles the result set, so page 3 of the old filter is
+  // meaningless under the new one.
+  const filterBy = (s: string) => { setStatus(s); setPage(1); };
 
   const addMut = useMutation({ mutationFn: () => growthApi.createLead(form), onSuccess: () => { setForm({ company: "", website: "", email: "" }); invalidate(); } });
   const warmMut = useMutation({ mutationFn: () => growthApi.warmLeads().then((r) => r.data?.data ?? r.data), onSuccess: (d) => { invalidate(); toast.success(`Added ${d?.created ?? 0} warm lead(s) from your site visitors.`); } });
@@ -101,6 +145,20 @@ function Content() {
         </div>
       </div>
 
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+        <StatTile label="All leads" value={stats?.total ?? "—"} hint={stats ? `${stats.with_email} with an email` : undefined}
+          active={status === ""} onClick={() => filterBy("")} />
+        <StatTile label="Not contacted" value={stats?.new ?? "—"} hint={stats ? `${stats.drafts_pending} drafts ready` : undefined}
+          active={status === "new"} onClick={() => filterBy("new")} />
+        <StatTile label="Contacted" value={stats?.contacted ?? "—"} tone="text-amber-400"
+          active={status === "contacted"} onClick={() => filterBy("contacted")} />
+        <StatTile label="Responded" value={stats?.replied ?? "—"} tone="text-indigo-400"
+          hint={stats ? `${stats.reply_rate}% of contacted` : undefined}
+          active={status === "replied"} onClick={() => filterBy("replied")} />
+        <StatTile label="Won" value={stats?.won ?? "—"} tone="text-emerald-400"
+          active={status === "won"} onClick={() => filterBy("won")} />
+      </div>
+
       <Card>
         <CardContent className="p-4 flex flex-col sm:flex-row gap-2 sm:items-center">
           <Input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Company" className="sm:w-44" />
@@ -119,8 +177,10 @@ function Content() {
 
       <Card>
         <CardHeader className="pb-2 flex-row items-center justify-between gap-2">
-          <CardTitle className="text-sm font-semibold text-on-surface flex items-center gap-2">All leads <Badge variant="secondary">{leads.length}</Badge></CardTitle>
-          <select value={status} onChange={(e) => setStatus(e.target.value)} className="h-8 px-2 rounded-lg border border-outline-variant/40 bg-surface text-sm text-on-surface">
+          <CardTitle className="text-sm font-semibold text-on-surface flex items-center gap-2">
+            {status ? <span className="capitalize">{status}</span> : "All leads"} <Badge variant="secondary">{total}</Badge>
+          </CardTitle>
+          <select value={status} onChange={(e) => filterBy(e.target.value)} className="h-8 px-2 rounded-lg border border-outline-variant/40 bg-surface text-sm text-on-surface">
             <option value="">All statuses</option>
             {STATUSES.map((s) => <option key={s} value={s} className="capitalize">{s}</option>)}
           </select>
@@ -154,6 +214,22 @@ function Content() {
               </tbody>
             </table>
           </div>
+          {lastPage > 1 && (
+            <div className="flex items-center justify-between gap-3 px-3 py-2.5 border-t border-outline-variant/20">
+              <span className="text-xs text-on-surface-variant tabular-nums">
+                {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, total)} of {total}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" disabled={page <= 1 || isLoading} onClick={() => setPage((p) => p - 1)}>
+                  Previous
+                </Button>
+                <span className="text-xs text-on-surface-variant tabular-nums">{page} / {lastPage}</span>
+                <Button variant="outline" size="sm" disabled={page >= lastPage || isLoading} onClick={() => setPage((p) => p + 1)}>
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -250,6 +250,7 @@ export const ANALYTICS_ROUTES = {
 // ── Growth (leads CRM + outreach) ───────────────────────────────────────────────
 export const GROWTH_ROUTES = {
   leads: "/leads",
+  leadsStats: "/leads/stats",
   leadsImport: "/leads/import",
   leadsWarm: "/leads/warm",
   lead: (id: number) => `/leads/${id}`,
