@@ -18,8 +18,9 @@ type Lead = {
 };
 
 type LeadStats = {
-  total: number; new: number; contacted: number; replied: number;
-  won: number; lost: number; with_email: number; drafts_pending: number; reply_rate: number;
+  total: number; new: number; contacted: number; delivered: number; bounced: number;
+  unsubscribed: number; replied: number; won: number; lost: number;
+  with_email: number; drafts_pending: number; reply_rate: number;
 };
 
 const STATUSES = ["new", "contacted", "replied", "won", "lost"];
@@ -145,15 +146,20 @@ function Content() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
         <StatTile label="All leads" value={stats?.total ?? "—"} hint={stats ? `${stats.with_email} with an email` : undefined}
           active={status === ""} onClick={() => filterBy("")} />
         <StatTile label="Not contacted" value={stats?.new ?? "—"} hint={stats ? `${stats.drafts_pending} drafts ready` : undefined}
           active={status === "new"} onClick={() => filterBy("new")} />
+        {/* Emails actually sent, bounces included — a bounced lead becomes `lost`,
+            so counting by status made sends disappear from this number. */}
         <StatTile label="Contacted" value={stats?.contacted ?? "—"} tone="text-amber-400"
+          hint={stats ? `${stats.delivered} delivered` : undefined}
           active={status === "contacted"} onClick={() => filterBy("contacted")} />
+        <StatTile label="Bounced" value={stats?.bounced ?? "—"} tone="text-rose-400"
+          hint={stats ? `${stats.unsubscribed} unsubscribed` : undefined} />
         <StatTile label="Responded" value={stats?.replied ?? "—"} tone="text-indigo-400"
-          hint={stats ? `${stats.reply_rate}% of contacted` : undefined}
+          hint={stats ? `${stats.reply_rate}% of delivered` : undefined}
           active={status === "replied"} onClick={() => filterBy("replied")} />
         <StatTile label="Won" value={stats?.won ?? "—"} tone="text-emerald-400"
           active={status === "won"} onClick={() => filterBy("won")} />
