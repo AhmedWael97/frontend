@@ -14,6 +14,7 @@ import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
 import GoogleOneTap from "@/components/auth/GoogleOneTap";
+import { oauthCallbackQuery } from "@/lib/track";
 
 const schema = z.object({
   email: z.string().email(),
@@ -38,7 +39,7 @@ export default function LoginSimpleVariant() {
 
   useEffect(() => {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    const callback = encodeURIComponent(`${origin}/${locale}/auth/callback`);
+    const callback = encodeURIComponent(`${origin}/${locale}/auth/callback${oauthCallbackQuery()}`);
     const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     setGoogleHref(`${api}/api/v1/auth/google/redirect?redirect=${callback}`);
     setFacebookHref(`${api}/api/v1/auth/facebook/redirect?redirect=${callback}`);

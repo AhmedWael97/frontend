@@ -39,6 +39,14 @@ export const domainsApi = {
 
   /** GET /domains/{domain}/snippet → text/plain HTML script tag */
   snippet: (domain: number | string) => client.get(DOMAIN_ROUTES.snippet(domain)),
+
+  /**
+   * POST /domains/{domain}/send-install-email → mails the snippet + install
+   * guide to the account's own address. For the common case of signing up on a
+   * phone, where the paste has to happen later at a desktop and `mailto:` is
+   * dead inside Instagram/Facebook in-app browsers.
+   */
+  sendInstallEmail: (domain: number | string) => client.post(DOMAIN_ROUTES.sendInstallEmail(domain)),
 };
 
 // ── Exclusions ────────────────────────────────────────────────────────────────

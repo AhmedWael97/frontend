@@ -6,7 +6,7 @@ import { useLocale } from "next-intl";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
-import { eyeTrack } from "@/lib/track";
+import { eyeTrack, readAcquisitionCookie } from "@/lib/track";
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
 
@@ -39,7 +39,9 @@ export default function GoogleOneTap() {
       eyeTrack("google_one_tap_credential", {});
       try {
         const ref = new URLSearchParams(window.location.search).get("ref") || undefined;
-        const r = await authApi.googleOneTap(resp.credential, ref);
+        // One-Tap posts straight from the SPA, so the eye_acq cookie is readable
+        // here — no need for the callback-URL relay the OAuth redirect uses.
+        const r = await authApi.googleOneTap(resp.credential, ref, readAcquisitionCookie());
         setToken(r.data.token);
         setUser(r.data.user);
         toast.success(locale === "ar" ? "تم الدخول عبر Google" : "Signed in with Google");

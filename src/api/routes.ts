@@ -143,6 +143,7 @@ export const DOMAIN_ROUTES = {
   rotateToken: (domain: number | string) => `/domains/${domain}/rotate-token`,
   verify: (domain: number | string) => `/domains/${domain}/verify`,
   snippet: (domain: number | string) => `/domains/${domain}/snippet`,
+  sendInstallEmail: (domain: number | string) => `/domains/${domain}/send-install-email`,
   // Exclusions
   exclusionsList: (domain: number | string) => `/domains/${domain}/exclusions`,
   exclusionsCreate: (domain: number | string) => `/domains/${domain}/exclusions`,

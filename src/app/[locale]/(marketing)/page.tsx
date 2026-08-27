@@ -23,6 +23,7 @@ import { organizationJsonLd, websiteJsonLd, softwareApplicationJsonLd, localePat
 import { headers } from "next/headers";
 import { Reveal, RevealGroup, RevealItem } from "@/components/marketing/Reveal";
 import SignupPopup from "@/components/marketing/SignupPopup";
+import HeroSiteScan from "@/components/marketing/HeroSiteScan";
 
 // Resolve the base URL from the actual request host, so every absolute URL on the
 // page (canonical, OG, JSON-LD, the install snippet) matches the domain it's
@@ -195,9 +196,14 @@ export default async function HomePage({
                   {t("hero.description")}
                 </p>
 
+                {/* URL-first: show the visitor something true about their own
+                    site before asking for a signup. See HeroSiteScan for the
+                    funnel data behind this ordering. */}
+                <HeroSiteScan />
+
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 mb-6">
                   <Link href={`/${locale}/auth/register`} className="w-full sm:w-auto">
-                    <Button size="lg" className="w-full sm:w-auto rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none px-8 h-12 text-base font-semibold gap-2">
+                    <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-none border-[#262626] text-white hover:bg-[#171717] h-12 px-8 text-base gap-2">
                       {t("hero.cta")}
                       <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                     </Button>
@@ -209,10 +215,6 @@ export default async function HomePage({
                     </Button>
                   </Link>
                 </div>
-
-                <p className="text-xs sm:text-sm font-medium text-green-400 mb-5" style={mono}>
-                  {t("hero.noSignupNote")}
-                </p>
 
                 <div className="flex items-center justify-center lg:justify-start gap-x-5 gap-y-2 flex-wrap text-xs sm:text-sm text-neutral-500">
                   <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> {t("hero.trustFree")}</span>

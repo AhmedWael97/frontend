@@ -45,6 +45,27 @@ export function readAcquisitionCookie(): { utm_source?: string; utm_medium?: str
 }
 
 /**
+ * Build the query string that carries first-touch attribution (and an optional
+ * referral code) through an OAuth round-trip.
+ *
+ * Google/Facebook hand our backend a fresh server-to-server request that
+ * carries neither the eye_acq cookie nor the ad's original query string, so
+ * these values have to ride inside the `?redirect=` callback URL — which
+ * survives untouched inside the provider's `state` param and is re-parsed by
+ * GoogleController/FacebookController. Returns "" when there is nothing to
+ * carry, so callers can append it unconditionally.
+ */
+export function oauthCallbackQuery(referralCode?: string): string {
+  const params = new URLSearchParams();
+  if (referralCode) params.set("ref", referralCode);
+  for (const [key, value] of Object.entries(readAcquisitionCookie())) {
+    if (value) params.set(key, value);
+  }
+  const qs = params.toString();
+  return qs ? `?${qs}` : "";
+}
+
+/**
  * Fire a custom event into EYE's OWN tracker (dogfooding). No-ops if the tracker
  * hasn't loaded. Used to measure our own activation funnel.
  */

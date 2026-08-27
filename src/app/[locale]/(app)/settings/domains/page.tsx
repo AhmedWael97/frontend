@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { domainsApi, billingApi } from "@/lib/api";
 import { eyeTrack, trackDomainAdded } from "@/lib/track";
+import { toast } from "@/lib/use-toast";
 import { Plus, Copy, Check, RefreshCw, Globe, Trash2, Rocket, X, Loader2, Mail, CheckCircle2, PartyPopper, MessageCircle, ArrowRight, Download, Link2 } from "lucide-react";
 
 const INSTALL_PLATFORMS = [
@@ -29,6 +30,8 @@ function InstallGuide({ token, domainId, domainName }: { token: string; domainId
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [mailing, setMailing] = useState(false);
+  const [mailed, setMailed] = useState(false);
   const [verified, setVerified] = useState<null | boolean>(null);
   const shareUrl = `${appUrl}/${locale}/install/${token}`;
 
@@ -92,6 +95,19 @@ function InstallGuide({ token, domainId, domainName }: { token: string; domainId
     );
   }
 
+  const emailToMe = async () => {
+    setMailing(true);
+    try {
+      await domainsApi.sendInstallEmail(domainId);
+      setMailed(true);
+      toast.success("Install instructions sent to your email.");
+    } catch {
+      toast.error("Couldn't send the email. Please try again.");
+    } finally {
+      setMailing(false);
+    }
+  };
+
   const mailto = `mailto:?subject=${encodeURIComponent(`Please install EYE tracking on ${domainName}`)}&body=${encodeURIComponent(
     `Hi,\n\nPlease add this tracking snippet to ${domainName}, just before the closing </head> tag on every page:\n\n${snippet}\n\nThanks!`
   )}`;
@@ -123,6 +139,13 @@ function InstallGuide({ token, domainId, domainName }: { token: string; domainId
       <div className="flex flex-wrap items-center gap-2">
         <Button size="sm" variant="outline" onClick={verify} disabled={verifying} className="gap-1.5">
           {verifying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />} Verify installation
+        </Button>
+        {/* Server-sent, unlike the mailto below: `mailto:` opens nothing inside
+            Instagram/Facebook in-app browsers, which is where most signups
+            happen. This is the path that actually gets the snippet to a desktop. */}
+        <Button size="sm" variant="outline" onClick={emailToMe} disabled={mailing || mailed} className="gap-1.5">
+          {mailing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : mailed ? <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> : <Mail className="w-3.5 h-3.5" />}
+          {mailed ? "Sent to your inbox" : "Email this to me"}
         </Button>
         <a href={mailto} className="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-primary px-2 py-1.5 rounded-lg hover:bg-surface-container">
           <Mail className="w-3.5 h-3.5" /> Email developer

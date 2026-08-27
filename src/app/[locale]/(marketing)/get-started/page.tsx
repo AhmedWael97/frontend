@@ -14,7 +14,7 @@ import { onboardingApi, type QuizDomain } from "@/api/onboarding";
 import { toolsApi } from "@/api/tools";
 import { useAuthStore } from "@/store/auth";
 import { localePath } from "@/lib/seo";
-import { trackSignup, trackDomainAdded, eyeTrack, readAcquisitionCookie } from "@/lib/track";
+import { trackSignup, trackDomainAdded, eyeTrack, oauthCallbackQuery, readAcquisitionCookie } from "@/lib/track";
 
 const mono = { fontFamily: "var(--font-mono-marketing)" };
 
@@ -115,6 +115,19 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
       try { localStorage.setItem("eye_quiz_visitor_id", id); } catch {}
     }
     setVisitorId(id);
+  }, []);
+
+  // The landing hero's site scan hands its URL over as ?site= — jump straight
+  // to the domain step with it filled in, so a visitor who already told us
+  // their address is never asked for it a second time.
+  useEffect(() => {
+    const site = new URLSearchParams(window.location.search).get("site");
+    if (!site) return;
+    const host = site.trim().replace(/^https?:\/\//i, "").split("/")[0].toLowerCase();
+    if (!host) return;
+    setDomains([{ domain: host }]);
+    setStep(4);
+    eyeTrack("quiz_prefilled_from_scan", { host });
   }, []);
 
   const toggle = (list: string[], setList: (v: string[]) => void, item: string) => {
@@ -233,7 +246,7 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
   const continueWithGoogle = () => {
     localStorage.setItem("eye_quiz_pending", JSON.stringify(buildPayload()));
     const origin = window.location.origin;
-    const callback = `${origin}/${locale}/auth/callback`;
+    const callback = `${origin}/${locale}/auth/callback${oauthCallbackQuery()}`;
     const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     window.location.href = `${api}/api/v1/auth/google/redirect?redirect=${encodeURIComponent(callback)}`;
   };

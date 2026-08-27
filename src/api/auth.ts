@@ -26,8 +26,16 @@ export const authApi = {
     client.post(AUTH_ROUTES.login, data),
 
   /** POST /auth/google/one-tap → { user, token } (Google GSI credential JWT) */
-  googleOneTap: (credential: string, referralCode?: string) =>
-    client.post(AUTH_ROUTES.googleOneTap, { credential, ...(referralCode ? { referral_code: referralCode } : {}) }),
+  googleOneTap: (
+    credential: string,
+    referralCode?: string,
+    acquisition?: { utm_source?: string; utm_medium?: string; utm_campaign?: string; click_id?: string },
+  ) =>
+    client.post(AUTH_ROUTES.googleOneTap, {
+      credential,
+      ...(referralCode ? { referral_code: referralCode } : {}),
+      ...(acquisition ?? {}),
+    }),
 
   /** POST /auth/logout  (requires Bearer token) */
   logout: () => client.post(AUTH_ROUTES.logout),

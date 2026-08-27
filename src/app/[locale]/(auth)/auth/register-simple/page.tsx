@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
-import { trackSignup, eyeTrack, readAcquisitionCookie } from "@/lib/track";
+import { trackSignup, eyeTrack, oauthCallbackQuery, readAcquisitionCookie } from "@/lib/track";
 import GoogleOneTap from "@/components/auth/GoogleOneTap";
 
 export default function RegisterSimpleVariant() {
@@ -46,7 +46,7 @@ export default function RegisterSimpleVariant() {
 
   useEffect(() => {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    const callback = `${origin}/${locale}/auth/callback${ref ? `?ref=${encodeURIComponent(ref)}` : ""}`;
+    const callback = `${origin}/${locale}/auth/callback${oauthCallbackQuery(ref)}`;
     const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     setGoogleHref(`${api}/api/v1/auth/google/redirect?redirect=${encodeURIComponent(callback)}`);
     setFacebookHref(`${api}/api/v1/auth/facebook/redirect?redirect=${encodeURIComponent(callback)}`);

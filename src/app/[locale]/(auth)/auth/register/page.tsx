@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/lib/use-toast";
-import { trackSignup, eyeTrack, readAcquisitionCookie } from "@/lib/track";
+import { trackSignup, eyeTrack, oauthCallbackQuery, readAcquisitionCookie } from "@/lib/track";
 import { AuthShowcase, MobileFeatureStrip } from "@/components/auth/AuthShowcase";
 import GoogleOneTap from "@/components/auth/GoogleOneTap";
 
@@ -51,7 +51,7 @@ export default function RegisterPage() {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     // The referral code rides inside the callback URL itself (survives the
     // OAuth round-trip through Google's/Facebook's `state` param unchanged).
-    const callback = `${origin}/${locale}/auth/callback${ref ? `?ref=${encodeURIComponent(ref)}` : ""}`;
+    const callback = `${origin}/${locale}/auth/callback${oauthCallbackQuery(ref)}`;
     const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     setGoogleHref(`${api}/api/v1/auth/google/redirect?redirect=${encodeURIComponent(callback)}`);
     setFacebookHref(`${api}/api/v1/auth/facebook/redirect?redirect=${encodeURIComponent(callback)}`);
