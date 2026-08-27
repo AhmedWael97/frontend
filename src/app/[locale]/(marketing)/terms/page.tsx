@@ -9,7 +9,7 @@ const CONTENT = {
     title: "Terms of Use",
     updated: "Last updated: June 29, 2026",
     intro:
-      "These Terms of Use govern your access to and use of EYE Analytics (“EYE”, “we”, “us”) and the service at eye-analsyis.live. By creating an account or using the service, you agree to these terms.",
+      "These Terms of Use govern your access to and use of EYE Analytics (“EYE”, “we”, “us”) and the service at eye-analysis.online. By creating an account or using the service, you agree to these terms.",
     sections: [
       { h: "1. Acceptance of Terms", p: [
         "By accessing or using EYE, you agree to be bound by these Terms and our Privacy Policy. If you do not agree, do not use the service.",
@@ -64,7 +64,7 @@ const CONTENT = {
     title: "شروط الاستخدام",
     updated: "آخر تحديث: 29 يونيو 2026",
     intro:
-      "تحكم شروط الاستخدام هذه وصولك إلى EYE Analytics (“EYE”، “نحن”) واستخدامك للخدمة على eye-analsyis.live. بإنشائك حسابًا أو استخدامك للخدمة، فإنك توافق على هذه الشروط.",
+      "تحكم شروط الاستخدام هذه وصولك إلى EYE Analytics (“EYE”، “نحن”) واستخدامك للخدمة على eye-analysis.online. بإنشائك حسابًا أو استخدامك للخدمة، فإنك توافق على هذه الشروط.",
     sections: [
       { h: "1. قبول الشروط", p: [
         "بوصولك إلى EYE أو استخدامك لها، فإنك توافق على الالتزام بهذه الشروط وسياسة الخصوصية لدينا. إذا لم توافق، فلا تستخدم الخدمة.",

@@ -9,7 +9,7 @@ const CONTENT = {
     title: "Privacy Policy",
     updated: "Last updated: June 29, 2026",
     intro:
-      "EYE Analytics (“EYE”, “we”, “us”) operates the website analytics platform at eye-analsyis.live. We are privacy-first by design: our tracker uses no advertising cookies and does not store personal data about your visitors. This policy explains what we collect, why, and your rights.",
+      "EYE Analytics (“EYE”, “we”, “us”) operates the website analytics platform at eye-analysis.online. We are privacy-first by design: our tracker uses no advertising cookies and does not store personal data about your visitors. This policy explains what we collect, why, and your rights.",
     sections: [
       { h: "1. Who We Are", p: [
         "EYE Analytics provides a website analytics service that helps website owners understand visitor behavior — live visitors, heatmaps, funnels, and AI summaries — without cookies or invasive tracking.",
@@ -60,7 +60,7 @@ const CONTENT = {
     title: "سياسة الخصوصية",
     updated: "آخر تحديث: 29 يونيو 2026",
     intro:
-      "تُشغّل EYE Analytics (“EYE”، “نحن”) منصة تحليلات المواقع على eye-analsyis.live. نحن نضع الخصوصية أولًا بحكم التصميم: أداة التتبع لدينا لا تستخدم كوكيز إعلانية ولا تخزّن بيانات شخصية عن زوار موقعك. توضّح هذه السياسة ما نجمعه ولماذا، وما هي حقوقك.",
+      "تُشغّل EYE Analytics (“EYE”، “نحن”) منصة تحليلات المواقع على eye-analysis.online. نحن نضع الخصوصية أولًا بحكم التصميم: أداة التتبع لدينا لا تستخدم كوكيز إعلانية ولا تخزّن بيانات شخصية عن زوار موقعك. توضّح هذه السياسة ما نجمعه ولماذا، وما هي حقوقك.",
     sections: [
       { h: "1. من نحن", p: [
         "تقدّم EYE Analytics خدمة تحليلات للمواقع تساعد أصحاب المواقع على فهم سلوك الزوار — الزوار المباشرون، الخرائط الحرارية، القمع، والملخصات بالذكاء الاصطناعي — بدون كوكيز أو تتبع متطفّل.",
