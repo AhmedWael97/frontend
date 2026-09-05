@@ -47,6 +47,14 @@ export const domainsApi = {
    * dead inside Instagram/Facebook in-app browsers.
    */
   sendInstallEmail: (domain: number | string) => client.post(DOMAIN_ROUTES.sendInstallEmail(domain)),
+
+  /**
+   * POST /domains/{domain}/request-install-help → opens a support thread.
+   * For the many people who reach the snippet and cannot act on it — they get
+   * a human rather than the logout button.
+   */
+  requestInstallHelp: (domain: number | string, message?: string) =>
+    client.post(DOMAIN_ROUTES.requestInstallHelp(domain), message ? { message } : {}),
 };
 
 // ── Exclusions ────────────────────────────────────────────────────────────────

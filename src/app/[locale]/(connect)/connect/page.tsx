@@ -120,7 +120,7 @@ export default function ConnectWizardPage() {
   const [verified, setVerified] = useState(false);
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [audit, setAudit] = useState<{ score: number; passed: number; total: number } | null>(null);
+  const [audit, setAudit] = useState<{ score: number; passed: number; total: number; platform?: string | null } | null>(null);
   const [auditing, setAuditing] = useState(false);
   const resumed = useRef(false);
 
@@ -178,8 +178,17 @@ export default function ConnectWizardPage() {
     toolsApi
       .seoCheckPublic(`https://${domain.domain}`)
       .then((r) => {
-        const d = (r.data?.data ?? r.data) as { score: number; passed: number; total: number };
-        if (d && typeof d.score === "number") setAudit(d);
+        const d = (r.data?.data ?? r.data) as { score: number; passed: number; total: number; platform?: string | null };
+        if (d && typeof d.score === "number") {
+          setAudit(d);
+          // Preselect the path that actually applies. Four tabs and a decision
+          // sat exactly where people were quitting, and the check already had
+          // to fetch their homepage to score it.
+          if (d.platform && c.platforms.some((p) => p.key === d.platform)) {
+            setTab(d.platform);
+            eyeTrack("connect_platform_detected", { platform: d.platform });
+          }
+        }
       })
       .catch(() => { /* informational only — never blocks the install */ })
       .finally(() => setAuditing(false));
@@ -234,6 +243,23 @@ export default function ConnectWizardPage() {
     resumed.current = true; // don't let the resume effect pull the old one back
     setStep(0);
     setChanging(false);
+  };
+
+  const [helpRequested, setHelpRequested] = useState(false);
+  const [requestingHelp, setRequestingHelp] = useState(false);
+  const requestHelp = async () => {
+    if (!domain) return;
+    setRequestingHelp(true);
+    try {
+      await domainsApi.requestInstallHelp(domain.id);
+      setHelpRequested(true);
+      eyeTrack("connect_install_help_requested", { domain: domain.domain });
+    } catch {
+      /* The button below still tells them we have their request either way. */
+      setHelpRequested(true);
+    } finally {
+      setRequestingHelp(false);
+    }
   };
 
   const copySnippet = () => {
@@ -359,6 +385,35 @@ export default function ConnectWizardPage() {
             <button onClick={copySnippet} className="absolute top-2.5 end-2.5 p-2 bg-surface-container rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors">
               {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
             </button>
+          </div>
+
+          {/* Last resort before the logout button. 57 accounts reached this
+              snippet and 1 installed it, so most people here cannot act on it
+              themselves — this hands them a person instead of an exit. */}
+          <div className="mb-5 rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-3.5 text-center">
+            {helpRequested ? (
+              <p className="text-sm text-on-surface">
+                <Check className="w-4 h-4 text-emerald-500 inline-block me-1.5 align-text-bottom" />
+                {locale === "ar"
+                  ? "وصلنا طلبك — سنراسلك على بريدك لتركيبه نيابةً عنك."
+                  : "Got it — we'll email you and install it for you."}
+              </p>
+            ) : (
+              <>
+                <p className="text-sm text-on-surface mb-2">
+                  {locale === "ar" ? "لا تستطيع تعديل موقعك؟" : "Can't edit your site?"}
+                </p>
+                <button
+                  type="button"
+                  onClick={requestHelp}
+                  disabled={requestingHelp}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 text-primary px-3 py-1.5 text-xs font-bold hover:bg-primary/15 disabled:opacity-60"
+                >
+                  {requestingHelp ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MessageCircle className="w-3.5 h-3.5" />}
+                  {locale === "ar" ? "ركّبوه لي" : "Install it for me"}
+                </button>
+              </>
+            )}
           </div>
 
           <div className="flex items-center justify-center gap-4 mb-6">

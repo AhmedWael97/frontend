@@ -144,6 +144,7 @@ export const DOMAIN_ROUTES = {
   verify: (domain: number | string) => `/domains/${domain}/verify`,
   snippet: (domain: number | string) => `/domains/${domain}/snippet`,
   sendInstallEmail: (domain: number | string) => `/domains/${domain}/send-install-email`,
+  requestInstallHelp: (domain: number | string) => `/domains/${domain}/request-install-help`,
   // Exclusions
   exclusionsList: (domain: number | string) => `/domains/${domain}/exclusions`,
   exclusionsCreate: (domain: number | string) => `/domains/${domain}/exclusions`,
