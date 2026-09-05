@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { Globe, ArrowRight, Copy, Check, Loader2, PartyPopper, Download, Mail, MessageCircle, Link2 } from "lucide-react";
+import { Globe, ArrowRight, ArrowLeft, Copy, Check, Loader2, PartyPopper, Download, Mail, MessageCircle, Link2 } from "lucide-react";
 import { domainsApi } from "@/lib/api";
 import { toolsApi } from "@/api/tools";
 import { useSetupGate } from "@/lib/useSetupGate";
@@ -213,6 +213,29 @@ export default function ConnectWizardPage() {
     return () => clearTimeout(t);
   }, [verified, router, locale]);
 
+  // Changing the domain has to REMOVE the pending one, not add a second: the
+  // free plan allows a single domain, so a typo would otherwise leave the
+  // account stuck on "Your plan allows up to 1 domain(s)" with no way back.
+  const [changing, setChanging] = useState(false);
+  const changeDomain = async () => {
+    if (!domain) return;
+    setChanging(true);
+    try {
+      await domainsApi.delete(domain.id);
+    } catch {
+      /* Already gone, or never ours — either way the wizard should reopen. */
+    }
+    eyeTrack("connect_wizard_domain_changed", { domain: domain.domain });
+    setSelectedDomainId(null);
+    setDomain(null);
+    setAudit(null);
+    setVerified(false);
+    setDomainInput("");
+    resumed.current = true; // don't let the resume effect pull the old one back
+    setStep(0);
+    setChanging(false);
+  };
+
   const copySnippet = () => {
     navigator.clipboard.writeText(snippet);
     setCopied(true);
@@ -265,6 +288,15 @@ export default function ConnectWizardPage() {
       {/* ── Step 1: install the tag ──────────────────────────────────────── */}
       {step === 1 && domain && (
         <div>
+          <button
+            type="button"
+            onClick={changeDomain}
+            disabled={changing}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant hover:text-on-surface mb-3 disabled:opacity-60"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-180" />
+            {locale === "ar" ? "تغيير النطاق" : "Change domain"}
+          </button>
           <h1 className="text-2xl font-black text-on-surface text-center">{c.step1Title(domain.domain)}</h1>
           <p className="text-sm text-on-surface-variant mt-2 mb-4 text-center">{c.step1Sub}</p>
 

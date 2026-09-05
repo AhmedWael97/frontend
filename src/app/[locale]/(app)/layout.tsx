@@ -54,9 +54,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     // finish the install, swap the domain, sort out billing, or log out, and
     // none of those should be behind the thing being gated. The demo sandbox is
     // exempt so the product can still be evaluated before installing.
-    const isOnSettingsPage = pathname?.includes("/settings/");
+    // Billing stays reachable because the API's 402 handler redirects there
+    // when a trial lapses; blocking it would bounce that user between billing
+    // and the wizard forever. Every other settings page is part of the app and
+    // is gated with the rest of it.
+    const isOnBillingPage = pathname?.includes("/settings/billing");
     const isOnConnectPage = pathname?.includes("/connect");
-    if (needsSetup && !isOnSettingsPage && !isOnConnectPage && !isDemoSelected) {
+    if (needsSetup && !isOnBillingPage && !isOnConnectPage && !isDemoSelected) {
       router.replace(`/${locale}/connect`);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

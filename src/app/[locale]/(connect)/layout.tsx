@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import Link from "next/link";
-import { Eye } from "lucide-react";
+import { Eye, LogOut } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 
 /**
@@ -16,7 +15,7 @@ import { useAuthStore } from "@/store/auth";
 export default function ConnectLayout({ children }: { children: React.ReactNode }) {
   const locale = useLocale();
   const router = useRouter();
-  const { token, user } = useAuthStore();
+  const { token, logout } = useAuthStore();
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export default function ConnectLayout({ children }: { children: React.ReactNode 
     // this sent them straight back out to verify-email, with no way to finish
     // installing the tracker.
     if (!token) router.replace(`/${locale}/auth/login`);
-  }, [token, user, locale, hydrated, router]);
+  }, [token, locale, hydrated, router]);
 
   if (!hydrated || !token) return null;
 
@@ -46,16 +45,22 @@ export default function ConnectLayout({ children }: { children: React.ReactNode 
           </div>
           <span className="text-lg font-black tracking-tighter text-primary uppercase">EYE</span>
         </div>
-        {/* No "Skip for now". The setup gate exists because skipping is what
-            produced accounts sitting on a dashboard of zeros; an escape hatch
-            here would just reinstate that. Settings and logout remain reachable
-            for changing the domain or leaving. */}
-        <Link
-          href={`/${locale}/settings/domains`}
+        {/* Log out is the only way off this screen. No "Skip for now" and no
+            Settings link: skipping the install is what produced accounts
+            sitting on a dashboard of zeros, and a Settings link is a door into
+            the rest of the app. Changing the domain is handled inside the
+            wizard, where the pending one can be removed first — the free plan
+            allows a single domain, so "add another" would just fail. */}
+        <button
+          type="button"
+          onClick={() => {
+            logout();
+            router.replace(`/${locale}/auth/login`);
+          }}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant hover:text-on-surface"
         >
-          {locale === "ar" ? "الإعدادات" : "Settings"}
-        </Link>
+          <LogOut className="w-3.5 h-3.5" /> {locale === "ar" ? "تسجيل الخروج" : "Log out"}
+        </button>
       </header>
       <main className="flex-1 flex items-center justify-center px-4 pb-16">{children}</main>
     </div>
