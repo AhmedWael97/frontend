@@ -81,6 +81,8 @@ client.interceptors.response.use(
       return Promise.reject(err);
     }
 
+    const status = err.response?.status;
+
     // Unwrap nested body: { statusCode, statusText, data: { message, errors } }
     const body = err.response?.data;
     const payload = body?.data ?? body;
@@ -103,7 +105,15 @@ client.interceptors.response.use(
     err.message = payload?.message || err.message || "Something went wrong.";
     (err as any).errors = payload?.errors ?? null;
 
-    if (typeof window !== "undefined") {
+    // Toast only what a person can act on. Every failed request used to raise
+    // one, including background queries the user never triggered — a stale
+    // selectedDomainId left in localStorage by a previous account made the
+    // whole app shout "No query results for model [App\Models\Domain]" at a
+    // brand-new signup who had done nothing wrong. 404 and 403 are almost
+    // always stale client state or a resource that simply is not there;
+    // callers that care handle them, the rest should stay quiet.
+    const quiet = status === 404 || status === 403;
+    if (typeof window !== "undefined" && !quiet) {
       toast.error(err.message);
     }
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import Link from "next/link";
-import { Eye, X } from "lucide-react";
+import { Eye } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 
 /**
@@ -46,11 +46,15 @@ export default function ConnectLayout({ children }: { children: React.ReactNode 
           </div>
           <span className="text-lg font-black tracking-tighter text-primary uppercase">EYE</span>
         </div>
+        {/* No "Skip for now". The setup gate exists because skipping is what
+            produced accounts sitting on a dashboard of zeros; an escape hatch
+            here would just reinstate that. Settings and logout remain reachable
+            for changing the domain or leaving. */}
         <Link
-          href={`/${locale}/dashboard`}
+          href={`/${locale}/settings/domains`}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant hover:text-on-surface"
         >
-          <X className="w-3.5 h-3.5" /> {locale === "ar" ? "تخطَّ الآن" : "Skip for now"}
+          {locale === "ar" ? "الإعدادات" : "Settings"}
         </Link>
       </header>
       <main className="flex-1 flex items-center justify-center px-4 pb-16">{children}</main>

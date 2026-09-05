@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { domainsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
@@ -25,7 +26,7 @@ export type GateDomain = {
  * skipping the wizard.
  */
 export function useSetupGate() {
-  const { token, user } = useAuthStore();
+  const { token, user, selectedDomainId, setSelectedDomainId } = useAuthStore();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["domains"],
@@ -36,6 +37,17 @@ export function useSetupGate() {
 
   const domains = data ?? [];
   const verified = domains.filter((d) => d.script_verified);
+
+  // selectedDomainId is persisted in localStorage and survives registering a
+  // second account in the same browser, so a new signup inherited the previous
+  // account's domain id and every request 404'd with "No query results for
+  // model [App\Models\Domain]". Drop an id this account cannot see.
+  useEffect(() => {
+    if (isLoading || isError || !data) return;
+    if (selectedDomainId && !domains.some((d) => d.id === selectedDomainId)) {
+      setSelectedDomainId(null);
+    }
+  }, [data, isLoading, isError, selectedDomainId, setSelectedDomainId, domains]);
 
   // Superadmins run the platform and are not onboarding onto it.
   const exempt = user?.role === "superadmin";
