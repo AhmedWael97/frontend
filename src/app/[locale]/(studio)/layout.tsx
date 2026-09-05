@@ -28,8 +28,12 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (!hydrated) return;
+    // Email verification is deliberately NON-blocking (see VerifyEmailBanner):
+    // an unverified user keeps full access and is nudged by a banner. Bouncing
+    // them here trapped new signups — the setup gate sends them to /connect and
+    // this sent them straight back out to verify-email, with no way to finish
+    // installing the tracker.
     if (!token) router.replace(`/${locale}/auth/login`);
-    else if (user && !user.email_verified_at) router.replace(`/${locale}/auth/verify-email`);
   }, [token, user, locale, hydrated, router]);
 
   useEffect(() => { setOpen(false); }, [pathname]);

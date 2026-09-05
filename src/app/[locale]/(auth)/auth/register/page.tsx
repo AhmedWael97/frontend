@@ -89,10 +89,13 @@ export default function RegisterPage() {
       eyeTrack("register_complete", { email: data.email });
       if (res.data.user?.email_verified_at) {
         toast.success("Account created! Let's set up your first website.");
-        router.push(`/${locale}/settings/domains?welcome=1`);
+        router.push(`/${locale}/connect`);
       } else {
-        toast.success("Account created! Check your inbox to verify your email.");
-        router.push(`/${locale}/auth/verify-email`);
+        // Straight into setup. Verification is non-blocking and is nudged by
+        // a banner; sending people to a verify page first stalled them before
+        // they ever saw that a tracking tag has to go on their site.
+        toast.success("Account created! Let's connect your website.");
+        router.push(`/${locale}/connect`);
       }
     } catch (e: any) {
       const fieldErrors = (e as any).errors;
