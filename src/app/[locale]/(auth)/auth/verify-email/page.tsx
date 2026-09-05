@@ -71,19 +71,24 @@ function VerifyEmailContent() {
           Didn&apos;t get the email? Check your spam folder or click above to resend.
         </p>
 
+        {/* Verification is not enforced, but this page should not read as an
+            optional step either — "Verify later" invited people to treat a
+            confirmed address as busywork, and it is what password resets and
+            every alert depend on. The way onward is still here, phrased as
+            carrying on with setup rather than as skipping something. */}
         <div className="pt-2 border-t border-outline-variant/15">
+          <p className="text-sm text-on-surface">
+            {isAr
+              ? "تأكيد بريدك يحمي حسابك ويتيح استعادة كلمة المرور والتنبيهات."
+              : "Confirming your address protects your account and switches on password resets and alerts."}
+          </p>
           <Link
-            href={`/${locale}/dashboard`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors"
+            href={`/${locale}/connect`}
+            className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors"
           >
-            {isAr ? "التحقق لاحقًا" : "Verify later"}
+            {isAr ? "متابعة إعداد موقعك" : "Continue setting up your site"}
             <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </Link>
-          <p className="text-xs text-on-surface-variant/60 mt-1">
-            {isAr
-              ? "يمكنك متابعة استخدام لوحة التحكم وتأكيد بريدك لاحقًا."
-              : "You can keep using the dashboard and confirm your email later."}
-          </p>
         </div>
       </div>
     </div>
