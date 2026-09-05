@@ -106,12 +106,12 @@ export default function HeroSiteScan() {
           className="w-full sm:w-auto rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none px-7 h-12 text-base font-semibold gap-2 disabled:opacity-70"
         >
           {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-          {busy ? t("Scanning…", "جارٍ الفحص…") : t("Scan my site free", "افحص موقعي مجانًا")}
+          {busy ? t("Checking…", "جارٍ الفحص…") : t("Check my site free", "افحص موقعي مجانًا")}
         </Button>
       </form>
 
       <p className="text-xs sm:text-sm font-medium text-green-400 mt-3" style={{ fontFamily: "var(--font-mono, monospace)" }}>
-        {t("No signup. Real results in seconds.", "بدون تسجيل. نتائج حقيقية خلال ثوانٍ.")}
+        {t("No signup. Reads your public pages in seconds.", "بدون تسجيل. يقرأ صفحاتك العامة خلال ثوانٍ.")}
       </p>
 
       {error ? (
@@ -165,9 +165,17 @@ export default function HeroSiteScan() {
             size="lg"
             className="w-full sm:w-auto rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none px-7 h-12 text-base font-semibold gap-2"
           >
-            {t("See who visits & why they leave", "اعرف من يزور ولماذا يغادر")}
+            {t("Track real visitors too", "تتبّع الزوار الحقيقيين أيضًا")}
             <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </Button>
+          {/* This check reads public pages only. Saying so here stops people
+              finishing signup expecting visitor data to already be flowing. */}
+          <p className="text-xs text-neutral-500 mt-2.5">
+            {t(
+              "This check reads your public pages. Seeing actual visitors needs a one-line snippet on your site — we give it to you at signup.",
+              "هذا الفحص يقرأ صفحاتك العامة. أما رؤية الزوار الفعليين فتحتاج سطرًا برمجيًا على موقعك — نمنحك إياه عند التسجيل.",
+            )}
+          </p>
         </div>
       ) : null}
     </div>

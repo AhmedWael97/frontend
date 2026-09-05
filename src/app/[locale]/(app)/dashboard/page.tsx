@@ -18,6 +18,7 @@ import { useAuthStore } from "@/store/auth";
 import { formatNumber } from "@/lib/utils";
 import { toast } from "@/lib/use-toast";
 import WelcomeChecklist from "@/components/WelcomeChecklist";
+import NotInstalledPanel from "@/components/dashboard/NotInstalledPanel";
 import { UsageUpgradeBanner } from "@/components/UsageUpgradeBanner";
 import InsightPanel from "@/components/ai/InsightPanel";
 
@@ -75,6 +76,8 @@ function KpiCard({
   return inner;
 }
 
+type DomainRow = { id: number; domain: string; script_token: string; script_verified: boolean };
+
 // ── Analytics Hub Content ─────────────────────────────────────────────────────
 function AnalyticsHub() {
   const t  = useTranslations("dashboard");
@@ -102,6 +105,23 @@ function AnalyticsHub() {
     enabled: !!selectedDomainId,
     refetchInterval: 60000,
   });
+
+  const { data: domainList } = useQuery({
+    queryKey: ["domains"],
+    queryFn: () => domainsApi.list().then((r) => (r.data?.data ?? r.data) as DomainRow[]),
+  });
+
+  // Zeros are not data. A domain that has never reported a visitor and has no
+  // verified script has not been installed, and showing 0% bounce for it reads
+  // as a broken product instead of an unfinished setup. Wait for the overview
+  // to load before judging, so a slow request never flashes the panel at a
+  // site that is in fact live.
+  const currentDomain = domainList?.find((d) => d.id === selectedDomainId);
+  const notInstalled =
+    !!currentDomain &&
+    !currentDomain.script_verified &&
+    !isLoading &&
+    !(data?.visitors || data?.sessions);
 
   useEffect(() => {
     if (!data?.visitors) return;
@@ -221,8 +241,17 @@ function AnalyticsHub() {
       {/* Plan usage upsell — events are stored; lower plans only see their allowance */}
       <UsageUpgradeBanner domainId={selectedDomainId} />
 
+      {/* Install gate — replaces the KPIs while a site has never reported data */}
+      {notInstalled && currentDomain && (
+        <NotInstalledPanel
+          domainId={currentDomain.id}
+          domainName={currentDomain.domain}
+          scriptToken={currentDomain.script_token}
+        />
+      )}
+
       {/* KPI cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className={`grid grid-cols-2 lg:grid-cols-5 gap-4${notInstalled ? " opacity-40 pointer-events-none" : ""}`}>
         <KpiCard title={t("visitors")} value={isLoading ? "…" : formatNumber(data?.visitors || 0)} icon={Users} />
         <KpiCard title={t("sessions")} value={isLoading ? "…" : formatNumber(data?.sessions || 0)} icon={Activity} />
         <KpiCard title={t("avgTime")}  value={isLoading ? "…" : formatSeconds(data?.avg_session_duration || 0)} icon={Clock} />

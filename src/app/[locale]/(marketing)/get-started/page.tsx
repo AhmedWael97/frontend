@@ -99,7 +99,19 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const [result, setResult] = useState<{ domains: { domain: string }[]; plan: { name: string } | null; trial_ends_at: string | null } | null>(null);
+  const [result, setResult] = useState<{ domains: { domain: string; script_token?: string }[]; plan: { name: string } | null; trial_ends_at: string | null } | null>(null);
+  const [snippetCopied, setSnippetCopied] = useState(false);
+
+  // Same tag the dashboard install guide and /install/{token} hand out — the
+  // quiz already returns script_token per created domain, it was simply never
+  // shown. Only the first domain's snippet is rendered; the rest are on the
+  // domains page, which the primary button now leads to.
+  const installSnippet = useMemo(() => {
+    const token = result?.domains?.find((d) => d.script_token)?.script_token;
+    if (!token) return "";
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://eye-analysis.online").replace(/\/$/, "");
+    return `<script src="${appUrl}/tracker/eye.js" data-token="${token}" data-api="${appUrl}/api/collect" async></script>`;
+  }, [result]);
   const [visitorId, setVisitorId] = useState("");
 
   const t = (en: string, arText: string) => (ar ? arText : en);
@@ -331,7 +343,7 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
               {step === 4 && (
                 <div>
                   <h1 className="text-2xl font-bold text-white mb-2">{t("Enter your domain(s)", "أدخل موقعك أو مواقعك")}</h1>
-                  <p className="text-sm text-neutral-400 mb-5">{t("Add up to 5, then test them — SEO, speed, and sitemap, in one shot.", "أضف حتى 5 مواقع، ثم افحصها — سيو، سرعة، وخريطة الموقع دفعة واحدة.")}</p>
+                  <p className="text-sm text-neutral-400 mb-5">{t("Add up to 5. We can run a free public check now — SEO, speed and sitemap. Visitor tracking needs a small snippet on each site, which you get at the end.", "أضف حتى 5 مواقع. يمكننا إجراء فحص عام مجاني الآن — سيو وسرعة وخريطة الموقع. أما تتبّع الزوار فيحتاج كود صغير على كل موقع، وستحصل عليه في النهاية.")}</p>
 
                   <div className="flex gap-2 mb-4">
                     <Input
@@ -376,7 +388,7 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
                         </div>
                       ))}
                       <Button type="button" variant="outline" onClick={runTests} className="w-full h-11 gap-2 rounded-none border-[#262626] text-white hover:bg-[#171717]">
-                        <ScanSearch className="w-4 h-4" /> {t("Test my site(s)", "افحص موقعي/مواقعي")}
+                        <ScanSearch className="w-4 h-4" /> {t("Run free public check", "شغّل الفحص العام المجاني")}
                       </Button>
                     </div>
                   )}
@@ -462,11 +474,61 @@ export default function GetStartedWizard({ params }: { params: { locale: string 
                       </div>
                     ))}
                   </div>
-                  <Link href={localePath(locale, "/dashboard")}>
+
+                  {/* The audit in step 4 runs on a URL alone, so people finish
+                      the quiz believing tracking is already live and land on a
+                      dashboard of zeros. Say the remaining step out loud, and
+                      put the snippet here rather than behind a settings page. */}
+                  {installSnippet && (
+                    <div className="border border-[#00E5FF]/30 bg-[#00E5FF]/5 p-4 mb-6 text-start">
+                      <p className="text-sm font-bold text-white mb-1">
+                        {t("One step left: add this to your site", "خطوة أخيرة: أضف هذا إلى موقعك")}
+                      </p>
+                      <p className="text-xs text-neutral-400 mb-3">
+                        {t(
+                          "Paste it just before the closing </head> tag. Until it is on your site we cannot see any visitors — the checks above only read your public pages.",
+                          "الصقه قبل وسم </head> مباشرة. لن نتمكن من رؤية أي زوار قبل وجوده على موقعك — الفحوصات أعلاه تقرأ صفحاتك العامة فقط.",
+                        )}
+                      </p>
+                      <pre className="bg-[#0A0A0A] border border-[#262626] p-3 text-[11px] leading-relaxed text-neutral-300 overflow-x-auto whitespace-pre-wrap break-all" style={mono}>{installSnippet}</pre>
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard?.writeText(installSnippet);
+                            setSnippetCopied(true);
+                            eyeTrack("quiz_snippet_copied", {});
+                            setTimeout(() => setSnippetCopied(false), 2000);
+                          }}
+                          className="rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none gap-2"
+                        >
+                          {snippetCopied ? t("Copied", "تم النسخ") : t("Copy snippet", "انسخ الكود")}
+                        </Button>
+                        <a href={`mailto:?subject=${encodeURIComponent("Please install EYE tracking")}&body=${encodeURIComponent(`Hi,
+
+Please add this to our site, just before the closing </head> tag:
+
+${installSnippet}
+
+Thanks!`)}`}>
+                          <Button type="button" variant="outline" className="rounded-none border-[#262626] text-white hover:bg-[#171717]">
+                            {t("Email to my developer", "أرسله لمطوّري")}
+                          </Button>
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  <Link href={localePath(locale, "/settings/domains")}>
                     <Button size="lg" className="w-full sm:w-auto h-14 px-10 text-lg font-bold gap-2 rounded-none bg-[#00E5FF] hover:bg-[#33EAFF] text-black shadow-none">
-                      {t("Go to my dashboard", "اذهب إلى لوحتي")} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+                      {t("Finish setup", "أكمل الإعداد")} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
                     </Button>
                   </Link>
+                  <div className="mt-3">
+                    <Link href={localePath(locale, "/dashboard")} className="text-sm text-neutral-400 hover:text-white underline">
+                      {t("Skip for now", "تخطَّ الآن")}
+                    </Link>
+                  </div>
                 </div>
               )}
 

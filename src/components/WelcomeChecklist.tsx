@@ -142,8 +142,15 @@ export default function WelcomeChecklist({ domainId, onDismiss }: Props) {
   const total = STEPS.length;
   const allDone = doneCount >= total;
 
-  // Hide once all done or manually dismissed
-  if (dismissed || allDone) return null;
+  // The install step is the whole product working at all, and this was the
+  // only place in the dashboard that mentioned it. Dismissing used to hide it
+  // permanently, leaving an account with a site that reports nothing and no
+  // remaining hint why. Dismissal is honoured for every other state, but not
+  // before the first visitor has actually arrived.
+  const trackingLive = done.has("first_visitor");
+
+  // Hide once all done, or when dismissed and tracking is already working
+  if (allDone || (dismissed && trackingLive)) return null;
 
   const pct = Math.round((doneCount / total) * 100);
 
@@ -171,14 +178,16 @@ export default function WelcomeChecklist({ domainId, onDismiss }: Props) {
         >
           {collapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
         </button>
-        {/* Always allow dismissing the checklist */}
-        <button
-          onClick={handleDismiss}
-          className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded"
-          aria-label="Dismiss checklist"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        {/* Dismissable only once tracking is live — see trackingLive above */}
+        {trackingLive && (
+          <button
+            onClick={handleDismiss}
+            className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded"
+            aria-label="Dismiss checklist"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Step list */}
