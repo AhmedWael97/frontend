@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Globe, ArrowRight, Copy, Check, Loader2, PartyPopper, Download, Mail, MessageCircle, Link2 } from "lucide-react";
 import { domainsApi } from "@/lib/api";
+import { toolsApi } from "@/api/tools";
+import { useSetupGate } from "@/lib/useSetupGate";
+import { AiChatBubble } from "@/components/AiChatBubble";
 import { useAuthStore } from "@/store/auth";
 import { eyeTrack, trackDomainAdded } from "@/lib/track";
 
@@ -117,6 +120,24 @@ export default function ConnectWizardPage() {
   const [verified, setVerified] = useState(false);
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [audit, setAudit] = useState<{ score: number; passed: number; total: number } | null>(null);
+  const [auditing, setAuditing] = useState(false);
+  const resumed = useRef(false);
+
+  // Resume where the account actually is. The setup gate sends people back here
+  // on every login until a tag reports in, so someone who added a domain
+  // yesterday must land on the install step rather than be asked for the domain
+  // again — the server's domain list is the only honest source for that.
+  const { pendingDomain, loading: gateLoading } = useSetupGate();
+  useEffect(() => {
+    if (resumed.current || gateLoading || domain || !pendingDomain) return;
+    resumed.current = true;
+    setDomain(pendingDomain);
+    setSelectedDomainId(pendingDomain.id);
+    setStep(1);
+    eyeTrack("connect_wizard_resumed", { domain: pendingDomain.domain });
+  }, [pendingDomain, gateLoading, domain, setSelectedDomainId]);
+
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://eye-analysis.online").replace(/\/$/, "");
   const snippet = domain
     ? `<script src="${appUrl}/tracker/eye.js" data-token="${domain.script_token}" data-api="${appUrl}/api/collect" async></script>`
@@ -146,6 +167,23 @@ export default function ConnectWizardPage() {
       setSubmitting(false);
     }
   };
+
+  // ── Free public check — runs itself once the domain is known ────────────
+  // Kept beside the install rather than as a gate before it: it reads public
+  // pages only and cannot tell us anything about visitors, so making people
+  // wait on it would push the one step that matters further away.
+  useEffect(() => {
+    if (!domain || audit || auditing) return;
+    setAuditing(true);
+    toolsApi
+      .seoCheckPublic(`https://${domain.domain}`)
+      .then((r) => {
+        const d = (r.data?.data ?? r.data) as { score: number; passed: number; total: number };
+        if (d && typeof d.score === "number") setAudit(d);
+      })
+      .catch(() => { /* informational only — never blocks the install */ })
+      .finally(() => setAuditing(false));
+  }, [domain, audit, auditing]);
 
   // ── Step 3: poll for the first event, once the domain exists ────────────
   useEffect(() => {
@@ -190,6 +228,7 @@ export default function ConnectWizardPage() {
   const shareUrl = domain ? `${appUrl}/${locale}/install/${domain.script_token}` : "";
 
   return (
+    <>
     <div className="w-full max-w-xl">
       <StepDots step={step} labels={c.stepLabels} />
 
@@ -227,7 +266,39 @@ export default function ConnectWizardPage() {
       {step === 1 && domain && (
         <div>
           <h1 className="text-2xl font-black text-on-surface text-center">{c.step1Title(domain.domain)}</h1>
-          <p className="text-sm text-on-surface-variant mt-2 mb-6 text-center">{c.step1Sub}</p>
+          <p className="text-sm text-on-surface-variant mt-2 mb-4 text-center">{c.step1Sub}</p>
+
+          {/* Free public check. Shown here rather than as a step of its own so
+              it never delays the install — and labelled plainly, because
+              believing this check was the product is exactly why people stopped
+              at a dashboard of zeros. */}
+          {(auditing || audit) && (
+            <div className="mb-5 rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-3.5 text-center">
+              {auditing && !audit ? (
+                <p className="text-xs text-on-surface-variant">
+                  {locale === "ar" ? "جارٍ فحص صفحاتك العامة…" : "Checking your public pages…"}
+                </p>
+              ) : audit ? (
+                <>
+                  <p className="text-sm text-on-surface">
+                    <span className={`font-black text-lg ${audit.score >= 80 ? "text-emerald-500" : audit.score >= 50 ? "text-amber-500" : "text-rose-500"}`}>
+                      {audit.score}
+                    </span>
+                    <span className="text-on-surface-variant">/100</span>
+                    {" — "}
+                    {locale === "ar"
+                      ? `${audit.passed} من ${audit.total} فحوصات ناجحة`
+                      : `${audit.passed} of ${audit.total} checks passed`}
+                  </p>
+                  <p className="text-[11px] text-on-surface-variant mt-1">
+                    {locale === "ar"
+                      ? "هذا الفحص يقرأ صفحاتك العامة فقط. لرؤية الزوار الفعليين أكمل التثبيت بالأسفل."
+                      : "That check read your public pages only. Finish the install below to see actual visitors."}
+                  </p>
+                </>
+              ) : null}
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-1.5 justify-center mb-3">
             {c.platforms.map((p) => (
@@ -313,5 +384,10 @@ export default function ConnectWizardPage() {
         </div>
       )}
     </div>
+
+      {/* The setup gate keeps people on this screen, so support has to be
+          reachable from it. */}
+      <AiChatBubble />
+    </>
   );
 }

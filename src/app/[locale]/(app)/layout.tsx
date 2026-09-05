@@ -13,6 +13,7 @@ import { TourGuide } from "@/components/onboarding/TourGuide";
 import { SandboxBanner } from "@/components/SandboxBanner";
 import { useAuthStore } from "@/store/auth";
 import { useDemoDomain } from "@/lib/useDemoDomain";
+import { useSetupGate } from "@/lib/useSetupGate";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { token, user, selectedDomainId } = useAuthStore();
   const demo = useDemoDomain();
+  const { needsSetup } = useSetupGate();
   const isDemoSelected = !!demo && selectedDomainId === demo.id;
   const [hydrated, setHydrated] = useState(false);
 
@@ -42,19 +44,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     // Email verification is NON-blocking: unverified users can still use the
     // dashboard. They're nudged via <VerifyEmailBanner /> instead of being
     // redirected to the verify-email page.
-    // New users who haven't added a domain yet → send them to domains setup
-    // Only redirect when navigating away from settings pages so they can add a domain
-    const isOnDomainsPage = pathname?.includes("/settings/domains");
+    // Setup gate. Previously this only asked whether a domain had been ADDED,
+    // so anyone who typed a URL landed on a dashboard of zeros and — having
+    // watched the free audit produce real results during signup — never
+    // realised a tag still had to go on their site. The gate now holds until an
+    // event has actually arrived.
+    //
+    // Settings stays reachable throughout: the way out of this screen is to
+    // finish the install, swap the domain, sort out billing, or log out, and
+    // none of those should be behind the thing being gated. The demo sandbox is
+    // exempt so the product can still be evaluated before installing.
     const isOnSettingsPage = pathname?.includes("/settings/");
     const isOnConnectPage = pathname?.includes("/connect");
-    if (
-      user?.onboarding && !user.onboarding.domain_added &&
-      !isOnDomainsPage && !isOnSettingsPage && !isOnConnectPage && !isDemoSelected
-    ) {
+    if (needsSetup && !isOnSettingsPage && !isOnConnectPage && !isDemoSelected) {
       router.replace(`/${locale}/connect`);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, user, locale, hydrated, pathname, isDemoSelected]);
+  }, [token, user, locale, hydrated, pathname, isDemoSelected, needsSetup]);
 
   if (!hydrated || !token) return null;
 
